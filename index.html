@@ -112,7 +112,7 @@
     color:var(--forest);
   }
   label .req{color:var(--maroon); margin-left:2px;}
-  input[type=text], input[type=tel], input[type=email], select, textarea{
+  input[type=text], input[type=tel], input[type=email], input[type=date], select, textarea{
     width:100%;
     padding:11px 12px;
     border-radius:8px;
@@ -247,14 +247,22 @@
     <label>পূর্ণ নাম <span class="req">*</span></label>
     <input type="text" id="fullName" required placeholder="যেমনঃ মোঃ আলামিন ইসলাম">
 
+    <label>মোবাইল নম্বর <span class="req">*</span></label>
+    <input type="tel" id="phone" required placeholder="01XXXXXXXXX" pattern="01[0-9]{9}">
+
     <div class="row2">
       <div>
-        <label>মোবাইল নম্বর <span class="req">*</span></label>
-        <input type="tel" id="phone" required placeholder="01XXXXXXXXX" pattern="01[0-9]{9}">
+        <label>জন্ম তারিখ</label>
+        <input type="date" id="dob">
       </div>
       <div>
-        <label>বয়স</label>
-        <input type="text" id="age" inputmode="numeric" placeholder="যেমনঃ ২৫">
+        <label>লিঙ্গ</label>
+        <select id="gender">
+          <option value="">নির্বাচন করুন</option>
+          <option value="পুরুষ">পুরুষ</option>
+          <option value="মহিলা">মহিলা</option>
+          <option value="অন্যান্য">অন্যান্য</option>
+        </select>
       </div>
     </div>
 
@@ -286,6 +294,9 @@
     <label>আপনার ফেসবুক সমস্যার বিবরণ <span class="req">*</span></label>
     <textarea id="comment" required placeholder="যেমনঃ পেজ হ্যাক হয়ে গেছে, অ্যাকাউন্ট নিষ্ক্রিয় হয়ে গেছে, মনিটাইজেশন বন্ধ হয়ে গেছে ইত্যাদি — বিস্তারিত লিখুন"></textarea>
 
+    <label>সমস্যার স্ক্রিনশট আপলোড করুন (ঐচ্ছিক)</label>
+    <input type="file" id="screenshot" accept="image/*">
+
     <button type="submit" id="submitBtn">রেজিস্ট্রেশন সম্পন্ন করুন</button>
     <div class="status" id="status"></div>
   </form>
@@ -294,7 +305,7 @@
 
 <script>
 // ============ CONFIG ============
-// এখানে আপনার Google Apps Script Web App URL বসান (deploy করার পর যেটা পাবেন)
+// এখানে আপনার Google Apps Script Web App URL বসান (নতুন Deploy করে যেটা পাবেন)
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznp7EpvAZFD3-ZJMrq4cQLmxGzK_qzGzNQtQlV5nGDgdivKsDAtKhvuB1sEmV0yx2E/exec";
 // ==================================
 
@@ -466,6 +477,15 @@ function showStatus(type, msg){
   statusBox.textContent = msg;
 }
 
+function fileToBase64(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 form.addEventListener('submit', async (e)=>{
   e.preventDefault();
 
@@ -477,21 +497,40 @@ form.addEventListener('submit', async (e)=>{
   const payload = {
     fullName: document.getElementById('fullName').value.trim(),
     phone: document.getElementById('phone').value.trim(),
-    age: document.getElementById('age').value.trim(),
+    dob: document.getElementById('dob').value.trim(),
+    gender: document.getElementById('gender').value.trim(),
     email: document.getElementById('email').value.trim(),
     division: divisionSelect.options[divisionSelect.selectedIndex]?.text || '',
     district: districtSelect.options[districtSelect.selectedIndex]?.text || '',
-    upazila: document.getElementById('areaDetail').value.trim() ? '' : '',
     areaDetail: document.getElementById('areaDetail').value.trim(),
     comment: document.getElementById('comment').value.trim(),
-    submittedAt: new Date().toISOString()
+    submittedAt: new Date().toISOString(),
+    screenshotBase64: '',
+    screenshotName: '',
+    screenshotType: ''
   };
+
+  const screenshotInput = document.getElementById('screenshot');
+  const file = screenshotInput.files[0];
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'পাঠানো হচ্ছে...';
   showStatus('loading', 'অনুগ্রহ করে অপেক্ষা করুন...');
 
   try{
+    if(file){
+      // ৫ এমবি এর বেশি ছবি পাঠানো এড়িয়ে চলুন (Apps Script এর সীমা মাথায় রেখে)
+      if(file.size > 5 * 1024 * 1024){
+        showStatus('err', 'ছবির সাইজ ৫ এমবি এর কম হতে হবে।');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'রেজিস্ট্রেশন সম্পন্ন করুন';
+        return;
+      }
+      payload.screenshotBase64 = await fileToBase64(file);
+      payload.screenshotName = file.name;
+      payload.screenshotType = file.type;
+    }
+
     await fetch(SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
