@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ফেসবুক সমস্যা সমাধান - রেজিস্ট্রেশন</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EA;
+    --paper-dark:#F2EBDA;
+    --ink:#22281F;
+    --forest:#1F3B2C;
+    --forest-2:#2C4F3A;
+    --gold:#B8863B;
+    --gold-light:#D9AE6B;
+    --maroon:#7A2E2E;
+    --line:#D8CDAE;
+    --ok:#2C6B4F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(31,59,44,0.06) 1px, transparent 0);
+    background-size:22px 22px;
+    font-family:'Hind Siliguri', sans-serif;
+    color:var(--ink);
+    padding:0 0 60px;
+  }
+  header{
+    background:linear-gradient(135deg, var(--forest) 0%, var(--forest-2) 100%);
+    color:var(--paper);
+    padding:38px 20px 46px;
+    position:relative;
+    overflow:hidden;
+    text-align:center;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:6px;
+    background:repeating-linear-gradient(90deg, var(--gold) 0 14px, transparent 14px 22px);
+  }
+  .eyebrow{
+    letter-spacing:.14em;
+    font-size:12.5px;
+    color:var(--gold-light);
+    font-weight:600;
+    margin-bottom:8px;
+  }
+  h1{
+    font-family:'Noto Serif Bengali', serif;
+    font-size:28px;
+    margin:0 0 8px;
+    font-weight:700;
+  }
+  header p{
+    margin:0;
+    font-size:14.5px;
+    color:#DCE6DD;
+  }
+  main{
+    max-width:520px;
+    margin:-24px auto 0;
+    padding:0 16px;
+  }
+  form{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:0 18px 40px -20px rgba(31,59,44,0.35);
+    padding:26px 20px 28px;
+  }
+  .section-label{
+    font-size:12.5px;
+    letter-spacing:.08em;
+    color:var(--gold);
+    font-weight:700;
+    text-transform:uppercase;
+    margin:26px 0 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .section-label:first-child{margin-top:0;}
+  .section-label::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--line);
+  }
+  label{
+    display:block;
+    font-size:14.5px;
+    font-weight:600;
+    margin:14px 0 6px;
+    color:var(--forest);
+  }
+  label .req{color:var(--maroon); margin-left:2px;}
+  input[type=text], input[type=tel], input[type=email], select, textarea{
+    width:100%;
+    padding:11px 12px;
+    border-radius:8px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    font-family:inherit;
+    font-size:15px;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s;
+    appearance:none;
+    -webkit-appearance:none;
+  }
+  select{
+    background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="9"><path d="M1 1l6 6 6-6" stroke="%231F3B2C" stroke-width="2" fill="none" stroke-linecap="round"/></svg>');
+    background-repeat:no-repeat;
+    background-position:right 12px center;
+    padding-right:34px;
+  }
+  select:disabled{
+    background-color:var(--paper-dark);
+    color:#9a9587;
+    cursor:not-allowed;
+  }
+  input:focus, select:focus, textarea:focus{
+    border-color:var(--forest);
+    box-shadow:0 0 0 3px rgba(31,59,44,0.12);
+  }
+  textarea{resize:vertical; min-height:70px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  button[type=submit]{
+    width:100%;
+    margin-top:28px;
+    padding:14px;
+    border:none;
+    border-radius:9px;
+    background:var(--forest);
+    color:var(--paper);
+    font-family:inherit;
+    font-size:16px;
+    font-weight:700;
+    letter-spacing:.02em;
+    cursor:pointer;
+    transition:background .15s, transform .1s;
+  }
+  button[type=submit]:active{transform:scale(0.98);}
+  button[type=submit]:disabled{background:#9aa79c; cursor:wait;}
+  .status{
+    margin-top:14px;
+    padding:12px 14px;
+    border-radius:8px;
+    font-size:14px;
+    display:none;
+  }
+  .status.show{display:block;}
+  .status.ok{background:#E6F0EA; color:var(--ok); border:1px solid #BFDBC9;}
+  .status.err{background:#F6E7E4; color:var(--maroon); border:1px solid #E3C3BC;}
+  .status.loading{background:var(--paper-dark); color:var(--forest);}
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:#8a8571;
+    margin-top:20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">ফেসবুক সমস্যা সমাধান সেবা</div>
+  <h1>কাজের জন্য রেজিস্ট্রেশন</h1>
+  <p>মোঃ আলামিন ইসলাম &nbsp;•&nbsp; গোপসেনা, কেশবপুর, যশোর</p>
+  <p style="margin-top:10px; font-size:13.5px; color:#DCE6DD; max-width:420px; margin-left:auto; margin-right:auto;">
+    যাদের ফেসবুক পেজ/অ্যাকাউন্ট হ্যাক হয়েছে, নিষ্ক্রিয় হয়ে গেছে, মনিটাইজেশন সমস্যা বা অন্য যেকোনো ফেসবুক সংক্রান্ত সমস্যা আছে — নিচের ফর্মটি পূরণ করুন, আমি দেখে যোগাযোগ করব।
+  </p>
+</header>
+
+<main>
+  <form id="regForm">
+
+    <div class="section-label">ব্যক্তিগত তথ্য</div>
+
+    <label>পূর্ণ নাম <span class="req">*</span></label>
+    <input type="text" id="fullName" required placeholder="যেমনঃ মোঃ আলামিন ইসলাম">
+
+    <div class="row2">
+      <div>
+        <label>মোবাইল নম্বর <span class="req">*</span></label>
+        <input type="tel" id="phone" required placeholder="01XXXXXXXXX" pattern="01[0-9]{9}">
+      </div>
+      <div>
+        <label>বয়স</label>
+        <input type="text" id="age" inputmode="numeric" placeholder="যেমনঃ ২৫">
+      </div>
+    </div>
+
+    <label>ইমেইল ঠিকানা</label>
+    <input type="email" id="email" placeholder="example@gmail.com">
+
+    <div class="section-label">ঠিকানা</div>
+
+    <label>বিভাগ <span class="req">*</span></label>
+    <select id="division" required>
+      <option value="">বিভাগ নির্বাচন করুন</option>
+    </select>
+
+    <label>জেলা <span class="req">*</span></label>
+    <select id="district" required disabled>
+      <option value="">প্রথমে বিভাগ নির্বাচন করুন</option>
+    </select>
+
+    <label>উপজেলা</label>
+    <select id="upazila" disabled>
+      <option value="">প্রথমে জেলা নির্বাচন করুন</option>
+    </select>
+
+    <label>গ্রাম / এলাকা</label>
+    <input type="text" id="areaDetail" placeholder="বিস্তারিত ঠিকানা লিখুন (ঐচ্ছিক)">
+
+    <div class="section-label">সমস্যার বিবরণ</div>
+
+    <label>আপনার ফেসবুক সমস্যার বিবরণ <span class="req">*</span></label>
+    <textarea id="comment" required placeholder="যেমনঃ পেজ হ্যাক হয়ে গেছে, অ্যাকাউন্ট নিষ্ক্রিয় হয়ে গেছে, মনিটাইজেশন বন্ধ হয়ে গেছে ইত্যাদি — বিস্তারিত লিখুন"></textarea>
+
+    <button type="submit" id="submitBtn">রেজিস্ট্রেশন সম্পন্ন করুন</button>
+    <div class="status" id="status"></div>
+  </form>
+  <footer>আপনার তথ্য নিরাপদে সংরক্ষণ করা হবে</footer>
+</main>
+
+<script>
+// ============ CONFIG ============
+// এখানে আপনার Google Apps Script Web App URL বসান (deploy করার পর যেটা পাবেন)
+const SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+// ==================================
+
+// বিভাগ ও জেলার তালিকা সরাসরি কোডে রাখা হয়েছে, তাই ইন্টারনেট/CDN এর উপর নির্ভর না করে
+// সাথে সাথে লোড হবে এবং কখনো ফাঁকা থাকবে না।
+const DIVISIONS = [
+  { id: "1", name: "ঢাকা" },
+  { id: "2", name: "চট্টগ্রাম" },
+  { id: "3", name: "রাজশাহী" },
+  { id: "4", name: "খুলনা" },
+  { id: "5", name: "বরিশাল" },
+  { id: "6", name: "সিলেট" },
+  { id: "7", name: "রংপুর" },
+  { id: "8", name: "ময়মনসিংহ" }
+];
+
+const DISTRICTS = {
+  "1": ["ঢাকা","গাজীপুর","নারায়ণগঞ্জ","নরসিংদী","মানিকগঞ্জ","মুন্সিগঞ্জ","টাঙ্গাইল","কিশোরগঞ্জ","ফরিদপুর","গোপালগঞ্জ","মাদারীপুর","রাজবাড়ী","শরীয়তপুর"],
+  "2": ["চট্টগ্রাম","কক্সবাজার","কুমিল্লা","ব্রাহ্মণবাড়িয়া","চাঁদপুর","ফেনী","লক্ষ্মীপুর","নোয়াখালী","খাগড়াছড়ি","রাঙামাটি","বান্দরবান"],
+  "3": ["রাজশাহী","বগুড়া","পাবনা","সিরাজগঞ্জ","নাটোর","জয়পুরহাট","চাঁপাইনবাবগঞ্জ"],
+  "4": ["খুলনা","যশোর","সাতক্ষীরা","বাগেরহাট","ঝিনাইদহ","কুষ্টিয়া","মাগুরা","মেহেরপুর","নড়াইল","চুয়াডাঙ্গা"],
+  "5": ["বরিশাল","পটুয়াখালী","ভোলা","পিরোজপুর","বরগুনা","ঝালকাঠি"],
+  "6": ["সিলেট","মৌলভীবাজার","হবিগঞ্জ","সুনামগঞ্জ"],
+  "7": ["রংপুর","দিনাজপুর","কুড়িগ্রাম","গাইবান্ধা","নীলফামারী","পঞ্চগড়","ঠাকুরগাঁও","লালমনিরহাট"],
+  "8": ["ময়মনসিংহ","জামালপুর","নেত্রকোণা","শেরপুর"]
+};
+
+const UPAZILAS = {
+  "ঢাকা": ["ঢাকা সদর","ধামরাই","দোহার","কেরানীগঞ্জ","নবাবগঞ্জ","সাভার"],
+  "গাজীপুর": ["গাজীপুর সদর","কালীগঞ্জ","কালিয়াকৈর","কাপাসিয়া","শ্রীপুর"],
+  "নারায়ণগঞ্জ": ["নারায়ণগঞ্জ সদর","আড়াইহাজার","বন্দর","রূপগঞ্জ","সোনারগাঁও"],
+  "নরসিংদী": ["নরসিংদী সদর","বেলাবো","মনোহরদী","পলাশ","রায়পুরা","শিবপুর"],
+  "মানিকগঞ্জ": ["মানিকগঞ্জ সদর","ঘিওর","দৌলতপুর","হরিরামপুর","সাটুরিয়া","শিবালয়","সিংগাইর"],
+  "মুন্সিগঞ্জ": ["মুন্সিগঞ্জ সদর","গজারিয়া","লৌহজং","শ্রীনগর","সিরাজদিখান","টঙ্গিবাড়ী"],
+  "টাঙ্গাইল": ["টাঙ্গাইল সদর","বাসাইল","ভূঞাপুর","দেলদুয়ার","ঘাটাইল","গোপালপুর","কালিহাতী","মধুপুর","মির্জাপুর","নাগরপুর","সখীপুর","ধনবাড়ী"],
+  "কিশোরগঞ্জ": ["কিশোরগঞ্জ সদর","বাজিতপুর","ভৈরব","হোসেনপুর","ইটনা","করিমগঞ্জ","কটিয়াদী","কুলিয়ারচর","মিঠামইন","নিকলী","পাকুন্দিয়া","তাড়াইল","অষ্টগ্রাম"],
+  "ফরিদপুর": ["ফরিদপুর সদর","আলফাডাঙ্গা","বোয়ালমারী","চরভদ্রাসন","ভাঙ্গা","মধুখালী","নগরকান্দা","সদরপুর","সালথা"],
+  "গোপালগঞ্জ": ["গোপালগঞ্জ সদর","কাশিয়ানী","কোটালীপাড়া","মুকসুদপুর","টুঙ্গিপাড়া"],
+  "মাদারীপুর": ["মাদারীপুর সদর","কালকিনি","রাজৈর","শিবচর","ডাসার"],
+  "রাজবাড়ী": ["রাজবাড়ী সদর","বালিয়াকান্দি","গোয়ালন্দ","পাংশা","কালুখালী"],
+  "শরীয়তপুর": ["শরীয়তপুর সদর","ভেদরগঞ্জ","ডামুড্যা","গোসাইরহাট","নড়িয়া","জাজিরা"],
+
+  "চট্টগ্রাম": ["চট্টগ্রাম সদর (কোতোয়ালী)","আনোয়ারা","বাঁশখালী","বোয়ালখালী","চন্দনাইশ","ফটিকছড়ি","হাটহাজারী","লোহাগাড়া","মিরসরাই","পটিয়া","রাঙ্গুনিয়া","রাউজান","সাতকানিয়া","সীতাকুণ্ড","সন্দ্বীপ"],
+  "কক্সবাজার": ["কক্সবাজার সদর","চকরিয়া","কুতুবদিয়া","মহেশখালী","পেকুয়া","রামু","টেকনাফ","উখিয়া"],
+  "কুমিল্লা": ["কুমিল্লা সদর","সদর দক্ষিণ","বরুড়া","ব্রাহ্মণপাড়া","চান্দিনা","চৌদ্দগ্রাম","দাউদকান্দি","দেবিদ্বার","হোমনা","লাকসাম","মেঘনা","মুরাদনগর","নাঙ্গলকোট","তিতাস","বুড়িচং","লালমাই","মনোহরগঞ্জ"],
+  "ব্রাহ্মণবাড়িয়া": ["ব্রাহ্মণবাড়িয়া সদর","আখাউড়া","বাঞ্ছারামপুর","বিজয়নগর","কসবা","নাসিরনগর","নবীনগর","সরাইল"],
+  "চাঁদপুর": ["চাঁদপুর সদর","ফরিদগঞ্জ","হাইমচর","হাজীগঞ্জ","কচুয়া","মতলব উত্তর","মতলব দক্ষিণ","শাহরাস্তি"],
+  "ফেনী": ["ফেনী সদর","ছাগলনাইয়া","দাগনভূঞা","ফুলগাজী","পরশুরাম","সোনাগাজী"],
+  "লক্ষ্মীপুর": ["লক্ষ্মীপুর সদর","কমলনগর","রামগঞ্জ","রায়পুর","রামগতি"],
+  "নোয়াখালী": ["নোয়াখালী সদর","বেগমগঞ্জ","চাটখিল","কোম্পানীগঞ্জ","হাতিয়া","কবিরহাট","সেনবাগ","সোনাইমুড়ী","সুবর্ণচর"],
+  "খাগড়াছড়ি": ["খাগড়াছড়ি সদর","দীঘিনালা","লক্ষ্মীছড়ি","মহালছড়ি","মানিকছড়ি","মাটিরাঙ্গা","পানছড়ি","রামগড়","গুইমারা"],
+  "রাঙামাটি": ["রাঙামাটি সদর","বাঘাইছড়ি","বরকল","বিলাইছড়ি","জুরাছড়ি","কাউখালী","কাপ্তাই","লংগদু","নানিয়ারচর","রাজস্থলী"],
+  "বান্দরবান": ["বান্দরবান সদর","আলীকদম","লামা","নাইক্ষ্যংছড়ি","রোয়াংছড়ি","রুমা","থানচি"],
+
+  "রাজশাহী": ["রাজশাহী সদর (বোয়ালিয়া)","বাগমারা","বাঘা","চারঘাট","দুর্গাপুর","গোদাগাড়ী","মোহনপুর","পবা","পুঠিয়া","তানোর"],
+  "বগুড়া": ["বগুড়া সদর","আদমদীঘি","ধুনট","দুপচাঁচিয়া","গাবতলী","কাহালু","নন্দীগ্রাম","সারিয়াকান্দি","শাজাহানপুর","শেরপুর","শিবগঞ্জ","সোনাতলা"],
+  "পাবনা": ["পাবনা সদর","আটঘরিয়া","বেড়া","ভাঙ্গুড়া","চাটমোহর","ফরিদপুর","ঈশ্বরদী","সাঁথিয়া","সুজানগর"],
+  "সিরাজগঞ্জ": ["সিরাজগঞ্জ সদর","বেলকুচি","চৌহালী","কামারখন্দ","কাজীপুর","রায়গঞ্জ","শাহজাদপুর","তাড়াশ","উল্লাপাড়া"],
+  "নাটোর": ["নাটোর সদর","বাগাতিপাড়া","বড়াইগ্রাম","গুরুদাসপুর","লালপুর","নলডাঙ্গা","সিংড়া"],
+  "জয়পুরহাট": ["জয়পুরহাট সদর","আক্কেলপুর","কালাই","ক্ষেতলাল","পাঁচবিবি"],
+  "চাঁপাইনবাবগঞ্জ": ["চাঁপাইনবাবগঞ্জ সদর","গোমস্তাপুর","নাচোল","শিবগঞ্জ","ভোলাহাট"],
+
+  "খুলনা": ["খুলনা সদর","বটিয়াঘাটা","দাকোপ","দিঘলিয়া","ডুমুরিয়া","কয়রা","পাইকগাছা","ফুলতলা","রূপসা","তেরখাদা"],
+  "যশোর": ["যশোর সদর","অভয়নগর","বাঘারপাড়া","চৌগাছা","ঝিকরগাছা","কেশবপুর","মণিরামপুর","শার্শা"],
+  "সাতক্ষীরা": ["সাতক্ষীরা সদর","আশাশুনি","দেবহাটা","কলারোয়া","কালীগঞ্জ","শ্যামনগর","তালা"],
+  "বাগেরহাট": ["বাগেরহাট সদর","চিতলমারী","ফকিরহাট","কচুয়া","মোল্লাহাট","মংলা","মোরেলগঞ্জ","রামপাল","শরণখোলা"],
+  "ঝিনাইদহ": ["ঝিনাইদহ সদর","হরিণাকুণ্ডু","কালীগঞ্জ","কোটচাঁদপুর","মহেশপুর","শৈলকুপা"],
+  "কুষ্টিয়া": ["কুষ্টিয়া সদর","ভেড়ামারা","দৌলতপুর","খোকসা","কুমারখালী","মিরপুর"],
+  "মাগুরা": ["মাগুরা সদর","মহম্মদপুর","শালিখা","শ্রীপুর"],
+  "মেহেরপুর": ["মেহেরপুর সদর","গাংনী","মুজিবনগর"],
+  "নড়াইল": ["নড়াইল সদর","কালিয়া","লোহাগড়া"],
+  "চুয়াডাঙ্গা": ["চুয়াডাঙ্গা সদর","আলমডাঙ্গা","দামুড়হুদা","জীবননগর"],
+
+  "বরিশাল": ["বরিশাল সদর","আগৈলঝাড়া","বাবুগঞ্জ","বাকেরগঞ্জ","বানারীপাড়া","গৌরনদী","হিজলা","মেহেন্দিগঞ্জ","মুলাদী","উজিরপুর"],
+  "পটুয়াখালী": ["পটুয়াখালী সদর","বাউফল","দশমিনা","দুমকি","গলাচিপা","কলাপাড়া","মির্জাগঞ্জ","রাঙ্গাবালী"],
+  "ভোলা": ["ভোলা সদর","বোরহানউদ্দিন","চরফ্যাশন","দৌলতখান","লালমোহন","মনপুরা","তজুমদ্দিন"],
+  "পিরোজপুর": ["পিরোজপুর সদর","ভান্ডারিয়া","কাউখালী","মঠবাড়িয়া","নাজিরপুর","নেছারাবাদ","জিয়ানগর"],
+  "বরগুনা": ["বরগুনা সদর","আমতলী","বামনা","বেতাগী","পাথরঘাটা","তালতলী"],
+  "ঝালকাঠি": ["ঝালকাঠি সদর","কাঁঠালিয়া","নলছিটি","রাজাপুর"],
+
+  "সিলেট": ["সিলেট সদর","বালাগঞ্জ","বিয়ানীবাজার","বিশ্বনাথ","কোম্পানীগঞ্জ","ফেঞ্চুগঞ্জ","গোলাপগঞ্জ","গোয়াইনঘাট","জৈন্তাপুর","কানাইঘাট","ওসমানীনগর","দক্ষিণ সুরমা","জকিগঞ্জ"],
+  "মৌলভীবাজার": ["মৌলভীবাজার সদর","বড়লেখা","কমলগঞ্জ","কুলাউড়া","জুড়ী","রাজনগর","শ্রীমঙ্গল"],
+  "হবিগঞ্জ": ["হবিগঞ্জ সদর","আজমিরীগঞ্জ","বাহুবল","বানিয়াচং","চুনারুঘাট","লাখাই","মাধবপুর","নবীগঞ্জ","শায়েস্তাগঞ্জ"],
+  "সুনামগঞ্জ": ["সুনামগঞ্জ সদর","বিশ্বম্ভরপুর","ছাতক","দক্ষিণ সুনামগঞ্জ","দিরাই","দোয়ারাবাজার","ধর্মপাশা","জগন্নাথপুর","জামালগঞ্জ","শাল্লা","তাহিরপুর","মধ্যনগর"],
+
+  "রংপুর": ["রংপুর সদর","বদরগঞ্জ","গঙ্গাচড়া","কাউনিয়া","মিঠাপুকুর","পীরগঞ্জ","পীরগাছা","তারাগঞ্জ"],
+  "দিনাজপুর": ["দিনাজপুর সদর","বিরামপুর","বিরল","বীরগঞ্জ","বোচাগঞ্জ","চিরিরবন্দর","ফুলবাড়ী","ঘোড়াঘাট","হাকিমপুর","কাহারোল","খানসামা","নবাবগঞ্জ","পার্বতীপুর"],
+  "কুড়িগ্রাম": ["কুড়িগ্রাম সদর","ভুরুঙ্গামারী","চর রাজিবপুর","চিলমারী","ফুলবাড়ী","নাগেশ্বরী","রাজারহাট","রৌমারী","উলিপুর"],
+  "গাইবান্ধা": ["গাইবান্ধা সদর","ফুলছড়ি","গোবিন্দগঞ্জ","পলাশবাড়ী","সাঘাটা","সাদুল্লাপুর","সুন্দরগঞ্জ"],
+  "নীলফামারী": ["নীলফামারী সদর","ডিমলা","ডোমার","জলঢাকা","কিশোরগঞ্জ","সৈয়দপুর"],
+  "পঞ্চগড়": ["পঞ্চগড় সদর","আটোয়ারী","বোদা","দেবীগঞ্জ","তেঁতুলিয়া"],
+  "ঠাকুরগাঁও": ["ঠাকুরগাঁও সদর","বালিয়াডাঙ্গী","হরিপুর","পীরগঞ্জ","রাণীশংকৈল"],
+  "লালমনিরহাট": ["লালমনিরহাট সদর","আদিতমারী","কালীগঞ্জ","হাতীবান্ধা","পাটগ্রাম"],
+
+  "ময়মনসিংহ": ["ময়মনসিংহ সদর","ভালুকা","ফুলবাড়ীয়া","গফরগাঁও","গৌরীপুর","হালুয়াঘাট","ঈশ্বরগঞ্জ","মুক্তাগাছা","নান্দাইল","ফুলপুর","তারাকান্দা","ত্রিশাল","ধোবাউড়া"],
+  "জামালপুর": ["জামালপুর সদর","বকশীগঞ্জ","দেওয়ানগঞ্জ","ইসলামপুর","মাদারগঞ্জ","মেলান্দহ","সরিষাবাড়ী"],
+  "নেত্রকোণা": ["নেত্রকোণা সদর","আটপাড়া","বারহাট্টা","দুর্গাপুর","খালিয়াজুরী","কলমাকান্দা","কেন্দুয়া","মদন","মোহনগঞ্জ","পূর্বধলা"],
+  "শেরপুর": ["শেরপুর সদর","ঝিনাইগাতী","নকলা","নালিতাবাড়ী","শ্রীবরদী"]
+};
+
+const divisionSelect = document.getElementById('division');
+const districtSelect = document.getElementById('district');
+const upazilaSelect = document.getElementById('upazila');
+
+function loadDivisions(){
+  DIVISIONS.forEach(d=>{
+    const opt = document.createElement('option');
+    opt.value = d.id;
+    opt.textContent = d.name;
+    divisionSelect.appendChild(opt);
+  });
+}
+loadDivisions();
+
+divisionSelect.addEventListener('change', ()=>{
+  const divId = divisionSelect.value;
+  districtSelect.innerHTML = '<option value="">জেলা নির্বাচন করুন</option>';
+  upazilaSelect.innerHTML = '<option value="">এলাকার নাম লিখুন প্রয়োজনে</option>';
+  upazilaSelect.disabled = true;
+
+  if(!divId){
+    districtSelect.disabled = true;
+    districtSelect.innerHTML = '<option value="">প্রথমে বিভাগ নির্বাচন করুন</option>';
+    return;
+  }
+
+  (DISTRICTS[divId] || []).forEach(name=>{
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    districtSelect.appendChild(opt);
+  });
+  districtSelect.disabled = false;
+});
+
+districtSelect.addEventListener('change', ()=>{
+  const distName = districtSelect.value;
+  upazilaSelect.innerHTML = '<option value="">উপজেলা নির্বাচন করুন</option>';
+
+  if(!distName){
+    upazilaSelect.disabled = true;
+    upazilaSelect.innerHTML = '<option value="">প্রথমে জেলা নির্বাচন করুন</option>';
+    return;
+  }
+
+  const list = UPAZILAS[distName] || [];
+  if(list.length === 0){
+    upazilaSelect.innerHTML = '<option value="">তালিকায় নেই, নিচে লিখুন</option>';
+    upazilaSelect.disabled = true;
+    return;
+  }
+
+  list.forEach(name=>{
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    upazilaSelect.appendChild(opt);
+  });
+  upazilaSelect.disabled = false;
+});
+
+// ============ FORM SUBMIT ============
+const form = document.getElementById('regForm');
+const statusBox = document.getElementById('status');
+const submitBtn = document.getElementById('submitBtn');
+
+function showStatus(type, msg){
+  statusBox.className = 'status show ' + type;
+  statusBox.textContent = msg;
+}
+
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+
+  if(SCRIPT_URL.includes("PASTE_YOUR")){
+    showStatus('err', 'প্রথমে কোডে আপনার Google Apps Script URL বসান।');
+    return;
+  }
+
+  const payload = {
+    fullName: document.getElementById('fullName').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    age: document.getElementById('age').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    division: divisionSelect.options[divisionSelect.selectedIndex]?.text || '',
+    district: districtSelect.options[districtSelect.selectedIndex]?.text || '',
+    upazila: document.getElementById('areaDetail').value.trim() ? '' : '',
+    areaDetail: document.getElementById('areaDetail').value.trim(),
+    comment: document.getElementById('comment').value.trim(),
+    submittedAt: new Date().toISOString()
+  };
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'পাঠানো হচ্ছে...';
+  showStatus('loading', 'অনুগ্রহ করে অপেক্ষা করুন...');
+
+  try{
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+    showStatus('ok', '✓ রেজিস্ট্রেশন সফল হয়েছে। ধন্যবাদ!');
+    form.reset();
+    districtSelect.disabled = true;
+    upazilaSelect.disabled = true;
+    districtSelect.innerHTML = '<option value="">প্রথমে বিভাগ নির্বাচন করুন</option>';
+    upazilaSelect.innerHTML = '<option value="">প্রথমে জেলা নির্বাচন করুন</option>';
+  }catch(err){
+    console.error(err);
+    showStatus('err', 'দুঃখিত, পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+  }finally{
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'রেজিস্ট্রেশন সম্পন্ন করুন';
+  }
+});
+</script>
+</body>
+</html>
