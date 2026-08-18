@@ -285,49 +285,65 @@
     position:fixed;
     left:-9999px;
     top:0;
-    width:420px;
-    background:#ffffff;
-    padding:34px 30px;
+    width:480px;
+    background:#FBF6EA;
     font-family:'Hind Siliguri', sans-serif;
     color:#22281F;
   }
-  #receipt .r-head{
+  #receipt .r-header{
+    background:linear-gradient(135deg, #1F3B2C 0%, #2C4F3A 100%);
+    color:#FBF6EA;
+    padding:30px 20px 26px;
     text-align:center;
-    border-bottom:3px solid #B8863B;
-    padding-bottom:16px;
-    margin-bottom:20px;
   }
-  #receipt .r-head img{
-    width:70px; height:70px; border-radius:50%; object-fit:cover;
+  #receipt .r-header img{
+    width:100px; height:100px; border-radius:50%; object-fit:cover;
     object-position:center 25%;
-    border:3px solid #B8863B;
-    margin-bottom:8px;
+    border:3px solid #D9AE6B;
+    margin-bottom:10px;
+  }
+  #receipt .r-eyebrow{
+    font-size:11px; letter-spacing:.12em; color:#D9AE6B; font-weight:600; margin-bottom:6px;
   }
   #receipt .r-title{
     font-family:'Noto Serif Bengali', serif;
-    font-size:20px;
+    font-size:22px;
     font-weight:700;
-    color:#1F3B2C;
   }
   #receipt .r-sub{
-    font-size:12.5px;
-    color:#7a7460;
-    margin-top:3px;
+    font-size:13px; color:#DCE6DD; margin-top:6px;
   }
+  #receipt .r-status{
+    background:#E6F0EA; color:#2C6B4F; border:1px solid #BFDBC9;
+    text-align:center; padding:10px; font-size:14px; font-weight:600;
+  }
+  #receipt .r-body{ padding:22px 24px 30px; }
+  #receipt .r-section{
+    font-size:12px; letter-spacing:.06em; color:#B8863B; font-weight:700;
+    text-transform:uppercase; margin:20px 0 10px;
+    border-bottom:1px solid #D8CDAE; padding-bottom:6px;
+  }
+  #receipt .r-section:first-child{ margin-top:0; }
   #receipt .r-row{
     display:flex;
     justify-content:space-between;
-    padding:9px 0;
-    border-bottom:1px solid #eee2c8;
+    padding:8px 0;
+    border-bottom:1px dashed #e5dcc0;
     font-size:14px;
   }
   #receipt .r-row .label{ color:#7a7460; }
-  #receipt .r-row .value{ font-weight:600; color:#1F3B2C; text-align:right; max-width:230px; }
+  #receipt .r-row .value{ font-weight:600; color:#1F3B2C; text-align:right; max-width:260px; }
+  #receipt .r-comment{
+    font-size:13.5px; line-height:1.6; background:#F2EBDA; border-radius:8px;
+    padding:12px 14px; margin-top:8px; color:#22281F;
+  }
   #receipt .r-foot{
-    margin-top:20px;
+    margin-top:22px;
     text-align:center;
     font-size:11.5px;
     color:#9a9587;
+    border-top:1px solid #D8CDAE;
+    padding-top:14px;
   }
 </style>
 </head>
@@ -448,19 +464,39 @@
 </main>
 
 <div id="receipt">
-  <div class="r-head">
+  <div class="r-header">
     <img src="profile.jpg" alt="মোঃ আলামিন ইসলাম">
+    <div class="r-eyebrow">ফেসবুক সমস্যা সমাধান সেবা</div>
     <div class="r-title">আবেদন রশিদ</div>
-    <div class="r-sub">ফেসবুক সমস্যা সমাধান সেবা — মোঃ আলামিন ইসলাম</div>
+    <div class="r-sub">মোঃ আলামিন ইসলাম • গোপসেনা, কেশবপুর, যশোর</div>
   </div>
-  <div class="r-row"><span class="label">আবেদন নম্বর</span><span class="value" id="r-id"></span></div>
-  <div class="r-row"><span class="label">তারিখ ও সময়</span><span class="value" id="r-date"></span></div>
-  <div class="r-row"><span class="label">নাম</span><span class="value" id="r-name"></span></div>
-  <div class="r-row"><span class="label">মোবাইল</span><span class="value" id="r-phone"></span></div>
-  <div class="r-row"><span class="label">বিভাগ / জেলা</span><span class="value" id="r-address"></span></div>
-  <div class="r-row"><span class="label">পেমেন্ট মাধ্যম</span><span class="value" id="r-payment"></span></div>
-  <div class="r-row"><span class="label">ট্রানজেকশন আইডি</span><span class="value" id="r-txn"></span></div>
-  <div class="r-foot">এই রশিদটি সংরক্ষণ করুন — প্রয়োজনে যোগাযোগের সময় দেখাতে পারবেন।</div>
+  <div class="r-status" id="r-status">✓ রেজিস্ট্রেশন সফল হয়েছে</div>
+  <div class="r-body">
+    <div class="r-row"><span class="label">আবেদন নম্বর</span><span class="value" id="r-id"></span></div>
+    <div class="r-row"><span class="label">তারিখ ও সময়</span><span class="value" id="r-date"></span></div>
+
+    <div class="r-section">ব্যক্তিগত তথ্য</div>
+    <div class="r-row"><span class="label">পূর্ণ নাম</span><span class="value" id="r-name"></span></div>
+    <div class="r-row"><span class="label">মোবাইল নম্বর</span><span class="value" id="r-phone"></span></div>
+    <div class="r-row"><span class="label">জন্ম তারিখ</span><span class="value" id="r-dob"></span></div>
+    <div class="r-row"><span class="label">লিঙ্গ</span><span class="value" id="r-gender"></span></div>
+    <div class="r-row"><span class="label">ইমেইল</span><span class="value" id="r-email"></span></div>
+
+    <div class="r-section">ঠিকানা</div>
+    <div class="r-row"><span class="label">বিভাগ</span><span class="value" id="r-division"></span></div>
+    <div class="r-row"><span class="label">জেলা</span><span class="value" id="r-district"></span></div>
+    <div class="r-row"><span class="label">গ্রাম / এলাকা</span><span class="value" id="r-area"></span></div>
+
+    <div class="r-section">সমস্যার বিবরণ</div>
+    <div class="r-comment" id="r-comment"></div>
+
+    <div class="r-section">আবেদন ফি</div>
+    <div class="r-row"><span class="label">পেমেন্ট মাধ্যম</span><span class="value" id="r-payment"></span></div>
+    <div class="r-row"><span class="label">ট্রানজেকশন আইডি</span><span class="value" id="r-txn"></span></div>
+    <div class="r-row"><span class="label">প্রেরকের নম্বর</span><span class="value" id="r-sender"></span></div>
+
+    <div class="r-foot">এই রশিদটি সংরক্ষণ করুন — প্রয়োজনে যোগাযোগের সময় দেখাতে পারবেন।</div>
+  </div>
 </div>
 
 <script>
@@ -727,11 +763,18 @@ form.addEventListener('submit', async (e)=>{
     const now = new Date();
     document.getElementById('r-id').textContent = appId;
     document.getElementById('r-date').textContent = now.toLocaleDateString('bn-BD') + ' ' + now.toLocaleTimeString('bn-BD');
-    document.getElementById('r-name').textContent = payload.fullName;
-    document.getElementById('r-phone').textContent = payload.phone;
-    document.getElementById('r-address').textContent = (payload.division || '-') + ' / ' + (payload.district || '-');
+    document.getElementById('r-name').textContent = payload.fullName || '-';
+    document.getElementById('r-phone').textContent = payload.phone || '-';
+    document.getElementById('r-dob').textContent = payload.dob || '-';
+    document.getElementById('r-gender').textContent = payload.gender || '-';
+    document.getElementById('r-email').textContent = payload.email || '-';
+    document.getElementById('r-division').textContent = payload.division || '-';
+    document.getElementById('r-district').textContent = payload.district || '-';
+    document.getElementById('r-area').textContent = payload.areaDetail || '-';
+    document.getElementById('r-comment').textContent = payload.comment || '-';
     document.getElementById('r-payment').textContent = payload.paymentMethod || '-';
     document.getElementById('r-txn').textContent = payload.txnId || '-';
+    document.getElementById('r-sender').textContent = payload.senderNumber || '-';
     downloadBtn.classList.add('show');
 
     form.reset();
@@ -749,4 +792,4 @@ form.addEventListener('submit', async (e)=>{
 });
 </script>
 </body>
-</html>
+                               </html>
