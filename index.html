@@ -6,6 +6,8 @@
 <title>ফেসবুক সমস্যা সমাধান - রেজিস্ট্রেশন</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
     --paper:#FBF6EA;
@@ -264,6 +266,69 @@
     font-size:14.5px;
     color:var(--forest);
   }
+  .download-btn{
+    display:none;
+    width:100%;
+    margin-top:12px;
+    padding:13px;
+    border:1.5px solid var(--forest);
+    border-radius:9px;
+    background:#fff;
+    color:var(--forest);
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .download-btn.show{display:block;}
+  #receipt{
+    position:fixed;
+    left:-9999px;
+    top:0;
+    width:420px;
+    background:#ffffff;
+    padding:34px 30px;
+    font-family:'Hind Siliguri', sans-serif;
+    color:#22281F;
+  }
+  #receipt .r-head{
+    text-align:center;
+    border-bottom:3px solid #B8863B;
+    padding-bottom:16px;
+    margin-bottom:20px;
+  }
+  #receipt .r-head img{
+    width:70px; height:70px; border-radius:50%; object-fit:cover;
+    object-position:center 25%;
+    border:3px solid #B8863B;
+    margin-bottom:8px;
+  }
+  #receipt .r-title{
+    font-family:'Noto Serif Bengali', serif;
+    font-size:20px;
+    font-weight:700;
+    color:#1F3B2C;
+  }
+  #receipt .r-sub{
+    font-size:12.5px;
+    color:#7a7460;
+    margin-top:3px;
+  }
+  #receipt .r-row{
+    display:flex;
+    justify-content:space-between;
+    padding:9px 0;
+    border-bottom:1px solid #eee2c8;
+    font-size:14px;
+  }
+  #receipt .r-row .label{ color:#7a7460; }
+  #receipt .r-row .value{ font-weight:600; color:#1F3B2C; text-align:right; max-width:230px; }
+  #receipt .r-foot{
+    margin-top:20px;
+    text-align:center;
+    font-size:11.5px;
+    color:#9a9587;
+  }
 </style>
 </head>
 <body>
@@ -377,9 +442,26 @@
 
     <button type="submit" id="submitBtn">রেজিস্ট্রেশন সম্পন্ন করুন</button>
     <div class="status" id="status"></div>
+    <button type="button" class="download-btn" id="downloadBtn">রশিদ ডাউনলোড করুন (PDF)</button>
   </form>
   <footer>আপনার তথ্য নিরাপদে সংরক্ষণ করা হবে</footer>
 </main>
+
+<div id="receipt">
+  <div class="r-head">
+    <img src="profile.jpg" alt="মোঃ আলামিন ইসলাম">
+    <div class="r-title">আবেদন রশিদ</div>
+    <div class="r-sub">ফেসবুক সমস্যা সমাধান সেবা — মোঃ আলামিন ইসলাম</div>
+  </div>
+  <div class="r-row"><span class="label">আবেদন নম্বর</span><span class="value" id="r-id"></span></div>
+  <div class="r-row"><span class="label">তারিখ ও সময়</span><span class="value" id="r-date"></span></div>
+  <div class="r-row"><span class="label">নাম</span><span class="value" id="r-name"></span></div>
+  <div class="r-row"><span class="label">মোবাইল</span><span class="value" id="r-phone"></span></div>
+  <div class="r-row"><span class="label">বিভাগ / জেলা</span><span class="value" id="r-address"></span></div>
+  <div class="r-row"><span class="label">পেমেন্ট মাধ্যম</span><span class="value" id="r-payment"></span></div>
+  <div class="r-row"><span class="label">ট্রানজেকশন আইডি</span><span class="value" id="r-txn"></span></div>
+  <div class="r-foot">এই রশিদটি সংরক্ষণ করুন — প্রয়োজনে যোগাযোগের সময় দেখাতে পারবেন।</div>
+</div>
 
 <script>
 // ============ CONFIG ============
@@ -549,6 +631,27 @@ districtSelect.addEventListener('change', ()=>{
 const form = document.getElementById('regForm');
 const statusBox = document.getElementById('status');
 const submitBtn = document.getElementById('submitBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+
+downloadBtn.addEventListener('click', async ()=>{
+  downloadBtn.disabled = true;
+  downloadBtn.textContent = 'তৈরি হচ্ছে...';
+  try{
+    const receiptEl = document.getElementById('receipt');
+    const canvas = await html2canvas(receiptEl, { scale: 2, backgroundColor: '#ffffff' });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: 'px', format: [canvas.width, canvas.height] });
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+    pdf.save('আবেদন-রশিদ.pdf');
+  }catch(err){
+    console.error(err);
+    alert('রশিদ ডাউনলোড করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।');
+  }finally{
+    downloadBtn.disabled = false;
+    downloadBtn.textContent = 'রশিদ ডাউনলোড করুন (PDF)';
+  }
+});
 
 function showStatus(type, msg){
   statusBox.className = 'status show ' + type;
@@ -619,6 +722,18 @@ form.addEventListener('submit', async (e)=>{
       body: JSON.stringify(payload)
     });
     showStatus('ok', '✓ রেজিস্ট্রেশন সফল হয়েছে। ধন্যবাদ!');
+
+    const appId = 'APP-' + Date.now().toString().slice(-8);
+    const now = new Date();
+    document.getElementById('r-id').textContent = appId;
+    document.getElementById('r-date').textContent = now.toLocaleDateString('bn-BD') + ' ' + now.toLocaleTimeString('bn-BD');
+    document.getElementById('r-name').textContent = payload.fullName;
+    document.getElementById('r-phone').textContent = payload.phone;
+    document.getElementById('r-address').textContent = (payload.division || '-') + ' / ' + (payload.district || '-');
+    document.getElementById('r-payment').textContent = payload.paymentMethod || '-';
+    document.getElementById('r-txn').textContent = payload.txnId || '-';
+    downloadBtn.classList.add('show');
+
     form.reset();
     districtSelect.disabled = true;
     upazilaSelect.disabled = true;
@@ -634,4 +749,4 @@ form.addEventListener('submit', async (e)=>{
 });
 </script>
 </body>
-  </html>
+</html>
