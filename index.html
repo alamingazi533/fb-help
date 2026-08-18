@@ -219,6 +219,71 @@
   .status.ok{background:#E6F0EA; color:var(--ok); border:1px solid #BFDBC9;}
   .status.err{background:#F6E7E4; color:var(--maroon); border:1px solid #E3C3BC;}
   .status.loading{background:var(--paper-dark); color:var(--forest);}
+  .whatsapp-note{
+    display:none;
+    margin-top:16px;
+    padding:16px;
+    border-radius:10px;
+    background:linear-gradient(135deg, #1F3B2C 0%, #2C4F3A 100%);
+    text-align:center;
+  }
+  .whatsapp-note.show{display:block;}
+  .whatsapp-note p{
+    color:#FBF6EA;
+    font-size:17px;
+    font-weight:700;
+    line-height:1.6;
+    margin:0;
+  }
+  .status-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:0 18px 40px -20px rgba(31,59,44,0.35);
+    padding:22px 20px 24px;
+    margin-top:16px;
+  }
+  .check-btn{
+    width:100%;
+    margin-top:14px;
+    padding:12px;
+    border:1.5px solid var(--forest);
+    border-radius:9px;
+    background:var(--forest);
+    color:var(--paper);
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .check-btn:disabled{ opacity:.6; cursor:wait; }
+  .check-result{
+    margin-top:14px;
+    display:none;
+  }
+  .check-result.show{ display:block; }
+  .check-result .cr-box{
+    border-radius:9px;
+    padding:14px 16px;
+    font-size:14.5px;
+    line-height:1.7;
+  }
+  .check-result .cr-found{
+    background:#E6F0EA; border:1px solid #BFDBC9; color:var(--ok);
+  }
+  .check-result .cr-notfound{
+    background:#F6E7E4; border:1px solid #E3C3BC; color:var(--maroon);
+  }
+  .check-result .cr-status-badge{
+    display:inline-block;
+    background:var(--forest);
+    color:var(--paper);
+    font-weight:700;
+    padding:4px 12px;
+    border-radius:999px;
+    font-size:13.5px;
+    margin-top:6px;
+  }
   footer{
     text-align:center;
     font-size:12px;
@@ -459,7 +524,19 @@
     <button type="submit" id="submitBtn">রেজিস্ট্রেশন সম্পন্ন করুন</button>
     <div class="status" id="status"></div>
     <button type="button" class="download-btn" id="downloadBtn">রশিদ ডাউনলোড করুন (PDF)</button>
+    <div class="whatsapp-note" id="whatsappNote">
+      <p>আবেদন ফর্ম ডাউনলোড করে WhatsApp-এ পাঠিয়ে দেন। ধন্যবাদ 🙏</p>
+    </div>
   </form>
+
+  <div class="status-card">
+    <div class="section-label" style="margin-top:0;">আবেদনের অবস্থা যাচাই করুন</div>
+    <label>আপনার আবেদন নম্বর দিন (যেমনঃ APP-12345678)</label>
+    <input type="text" id="checkId" placeholder="APP-XXXXXXXX">
+    <button type="button" id="checkBtn" class="check-btn">যাচাই করুন</button>
+    <div class="check-result" id="checkResult"></div>
+  </div>
+
   <footer>আপনার তথ্য নিরাপদে সংরক্ষণ করা হবে</footer>
 </main>
 
@@ -689,6 +766,43 @@ downloadBtn.addEventListener('click', async ()=>{
   }
 });
 
+const checkBtn = document.getElementById('checkBtn');
+const checkResult = document.getElementById('checkResult');
+
+checkBtn.addEventListener('click', async ()=>{
+  const id = document.getElementById('checkId').value.trim();
+  if(!id){
+    checkResult.className = 'check-result show';
+    checkResult.innerHTML = '<div class="cr-box cr-notfound">অনুগ্রহ করে আপনার আবেদন নম্বর লিখুন।</div>';
+    return;
+  }
+  checkBtn.disabled = true;
+  checkBtn.textContent = 'যাচাই করা হচ্ছে...';
+  checkResult.className = 'check-result';
+  try{
+    const res = await fetch(SCRIPT_URL + '?action=status&id=' + encodeURIComponent(id));
+    const data = await res.json();
+    checkResult.className = 'check-result show';
+    if(data.found){
+      checkResult.innerHTML =
+        '<div class="cr-box cr-found">' +
+        'নাম: <strong>' + data.name + '</strong><br>' +
+        'আবেদনের তারিখ: ' + data.date + '<br>' +
+        'বর্তমান অবস্থা: <span class="cr-status-badge">' + data.status + '</span>' +
+        '</div>';
+    }else{
+      checkResult.innerHTML = '<div class="cr-box cr-notfound">এই নম্বরে কোনো আবেদন পাওয়া যায়নি। নম্বরটি আবার যাচাই করুন।</div>';
+    }
+  }catch(err){
+    console.error(err);
+    checkResult.className = 'check-result show';
+    checkResult.innerHTML = '<div class="cr-box cr-notfound">যাচাই করতে সমস্যা হয়েছে। একটু পর আবার চেষ্টা করুন।</div>';
+  }finally{
+    checkBtn.disabled = false;
+    checkBtn.textContent = 'যাচাই করুন';
+  }
+});
+
 function showStatus(type, msg){
   statusBox.className = 'status show ' + type;
   statusBox.textContent = msg;
@@ -711,7 +825,10 @@ form.addEventListener('submit', async (e)=>{
     return;
   }
 
+  const appId = 'APP-' + Date.now().toString().slice(-8);
+
   const payload = {
+    appId: appId,
     fullName: document.getElementById('fullName').value.trim(),
     phone: document.getElementById('phone').value.trim(),
     dob: document.getElementById('dob').value.trim(),
@@ -759,7 +876,6 @@ form.addEventListener('submit', async (e)=>{
     });
     showStatus('ok', '✓ রেজিস্ট্রেশন সফল হয়েছে। ধন্যবাদ!');
 
-    const appId = 'APP-' + Date.now().toString().slice(-8);
     const now = new Date();
     document.getElementById('r-id').textContent = appId;
     document.getElementById('r-date').textContent = now.toLocaleDateString('bn-BD') + ' ' + now.toLocaleTimeString('bn-BD');
@@ -776,6 +892,7 @@ form.addEventListener('submit', async (e)=>{
     document.getElementById('r-txn').textContent = payload.txnId || '-';
     document.getElementById('r-sender').textContent = payload.senderNumber || '-';
     downloadBtn.classList.add('show');
+    document.getElementById('whatsappNote').classList.add('show');
 
     form.reset();
     districtSelect.disabled = true;
@@ -792,4 +909,4 @@ form.addEventListener('submit', async (e)=>{
 });
 </script>
 </body>
-                               </html>
+                                                                                                       </html>
