@@ -58,6 +58,14 @@
     margin:0 0 8px;
     font-weight:700;
   }
+  .tagline{
+    font-family:'Noto Serif Bengali', serif;
+    font-size:22px;
+    font-weight:700;
+    color:var(--gold-light);
+    margin:0 0 14px;
+    line-height:1.4;
+  }
   header p{
     margin:0;
     font-size:14.5px;
@@ -263,6 +271,7 @@
 <header>
   <img class="profile-pic" src="profile.jpg" alt="মোঃ আলামিন ইসলাম">
   <div class="eyebrow">ফেসবুক সমস্যা সমাধান সেবা</div>
+  <p class="tagline">আপনার স্বপ্নই হোক আপনার ভবিষ্যৎ</p>
   <h1>কাজের জন্য রেজিস্ট্রেশন</h1>
   <p>মোঃ আলামিন ইসলাম &nbsp;•&nbsp; গোপসেনা, কেশবপুর, যশোর</p>
   <p style="margin-top:10px; font-size:13.5px; color:#DCE6DD; max-width:420px; margin-left:auto; margin-right:auto;">
@@ -362,6 +371,9 @@
 
     <label>ট্রানজেকশন আইডি (Transaction ID) <span class="req">*</span></label>
     <input type="text" id="txnId" required placeholder="যেমনঃ 8N7A2XXXXX">
+
+    <label>যে নম্বর থেকে টাকা পাঠিয়েছেন <span class="req">*</span></label>
+    <input type="tel" id="senderNumber" required placeholder="01XXXXXXXXX" pattern="01[0-9]{9}">
 
     <button type="submit" id="submitBtn">রেজিস্ট্রেশন সম্পন্ন করুন</button>
     <div class="status" id="status"></div>
@@ -572,6 +584,7 @@ form.addEventListener('submit', async (e)=>{
     comment: document.getElementById('comment').value.trim(),
     paymentMethod: document.getElementById('paymentMethod').value.trim(),
     txnId: document.getElementById('txnId').value.trim(),
+    senderNumber: document.getElementById('senderNumber').value.trim(),
     submittedAt: new Date().toISOString(),
     screenshotBase64: '',
     screenshotName: '',
@@ -621,4 +634,4 @@ form.addEventListener('submit', async (e)=>{
 });
 </script>
 </body>
-</html>
+  </html>
