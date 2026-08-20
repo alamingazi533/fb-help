@@ -527,7 +527,7 @@
     <div class="status" id="status"></div>
     <button type="button" class="download-btn" id="downloadBtn">রশিদ ডাউনলোড করুন (PDF)</button>
     <div class="whatsapp-note" id="whatsappNote">
-      <p>আবেদন ফর্ম ডাউনলোড করে WhatsApp-এ পাঠিয়ে দেন। ধন্যবাদ 🙏</p>
+      <p>উপরের বাটনে চাপলে রশিদ ডাউনলোড হবে এবং শেয়ার মেনু খুলবে — সেখান থেকে WhatsApp সিলেক্ট করে আমাদের নম্বরে পাঠিয়ে দিন। ধন্যবাদ 🙏</p>
     </div>
   </form>
 
@@ -758,7 +758,27 @@ downloadBtn.addEventListener('click', async ()=>{
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ unit: 'px', format: [canvas.width, canvas.height] });
     pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-    pdf.save('আবেদন-রশিদ.pdf');
+
+    const pdfBlob = pdf.output('blob');
+    const fileName = 'আবেদন-রশিদ.pdf';
+
+    // ১. ফোনে PDF ডাউনলোড করুন
+    pdf.save(fileName);
+
+    // ২. সম্ভব হলে মোবাইলের নিজস্ব শেয়ার মেনু খুলুন, যাতে এক ট্যাপে WhatsApp-এ পাঠানো যায়
+    const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+    if(navigator.canShare && navigator.canShare({ files: [pdfFile] })){
+      try{
+        await navigator.share({
+          files: [pdfFile],
+          title: 'আবেদন রশিদ',
+          text: 'আমার রেজিস্ট্রেশন আবেদন রশিদ'
+        });
+      }catch(shareErr){
+        // ব্যবহারকারী শেয়ার মেনু বাতিল করলে কিছু করার দরকার নেই
+        console.log('Share cancelled or unsupported', shareErr);
+      }
+    }
   }catch(err){
     console.error(err);
     alert('রশিদ ডাউনলোড করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।');
@@ -911,4 +931,4 @@ form.addEventListener('submit', async (e)=>{
 });
 </script>
 </body>
-  </html>
+    </html>
