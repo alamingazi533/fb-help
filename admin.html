@@ -106,6 +106,30 @@
   .card-actions button:disabled{opacity:.6; cursor:wait;}
   .card a.ss-link{color:var(--forest); font-weight:600; text-decoration:underline; font-size:13.5px;}
   #loadingMsg, #emptyMsg{text-align:center; color:#8a8571; padding:30px 0; display:none;}
+
+  .dashboard{display:flex; gap:8px; overflow-x:auto; margin-bottom:12px; padding-bottom:2px;}
+  .dash-item{
+    flex:0 0 auto; background:#fff; border:1px solid var(--line); border-radius:10px;
+    padding:8px 14px; text-align:center; min-width:76px;
+  }
+  .dash-item .num{font-size:18px; font-weight:700; color:var(--forest);}
+  .dash-item .lbl{font-size:11px; color:#7a7460; margin-top:2px;}
+
+  .filterRow{display:flex; gap:7px; overflow-x:auto; margin-bottom:12px; padding-bottom:2px;}
+  .chip{
+    flex:0 0 auto; padding:7px 13px; border-radius:999px; border:1.5px solid var(--line);
+    background:#fff; color:var(--ink); font-size:13px; font-family:inherit; cursor:pointer; font-weight:600;
+  }
+  .chip.active{background:var(--forest); border-color:var(--forest); color:#fff;}
+
+  .exportBtn{
+    width:100%; padding:10px; border:1.5px solid var(--forest); border-radius:8px;
+    background:#fff; color:var(--forest); font-family:inherit; font-weight:700; font-size:14px; cursor:pointer;
+  }
+  .deleteBtn{
+    padding:9px 12px; border:1.5px solid var(--maroon); border-radius:8px; background:#fff;
+    color:var(--maroon); font-family:inherit; font-weight:700; cursor:pointer; font-size:13px;
+  }
   #logoutBtn{
     background:transparent; border:1px solid rgba(255,255,255,0.5); color:var(--paper);
     padding:6px 12px; border-radius:7px; font-size:12.5px; font-family:inherit; cursor:pointer;
@@ -133,6 +157,11 @@
       <input type="text" id="searchBox" placeholder="নাম, ফোন বা আবেদন নম্বর দিয়ে খুঁজুন">
       <button onclick="manualRefresh()">রিফ্রেশ</button>
     </div>
+    <div class="dashboard" id="dashboard"></div>
+    <div class="filterRow" id="filterRow"></div>
+    <div class="toolbar" style="margin-top:0;">
+      <button class="exportBtn" onclick="exportCsv()">CSV ডাউনলোড করুন</button>
+    </div>
     <div class="summary" id="summary"></div>
     <div class="summary" id="lastUpdated" style="margin-top:-6px;">প্রতি ৩০ সেকেন্ডে অটো-আপডেট হয়</div>
     <div id="loadingMsg">লোড হচ্ছে...</div>
@@ -147,16 +176,90 @@ const STATUS_OPTIONS = ["অপেক্ষমান", "কাজ চলছে",
 
 let allRows = [];
 let autoRefreshTimer = null;
+let activeStatusFilter = 'সব';
 
 function applyCurrentFilter(){
   const q = document.getElementById('searchBox').value.trim().toLowerCase();
-  if(!q){ renderList(allRows); return; }
-  const filtered = allRows.filter(r =>
-    (r.fullName || '').toLowerCase().includes(q) ||
-    (r.phone || '').includes(q) ||
-    (r.appId || '').toLowerCase().includes(q)
-  );
+  let filtered = allRows;
+  if(activeStatusFilter !== 'সব'){
+    filtered = filtered.filter(r => r.status === activeStatusFilter);
+  }
+  if(q){
+    filtered = filtered.filter(r =>
+      (r.fullName || '').toLowerCase().includes(q) ||
+      (r.phone || '').includes(q) ||
+      (r.appId || '').toLowerCase().includes(q)
+    );
+  }
   renderList(filtered);
+  renderDashboard();
+  renderFilterChips();
+}
+
+function renderDashboard(){
+  const dash = document.getElementById('dashboard');
+  const counts = {};
+  STATUS_OPTIONS.forEach(s => counts[s] = 0);
+  allRows.forEach(r => { counts[r.status] = (counts[r.status] || 0) + 1; });
+  let html = '<div class="dash-item"><div class="num">' + allRows.length + '</div><div class="lbl">মোট</div></div>';
+  STATUS_OPTIONS.forEach(s => {
+    html += '<div class="dash-item"><div class="num">' + (counts[s] || 0) + '</div><div class="lbl">' + s + '</div></div>';
+  });
+  dash.innerHTML = html;
+}
+
+function renderFilterChips(){
+  const row = document.getElementById('filterRow');
+  const options = ['সব'].concat(STATUS_OPTIONS);
+  row.innerHTML = options.map(s =>
+    '<button class="chip' + (s === activeStatusFilter ? ' active' : '') + '" data-status="' + s + '">' + s + '</button>'
+  ).join('');
+  row.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeStatusFilter = btn.getAttribute('data-status');
+      applyCurrentFilter();
+    });
+  });
+}
+
+function exportCsv(){
+  if(!allRows.length){ alert('ডাউনলোড করার মতো কোনো এন্ট্রি নেই।'); return; }
+  const headers = ['তারিখ','নাম','ফোন','জন্ম তারিখ','লিঙ্গ','ইমেইল','বিভাগ','জেলা','এলাকা','মন্তব্য','পেমেন্ট মেথড','TxnID','প্রেরক নম্বর','আবেদন নম্বর','স্ট্যাটাস'];
+  const csvRows = [headers.join(',')];
+  allRows.forEach(r => {
+    const line = [r.date, r.fullName, r.phone, r.dob, r.gender, r.email, r.division, r.district, r.areaDetail, r.comment, r.paymentMethod, r.txnId, r.senderNumber, r.appId, r.status]
+      .map(v => '"' + String(v === undefined || v === null ? '' : v).replace(/"/g, '""') + '"')
+      .join(',');
+    csvRows.push(line);
+  });
+  const csvContent = '\uFEFF' + csvRows.join('\n');
+  const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'registrations_' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function deleteEntry(rowIndex, fullName, cardEl){
+  const pw = sessionStorage.getItem('adminPw');
+  if(!confirm(fullName + ' এর আবেদনটি সম্পূর্ণ মুছে ফেলতে চান? এটা আর ফেরত পাওয়া যাবে না।')) return;
+  fetch(SCRIPT_URL + '?action=deleteRow&password=' + encodeURIComponent(pw) + '&row=' + encodeURIComponent(rowIndex))
+    .then(r => r.json())
+    .then(data => {
+      if(data.success){
+        cardEl.remove();
+        allRows = allRows.filter(r => r.rowIndex !== rowIndex);
+        renderDashboard();
+        document.getElementById('summary').textContent = 'মোট ' + document.querySelectorAll('.card').length + 'টি আবেদন দেখানো হচ্ছে';
+      } else {
+        alert('ডিলিট করতে সমস্যা হয়েছে।');
+      }
+    })
+    .catch(() => alert('সংযোগে সমস্যা হয়েছে।'));
 }
 
 function startAutoRefresh(){
@@ -196,7 +299,7 @@ function verifyAndEnter(){
         document.getElementById('loginBox').style.display = 'none';
         document.getElementById('panel').style.display = 'block';
         allRows = data.rows;
-        renderList(allRows);
+        applyCurrentFilter();
         document.getElementById('lastUpdated').textContent = 'সবশেষ আপডেট: ' + new Date().toLocaleTimeString('bn-BD');
         startAutoRefresh();
       } else {
@@ -287,11 +390,14 @@ function renderList(rows){
       '<div class="card-actions">' +
         '<select class="statusSelect">' + optionsHtml + '</select>' +
         '<button class="saveBtn">আপডেট</button>' +
+        '<button class="deleteBtn">ডিলিট</button>' +
       '</div>';
 
     const saveBtn = card.querySelector('.saveBtn');
     const select = card.querySelector('.statusSelect');
+    const deleteBtn = card.querySelector('.deleteBtn');
     saveBtn.addEventListener('click', () => updateStatus(row.rowIndex, select.value, saveBtn, card));
+    deleteBtn.addEventListener('click', () => deleteEntry(row.rowIndex, row.fullName, card));
 
     listEl.appendChild(card);
   });
