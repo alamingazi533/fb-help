@@ -80,9 +80,14 @@
     background:#fff; border:1px solid var(--line); border-radius:12px;
     padding:16px; margin-bottom:12px; box-shadow:0 10px 24px -18px rgba(31,59,44,0.3);
   }
-  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+  .card-top{display:flex; justify-content:space-between; align-items:center; gap:10px;}
+  .applicant-photo{
+    width:44px; height:44px; border-radius:8px; object-fit:cover;
+    border:1.5px solid var(--line); cursor:pointer; flex-shrink:0;
+  }
   .card-name{font-size:16.5px; font-weight:700; color:var(--forest);}
   .card-id{font-size:12px; color:var(--gold); font-weight:600;}
+  .card-top > div:first-child{flex:1; min-width:0;}
   .badge{
     display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:700;
     background:var(--paper-dark); color:var(--forest); white-space:nowrap;
@@ -224,10 +229,10 @@ function renderFilterChips(){
 
 function exportCsv(){
   if(!allRows.length){ alert('ডাউনলোড করার মতো কোনো এন্ট্রি নেই।'); return; }
-  const headers = ['তারিখ','নাম','ফোন','জন্ম তারিখ','লিঙ্গ','ইমেইল','বিভাগ','জেলা','এলাকা','মন্তব্য','পেমেন্ট মেথড','TxnID','প্রেরক নম্বর','আবেদন নম্বর','স্ট্যাটাস'];
+  const headers = ['তারিখ','নাম','ফোন','জন্ম তারিখ','লিঙ্গ','ইমেইল','বিভাগ','জেলা','এলাকা','মন্তব্য','পেমেন্ট মেথড','TxnID','প্রেরক নম্বর','আবেদন নম্বর','স্ট্যাটাস','ছবি লিংক'];
   const csvRows = [headers.join(',')];
   allRows.forEach(r => {
-    const line = [r.date, r.fullName, r.phone, r.dob, r.gender, r.email, r.division, r.district, r.areaDetail, r.comment, r.paymentMethod, r.txnId, r.senderNumber, r.appId, r.status]
+    const line = [r.date, r.fullName, r.phone, r.dob, r.gender, r.email, r.division, r.district, r.areaDetail, r.comment, r.paymentMethod, r.txnId, r.senderNumber, r.appId, r.status, r.photoUrl]
       .map(v => '"' + String(v === undefined || v === null ? '' : v).replace(/"/g, '""') + '"')
       .join(',');
     csvRows.push(line);
@@ -378,6 +383,7 @@ function renderList(rows){
     card.innerHTML =
       '<div class="card-top">' +
         '<div><div class="card-name">' + esc(row.fullName) + '</div><div class="card-id">' + (row.appId === 'N/A' ? 'সারি #' + row.rowIndex : esc(row.appId)) + '</div></div>' +
+        (row.photoUrl ? '<img class="applicant-photo" src="' + row.photoUrl + '" alt="ছবি" onclick="window.open(\'' + row.photoUrl + '\', \'_blank\')">' : '') +
         '<span class="' + badgeClass(row.status) + '">' + esc(row.status) + '</span>' +
       '</div>' +
       '<div class="row"><span class="lbl">তারিখ:</span>' + esc(row.date) + '</div>' +
