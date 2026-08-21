@@ -235,7 +235,74 @@
     line-height:1.6;
     margin:0;
   }
-  .status-card{
+  .trust-badge{
+    margin-top:14px;
+    font-size:12px;
+    color:var(--gold-light);
+    font-weight:600;
+    letter-spacing:.02em;
+  }
+  .faq-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:0 18px 40px -20px rgba(31,59,44,0.35);
+    padding:22px 20px 16px;
+    margin-top:16px;
+  }
+  .faq-item{
+    border-bottom:1px solid var(--line);
+    padding:12px 0;
+  }
+  .faq-item:last-child{ border-bottom:none; }
+  .faq-q{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    font-weight:600;
+    font-size:14.5px;
+    color:var(--forest);
+  }
+  .faq-q .arrow{
+    transition:transform .2s;
+    color:var(--gold);
+    font-size:13px;
+  }
+  .faq-item.open .faq-q .arrow{ transform:rotate(180deg); }
+  .faq-a{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+    font-size:13.5px;
+    color:#4a4737;
+    line-height:1.6;
+  }
+  .faq-item.open .faq-a{
+    max-height:200px;
+    margin-top:9px;
+  }
+  .captcha-box{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--paper-dark);
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    padding:11px 14px;
+    margin-top:8px;
+  }
+  .captcha-box span{
+    font-weight:700;
+    color:var(--forest);
+    font-size:16px;
+    white-space:nowrap;
+  }
+  .captcha-box input{
+    border:1.5px solid var(--line) !important;
+    padding:8px 10px !important;
+    width:90px !important;
+  }
     background:var(--paper);
     border:1px solid var(--line);
     border-radius:14px;
@@ -423,6 +490,7 @@
   <p style="margin-top:10px; font-size:13.5px; color:#DCE6DD; max-width:420px; margin-left:auto; margin-right:auto;">
     যাদের ফেসবুক পেজ/অ্যাকাউন্ট হ্যাক হয়েছে, নিষ্ক্রিয় হয়ে গেছে, মনিটাইজেশন সমস্যা বা অন্য যেকোনো ফেসবুক সংক্রান্ত সমস্যা আছে — নিচের ফর্মটি পূরণ করুন, আমি দেখে যোগাযোগ করব।
   </p>
+  <div class="trust-badge">✓ সরাসরি যোগাযোগ &nbsp;•&nbsp; ✓ নিরাপদ তথ্য &nbsp;•&nbsp; ✓ দ্রুত সাড়া</div>
 </header>
 
 <a class="whatsapp-btn" href="https://wa.me/8801764324313?text=আসসালামু%20আলাইকুম%2C%20আমি%20ফেসবুক%20সমস্যা%20নিয়ে%20যোগাযোগ%20করতে%20চাই।" target="_blank" rel="noopener">
@@ -523,6 +591,12 @@
     <label>যে নম্বর থেকে টাকা পাঠিয়েছেন <span class="req">*</span></label>
     <input type="tel" id="senderNumber" required placeholder="01XXXXXXXXX" pattern="01[0-9]{9}">
 
+    <label>যাচাই করুন <span class="req">*</span></label>
+    <div class="captcha-box">
+      <span id="captchaQ"></span>
+      <input type="text" id="captchaAns" required inputmode="numeric" placeholder="উত্তর">
+    </div>
+
     <button type="submit" id="submitBtn">রেজিস্ট্রেশন সম্পন্ন করুন</button>
     <div class="status" id="status"></div>
     <button type="button" class="download-btn" id="downloadBtn">রশিদ ডাউনলোড করুন (PDF)</button>
@@ -537,6 +611,42 @@
     <input type="text" id="checkId" placeholder="APP-XXXXXXXX">
     <button type="button" id="checkBtn" class="check-btn">যাচাই করুন</button>
     <div class="check-result" id="checkResult"></div>
+  </div>
+
+  <div class="faq-card">
+    <div class="section-label" style="margin-top:0;">সচরাচর জিজ্ঞাসিত প্রশ্ন</div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>আবেদন করার কতদিনের মধ্যে যোগাযোগ করা হয়?</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="faq-a">আবেদন পাওয়ার পর যাচাই করে যত দ্রুত সম্ভব হোয়াটসঅ্যাপ বা মোবাইলে যোগাযোগ করা হয়। সাধারণত ২৪ ঘণ্টার মধ্যেই সাড়া দেওয়া হয়।</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>আবেদন ফি কি ফেরতযোগ্য?</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="faq-a">আবেদন ফি শুধু আবেদন যাচাইয়ের জন্য নেওয়া হয়, তাই এটি ফেরতযোগ্য নয়। সেবা সংক্রান্ত চার্জ আলাদাভাবে আলোচনা করে নির্ধারণ করা হয়।</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>কোন ধরনের সমস্যা সমাধান করা হয়?</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="faq-a">পেজ/অ্যাকাউন্ট হ্যাক, নিষ্ক্রিয় হয়ে যাওয়া, মনিটাইজেশন বন্ধ হয়ে যাওয়া এবং এই সংক্রান্ত অন্যান্য সমস্যা নিয়ে কাজ করা হয়।</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>সেবার জন্য মোট খরচ কত হবে?</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="faq-a">সমস্যার ধরন অনুযায়ী খরচ ভিন্ন হয়। আবেদন যাচাইয়ের পর সরাসরি আলোচনা করে খরচ জানিয়ে দেওয়া হয় — কোনো কাজ ফ্রি করা হয় না।</div>
+    </div>
   </div>
 
   <footer>আপনার তথ্য নিরাপদে সংরক্ষণ করা হবে</footer>
@@ -839,8 +949,30 @@ function fileToBase64(file){
   });
 }
 
+// ============ CAPTCHA ============
+let captchaAnswer = 0;
+function newCaptcha(){
+  const a = Math.floor(Math.random() * 8) + 1;
+  const b = Math.floor(Math.random() * 8) + 1;
+  captchaAnswer = a + b;
+  document.getElementById('captchaQ').textContent = a + ' + ' + b + ' =';
+  document.getElementById('captchaAns').value = '';
+}
+newCaptcha();
+
+// ============ FAQ ============
+function toggleFaq(el){
+  el.parentElement.classList.toggle('open');
+}
+
 form.addEventListener('submit', async (e)=>{
   e.preventDefault();
+
+  if(parseInt(document.getElementById('captchaAns').value.trim(), 10) !== captchaAnswer){
+    showStatus('err', 'যাচাই ঘরের উত্তরটি সঠিক নয়, আবার চেষ্টা করুন।');
+    newCaptcha();
+    return;
+  }
 
   if(SCRIPT_URL.includes("PASTE_YOUR")){
     showStatus('err', 'প্রথমে কোডে আপনার Google Apps Script URL বসান।');
@@ -931,4 +1063,4 @@ form.addEventListener('submit', async (e)=>{
 });
 </script>
 </body>
-    </html>
+      </html>
