@@ -528,6 +528,9 @@
     <label>মোবাইল নম্বর <span class="req">*</span></label>
     <input type="tel" id="phone" required placeholder="01XXXXXXXXX" pattern="01[0-9]{9}">
 
+    <label>আপনার ছবি আপলোড করুন <span class="req">*</span></label>
+    <input type="file" id="applicantPhoto" accept="image/*" required>
+
     <div class="row2">
       <div>
         <label>জন্ম তারিখ</label>
@@ -1012,8 +1015,14 @@ form.addEventListener('submit', async (e)=>{
     submittedAt: new Date().toISOString(),
     screenshotBase64: '',
     screenshotName: '',
-    screenshotType: ''
+    screenshotType: '',
+    photoBase64: '',
+    photoName: '',
+    photoType: ''
   };
+
+  const photoInput = document.getElementById('applicantPhoto');
+  const photoFile = photoInput.files[0];
 
   const screenshotInput = document.getElementById('screenshot');
   const file = screenshotInput.files[0];
@@ -1023,6 +1032,18 @@ form.addEventListener('submit', async (e)=>{
   showStatus('loading', 'অনুগ্রহ করে অপেক্ষা করুন...');
 
   try{
+    if(photoFile){
+      if(photoFile.size > 5 * 1024 * 1024){
+        showStatus('err', 'আপনার ছবির সাইজ ৫ এমবি এর কম হতে হবে।');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'রেজিস্ট্রেশন সম্পন্ন করুন';
+        return;
+      }
+      payload.photoBase64 = await fileToBase64(photoFile);
+      payload.photoName = photoFile.name;
+      payload.photoType = photoFile.type;
+    }
+
     if(file){
       // ৫ এমবি এর বেশি ছবি পাঠানো এড়িয়ে চলুন (Apps Script এর সীমা মাথায় রেখে)
       if(file.size > 5 * 1024 * 1024){
@@ -1077,4 +1098,4 @@ form.addEventListener('submit', async (e)=>{
 });
 </script>
 </body>
-  </html>
+      </html>
