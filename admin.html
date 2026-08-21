@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>অ্যাডমিন প্যানেল - ফেসবুক সমস্যা সমাধান</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EA;
+    --paper-dark:#F2EBDA;
+    --ink:#22281F;
+    --forest:#1F3B2C;
+    --forest-2:#2C4F3A;
+    --gold:#B8863B;
+    --gold-light:#D9AE6B;
+    --maroon:#7A2E2E;
+    --line:#D8CDAE;
+    --ok:#2C6B4F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    font-family:'Hind Siliguri', sans-serif;
+    color:var(--ink);
+    padding:0 0 60px;
+  }
+  header{
+    background:linear-gradient(135deg, var(--forest) 0%, var(--forest-2) 100%);
+    color:var(--paper);
+    padding:22px 16px;
+    text-align:center;
+  }
+  header h1{
+    font-family:'Noto Serif Bengali', serif;
+    font-size:20px;
+    margin:0;
+  }
+  main{max-width:640px; margin:0 auto; padding:16px;}
+
+  /* লগইন স্ক্রিন */
+  #loginBox{
+    max-width:360px;
+    margin:60px auto;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:26px 22px;
+    box-shadow:0 18px 40px -20px rgba(31,59,44,0.35);
+    text-align:center;
+  }
+  #loginBox h2{font-family:'Noto Serif Bengali', serif; color:var(--forest); font-size:19px; margin:0 0 16px;}
+  #loginBox input{
+    width:100%; padding:12px; border-radius:8px; border:1.5px solid var(--line);
+    font-size:16px; font-family:inherit; margin-bottom:12px; outline:none;
+  }
+  #loginBox button, .btn{
+    width:100%; padding:12px; border:none; border-radius:9px;
+    background:var(--forest); color:var(--paper); font-family:inherit;
+    font-size:15.5px; font-weight:700; cursor:pointer;
+  }
+  #loginErr{color:var(--maroon); font-size:13.5px; margin-top:8px; display:none;}
+
+  /* টুলবার */
+  .toolbar{display:flex; gap:8px; margin-bottom:14px;}
+  .toolbar input{
+    flex:1; padding:11px 12px; border-radius:8px; border:1.5px solid var(--line);
+    font-size:15px; font-family:inherit; outline:none;
+  }
+  .toolbar button{
+    padding:11px 16px; border-radius:8px; border:1.5px solid var(--forest);
+    background:#fff; color:var(--forest); font-weight:700; font-family:inherit; cursor:pointer;
+  }
+  .summary{font-size:13px; color:#6b6752; margin-bottom:12px;}
+
+  /* কার্ড */
+  .card{
+    background:#fff; border:1px solid var(--line); border-radius:12px;
+    padding:16px; margin-bottom:12px; box-shadow:0 10px 24px -18px rgba(31,59,44,0.3);
+  }
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+  .card-name{font-size:16.5px; font-weight:700; color:var(--forest);}
+  .card-id{font-size:12px; color:var(--gold); font-weight:600;}
+  .badge{
+    display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:700;
+    background:var(--paper-dark); color:var(--forest); white-space:nowrap;
+  }
+  .badge.done{background:#E6F0EA; color:var(--ok);}
+  .badge.progress{background:#FDF1DC; color:#8a5a12;}
+  .badge.cancel{background:#F6E7E4; color:var(--maroon);}
+  .row{font-size:14px; margin-top:6px; line-height:1.6;}
+  .row .lbl{color:#7a7460; margin-right:4px;}
+  .card-comment{
+    background:var(--paper-dark); border-radius:8px; padding:10px 12px; margin-top:8px; font-size:13.5px;
+  }
+  .card-actions{display:flex; gap:8px; margin-top:12px;}
+  .card-actions select{
+    flex:1; padding:9px; border-radius:8px; border:1.5px solid var(--line); font-family:inherit; font-size:14px;
+  }
+  .card-actions button{
+    padding:9px 14px; border:none; border-radius:8px; background:var(--forest); color:#fff;
+    font-weight:700; font-family:inherit; cursor:pointer; font-size:14px;
+  }
+  .card-actions button:disabled{opacity:.6; cursor:wait;}
+  .card a.ss-link{color:var(--forest); font-weight:600; text-decoration:underline; font-size:13.5px;}
+  #loadingMsg, #emptyMsg{text-align:center; color:#8a8571; padding:30px 0; display:none;}
+  #logoutBtn{
+    background:transparent; border:1px solid rgba(255,255,255,0.5); color:var(--paper);
+    padding:6px 12px; border-radius:7px; font-size:12.5px; font-family:inherit; cursor:pointer;
+    position:absolute; right:14px; top:22px;
+  }
+  header{position:relative;}
+</style>
+</head>
+<body>
+
+<div id="loginBox">
+  <h2>অ্যাডমিন লগইন</h2>
+  <input type="password" id="pwInput" placeholder="পাসওয়ার্ড দিন" autocomplete="off">
+  <button onclick="login()">লগইন করুন</button>
+  <div id="loginErr">পাসওয়ার্ড ভুল হয়েছে, আবার চেষ্টা করুন।</div>
+</div>
+
+<div id="panel" style="display:none;">
+  <header>
+    <h1>রেজিস্ট্রেশন - অ্যাডমিন প্যানেল</h1>
+    <button id="logoutBtn" onclick="logout()">লগ-আউট</button>
+  </header>
+  <main>
+    <div class="toolbar">
+      <input type="text" id="searchBox" placeholder="নাম, ফোন বা আবেদন নম্বর দিয়ে খুঁজুন">
+      <button onclick="loadEntries()">রিফ্রেশ</button>
+    </div>
+    <div class="summary" id="summary"></div>
+    <div id="loadingMsg">লোড হচ্ছে...</div>
+    <div id="emptyMsg">কোনো এন্ট্রি পাওয়া যায়নি।</div>
+    <div id="list"></div>
+  </main>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbymlff-q29ojuF8V_i1GYCzYcUcvLA8XPHlOkhOoSAW0KkM7l9B5WbLCHg7uGTe1kjY/exec";
+const STATUS_OPTIONS = ["অপেক্ষমান", "কাজ চলছে", "সম্পন্ন", "বাতিল"];
+
+let allRows = [];
+
+function badgeClass(status){
+  if(status === "সম্পন্ন") return "badge done";
+  if(status === "কাজ চলছে") return "badge progress";
+  if(status === "বাতিল") return "badge cancel";
+  return "badge";
+}
+
+function login(){
+  const pw = document.getElementById('pwInput').value.trim();
+  if(!pw){ return; }
+  sessionStorage.setItem('adminPw', pw);
+  verifyAndEnter();
+}
+
+function verifyAndEnter(){
+  const pw = sessionStorage.getItem('adminPw');
+  if(!pw){ return; }
+  document.getElementById('loginErr').style.display = 'none';
+  fetch(SCRIPT_URL + '?action=list&password=' + encodeURIComponent(pw))
+    .then(r => r.json())
+    .then(data => {
+      if(data.success){
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('panel').style.display = 'block';
+        allRows = data.rows;
+        renderList(allRows);
+      } else {
+        sessionStorage.removeItem('adminPw');
+        document.getElementById('loginErr').style.display = 'block';
+      }
+    })
+    .catch(() => {
+      document.getElementById('loginErr').textContent = 'সংযোগে সমস্যা হয়েছে, আবার চেষ্টা করুন।';
+      document.getElementById('loginErr').style.display = 'block';
+    });
+}
+
+function logout(){
+  sessionStorage.removeItem('adminPw');
+  document.getElementById('panel').style.display = 'none';
+  document.getElementById('loginBox').style.display = 'block';
+  document.getElementById('pwInput').value = '';
+}
+
+function loadEntries(){
+  document.getElementById('loadingMsg').style.display = 'block';
+  document.getElementById('list').innerHTML = '';
+  document.getElementById('emptyMsg').style.display = 'none';
+  const pw = sessionStorage.getItem('adminPw');
+  fetch(SCRIPT_URL + '?action=list&password=' + encodeURIComponent(pw))
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('loadingMsg').style.display = 'none';
+      if(data.success){
+        allRows = data.rows;
+        renderList(allRows);
+      }
+    })
+    .catch(() => {
+      document.getElementById('loadingMsg').style.display = 'none';
+      alert('লোড করতে সমস্যা হয়েছে।');
+    });
+}
+
+function renderList(rows){
+  const listEl = document.getElementById('list');
+  const summaryEl = document.getElementById('summary');
+  listEl.innerHTML = '';
+  summaryEl.textContent = 'মোট ' + rows.length + 'টি আবেদন';
+  document.getElementById('emptyMsg').style.display = rows.length ? 'none' : 'block';
+
+  rows.forEach(row => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    let optionsHtml = '';
+    STATUS_OPTIONS.forEach(s => {
+      optionsHtml += '<option value="' + s + '"' + (s === row.status ? ' selected' : '') + '>' + s + '</option>';
+    });
+
+    card.innerHTML =
+      '<div class="card-top">' +
+        '<div><div class="card-name">' + esc(row.fullName) + '</div><div class="card-id">' + esc(row.appId) + '</div></div>' +
+        '<span class="' + badgeClass(row.status) + '">' + esc(row.status) + '</span>' +
+      '</div>' +
+      '<div class="row"><span class="lbl">তারিখ:</span>' + esc(row.date) + '</div>' +
+      '<div class="row"><span class="lbl">ফোন:</span>' + esc(row.phone) + '</div>' +
+      (row.email ? '<div class="row"><span class="lbl">ইমেইল:</span>' + esc(row.email) + '</div>' : '') +
+      '<div class="row"><span class="lbl">ঠিকানা:</span>' + esc(row.division) + ', ' + esc(row.district) + (row.areaDetail ? ' - ' + esc(row.areaDetail) : '') + '</div>' +
+      '<div class="row"><span class="lbl">পেমেন্ট:</span>' + esc(row.paymentMethod) + ' | TxnID: ' + esc(row.txnId) + ' | নম্বর: ' + esc(row.senderNumber) + '</div>' +
+      (row.screenshotUrl ? '<div class="row"><a class="ss-link" href="' + row.screenshotUrl + '" target="_blank">পেমেন্ট স্ক্রিনশট দেখুন</a></div>' : '') +
+      (row.comment ? '<div class="card-comment">' + esc(row.comment) + '</div>' : '') +
+      '<div class="card-actions">' +
+        '<select class="statusSelect">' + optionsHtml + '</select>' +
+        '<button class="saveBtn">আপডেট</button>' +
+      '</div>';
+
+    const saveBtn = card.querySelector('.saveBtn');
+    const select = card.querySelector('.statusSelect');
+    saveBtn.addEventListener('click', () => updateStatus(row.appId, select.value, saveBtn, card));
+
+    listEl.appendChild(card);
+  });
+}
+
+function updateStatus(appId, newStatus, btn, card){
+  const pw = sessionStorage.getItem('adminPw');
+  btn.disabled = true;
+  btn.textContent = 'সেভ হচ্ছে...';
+  fetch(SCRIPT_URL + '?action=updateStatus&password=' + encodeURIComponent(pw) + '&id=' + encodeURIComponent(appId) + '&status=' + encodeURIComponent(newStatus))
+    .then(r => r.json())
+    .then(data => {
+      btn.disabled = false;
+      btn.textContent = 'আপডেট';
+      if(data.success){
+        const badge = card.querySelector('.badge');
+        badge.textContent = newStatus;
+        badge.className = badgeClass(newStatus);
+      } else {
+        alert('আপডেট করতে সমস্যা হয়েছে।');
+      }
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.textContent = 'আপডেট';
+      alert('সংযোগে সমস্যা হয়েছে।');
+    });
+}
+
+function esc(str){
+  if(str === undefined || str === null) return '';
+  const div = document.createElement('div');
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
+document.getElementById('searchBox').addEventListener('input', (e)=>{
+  const q = e.target.value.trim().toLowerCase();
+  if(!q){ renderList(allRows); return; }
+  const filtered = allRows.filter(r =>
+    (r.fullName || '').toLowerCase().includes(q) ||
+    (r.phone || '').includes(q) ||
+    (r.appId || '').toLowerCase().includes(q)
+  );
+  renderList(filtered);
+});
+
+document.getElementById('pwInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') login();
+});
+
+// পেজ লোড হলে আগে থেকে লগইন করা থাকলে সরাসরি প্যানেলে ঢুকিয়ে দিন
+if(sessionStorage.getItem('adminPw')){
+  verifyAndEnter();
+}
+</script>
+</body>
+</html>
