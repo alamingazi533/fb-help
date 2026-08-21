@@ -131,9 +131,10 @@
   <main>
     <div class="toolbar">
       <input type="text" id="searchBox" placeholder="নাম, ফোন বা আবেদন নম্বর দিয়ে খুঁজুন">
-      <button onclick="loadEntries()">রিফ্রেশ</button>
+      <button onclick="manualRefresh()">রিফ্রেশ</button>
     </div>
     <div class="summary" id="summary"></div>
+    <div class="summary" id="lastUpdated" style="margin-top:-6px;">প্রতি ৩০ সেকেন্ডে অটো-আপডেট হয়</div>
     <div id="loadingMsg">লোড হচ্ছে...</div>
     <div id="emptyMsg">কোনো এন্ট্রি পাওয়া যায়নি।</div>
     <div id="list"></div>
@@ -145,6 +146,30 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbymlff-q29ojuF8V_i1G
 const STATUS_OPTIONS = ["অপেক্ষমান", "কাজ চলছে", "সম্পন্ন", "বাতিল"];
 
 let allRows = [];
+let autoRefreshTimer = null;
+
+function applyCurrentFilter(){
+  const q = document.getElementById('searchBox').value.trim().toLowerCase();
+  if(!q){ renderList(allRows); return; }
+  const filtered = allRows.filter(r =>
+    (r.fullName || '').toLowerCase().includes(q) ||
+    (r.phone || '').includes(q) ||
+    (r.appId || '').toLowerCase().includes(q)
+  );
+  renderList(filtered);
+}
+
+function startAutoRefresh(){
+  if(autoRefreshTimer) return;
+  autoRefreshTimer = setInterval(loadEntries, 30000);
+}
+
+function stopAutoRefresh(){
+  if(autoRefreshTimer){
+    clearInterval(autoRefreshTimer);
+    autoRefreshTimer = null;
+  }
+}
 
 function badgeClass(status){
   if(status === "সম্পন্ন") return "badge done";
@@ -172,6 +197,8 @@ function verifyAndEnter(){
         document.getElementById('panel').style.display = 'block';
         allRows = data.rows;
         renderList(allRows);
+        document.getElementById('lastUpdated').textContent = 'সবশেষ আপডেট: ' + new Date().toLocaleTimeString('bn-BD');
+        startAutoRefresh();
       } else {
         sessionStorage.removeItem('adminPw');
         document.getElementById('loginErr').style.display = 'block';
@@ -185,14 +212,31 @@ function verifyAndEnter(){
 
 function logout(){
   sessionStorage.removeItem('adminPw');
+  stopAutoRefresh();
   document.getElementById('panel').style.display = 'none';
   document.getElementById('loginBox').style.display = 'block';
   document.getElementById('pwInput').value = '';
 }
 
 function loadEntries(){
+  const pw = sessionStorage.getItem('adminPw');
+  fetch(SCRIPT_URL + '?action=list&password=' + encodeURIComponent(pw))
+    .then(r => r.json())
+    .then(data => {
+      if(data.success){
+        allRows = data.rows;
+        applyCurrentFilter();
+        const now = new Date();
+        document.getElementById('lastUpdated').textContent = 'সবশেষ আপডেট: ' + now.toLocaleTimeString('bn-BD');
+      }
+    })
+    .catch(() => {
+      // নীরবে ব্যর্থ হোক, অটো-রিফ্রেশে বারবার এলার্ট দেখানোর দরকার নেই
+    });
+}
+
+function manualRefresh(){
   document.getElementById('loadingMsg').style.display = 'block';
-  document.getElementById('list').innerHTML = '';
   document.getElementById('emptyMsg').style.display = 'none';
   const pw = sessionStorage.getItem('adminPw');
   fetch(SCRIPT_URL + '?action=list&password=' + encodeURIComponent(pw))
@@ -201,7 +245,9 @@ function loadEntries(){
       document.getElementById('loadingMsg').style.display = 'none';
       if(data.success){
         allRows = data.rows;
-        renderList(allRows);
+        applyCurrentFilter();
+        const now = new Date();
+        document.getElementById('lastUpdated').textContent = 'সবশেষ আপডেট: ' + now.toLocaleTimeString('bn-BD');
       }
     })
     .catch(() => {
@@ -228,7 +274,7 @@ function renderList(rows){
 
     card.innerHTML =
       '<div class="card-top">' +
-        '<div><div class="card-name">' + esc(row.fullName) + '</div><div class="card-id">' + esc(row.appId) + '</div></div>' +
+        '<div><div class="card-name">' + esc(row.fullName) + '</div><div class="card-id">' + (row.appId === 'N/A' ? 'সারি #' + row.rowIndex : esc(row.appId)) + '</div></div>' +
         '<span class="' + badgeClass(row.status) + '">' + esc(row.status) + '</span>' +
       '</div>' +
       '<div class="row"><span class="lbl">তারিখ:</span>' + esc(row.date) + '</div>' +
@@ -245,17 +291,17 @@ function renderList(rows){
 
     const saveBtn = card.querySelector('.saveBtn');
     const select = card.querySelector('.statusSelect');
-    saveBtn.addEventListener('click', () => updateStatus(row.appId, select.value, saveBtn, card));
+    saveBtn.addEventListener('click', () => updateStatus(row.rowIndex, select.value, saveBtn, card));
 
     listEl.appendChild(card);
   });
 }
 
-function updateStatus(appId, newStatus, btn, card){
+function updateStatus(rowIndex, newStatus, btn, card){
   const pw = sessionStorage.getItem('adminPw');
   btn.disabled = true;
   btn.textContent = 'সেভ হচ্ছে...';
-  fetch(SCRIPT_URL + '?action=updateStatus&password=' + encodeURIComponent(pw) + '&id=' + encodeURIComponent(appId) + '&status=' + encodeURIComponent(newStatus))
+  fetch(SCRIPT_URL + '?action=updateStatus&password=' + encodeURIComponent(pw) + '&row=' + encodeURIComponent(rowIndex) + '&status=' + encodeURIComponent(newStatus))
     .then(r => r.json())
     .then(data => {
       btn.disabled = false;
@@ -282,16 +328,7 @@ function esc(str){
   return div.innerHTML;
 }
 
-document.getElementById('searchBox').addEventListener('input', (e)=>{
-  const q = e.target.value.trim().toLowerCase();
-  if(!q){ renderList(allRows); return; }
-  const filtered = allRows.filter(r =>
-    (r.fullName || '').toLowerCase().includes(q) ||
-    (r.phone || '').includes(q) ||
-    (r.appId || '').toLowerCase().includes(q)
-  );
-  renderList(filtered);
-});
+document.getElementById('searchBox').addEventListener('input', applyCurrentFilter);
 
 document.getElementById('pwInput').addEventListener('keydown', (e)=>{
   if(e.key === 'Enter') login();
