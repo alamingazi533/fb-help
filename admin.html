@@ -143,6 +143,10 @@
     padding:9px 12px; border:1.5px solid var(--maroon); border-radius:8px; background:#fff;
     color:var(--maroon); font-family:inherit; font-weight:700; cursor:pointer; font-size:13px;
   }
+  .waBtn{
+    width:100%; padding:10px; border:none; border-radius:8px; background:#25D366;
+    color:#fff; font-family:inherit; font-weight:700; cursor:pointer; font-size:14px;
+  }
   #logoutBtn{
     background:transparent; border:1px solid rgba(255,255,255,0.5); color:var(--paper);
     padding:6px 12px; border-radius:7px; font-size:12.5px; font-family:inherit; cursor:pointer;
@@ -405,13 +409,18 @@ function renderList(rows){
         '<select class="statusSelect">' + optionsHtml + '</select>' +
         '<button class="saveBtn">আপডেট</button>' +
         '<button class="deleteBtn">ডিলিট</button>' +
+      '</div>' +
+      '<div class="card-actions" style="margin-top:8px;">' +
+        '<button class="waBtn">📱 WhatsApp পাঠান</button>' +
       '</div>';
 
     const saveBtn = card.querySelector('.saveBtn');
     const select = card.querySelector('.statusSelect');
     const deleteBtn = card.querySelector('.deleteBtn');
+    const waBtn = card.querySelector('.waBtn');
     saveBtn.addEventListener('click', () => updateStatus(row.rowIndex, select.value, saveBtn, card));
     deleteBtn.addEventListener('click', () => deleteEntry(row.rowIndex, row.fullName, card));
+    waBtn.addEventListener('click', () => sendWhatsApp(row.phone, row.fullName, row.appId, select.value));
 
     listEl.appendChild(card);
   });
@@ -441,6 +450,31 @@ function updateStatus(rowIndex, newStatus, btn, card){
     });
 }
 
+function normalizePhone(phone){
+  let digits = String(phone || '').replace(/\D/g, '');
+  if(digits.startsWith('0')) digits = '88' + digits;
+  else if(digits.startsWith('880')) digits = digits;
+  else if(!digits.startsWith('88')) digits = '880' + digits;
+  return digits;
+}
+
+function statusMessage(fullName, appId, status){
+  const idLine = (appId && appId !== 'N/A') ? ('আবেদন নম্বর: ' + appId + '\n') : '';
+  let line;
+  if(status === 'সম্পন্ন') line = 'আপনার আবেদনটির কাজ সম্পন্ন হয়েছে। ধন্যবাদ।';
+  else if(status === 'কাজ চলছে') line = 'আপনার আবেদনটি নিয়ে কাজ চলছে। একটু অপেক্ষা করুন।';
+  else if(status === 'বাতিল') line = 'দুঃখিত, আপনার আবেদনটি বাতিল করা হয়েছে। বিস্তারিত জানতে যোগাযোগ করুন।';
+  else line = 'আপনার আবেদনটি জমা হয়েছে, বর্তমানে অপেক্ষমান আছে।';
+  return 'প্রিয় ' + fullName + ',\n' + idLine + 'স্ট্যাটাস: ' + status + '\n' + line;
+}
+
+function sendWhatsApp(phone, fullName, appId, status){
+  if(!phone){ alert('এই আবেদনকারীর ফোন নম্বর পাওয়া যায়নি।'); return; }
+  const number = normalizePhone(phone);
+  const message = statusMessage(fullName, appId, status);
+  const url = 'https://wa.me/' + number + '?text=' + encodeURIComponent(message);
+  window.open(url, '_blank');
+}
 function esc(str){
   if(str === undefined || str === null) return '';
   const div = document.createElement('div');
