@@ -85,39 +85,57 @@
 
   /* কার্ড */
   .card{
-    background:#fff; border:1px solid var(--line); border-radius:12px;
-    padding:16px; margin-bottom:12px; box-shadow:0 10px 24px -18px rgba(31,59,44,0.3);
+    background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:0; margin-bottom:14px; box-shadow:0 12px 28px -18px rgba(31,59,44,0.32); overflow:hidden;
   }
-  .card-top{display:flex; justify-content:space-between; align-items:center; gap:10px;}
+  .card-top{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:14px 16px; background:var(--paper-dark); border-bottom:1px solid var(--line);
+  }
   .applicant-photo{
-    width:44px; height:44px; border-radius:8px; object-fit:cover;
-    border:1.5px solid var(--line); cursor:pointer; flex-shrink:0;
+    width:48px; height:48px; border-radius:9px; object-fit:cover;
+    border:1.5px solid var(--gold-light); cursor:pointer; flex-shrink:0;
   }
   .card-name{font-size:16.5px; font-weight:700; color:var(--forest);}
-  .card-id{font-size:12px; color:var(--gold); font-weight:600;}
-  .card-top > div:first-child{flex:1; min-width:0;}
+  .card-id{font-size:11.5px; color:var(--gold); font-weight:700; letter-spacing:.02em;}
+  .card-top > div:first-child{flex:1; min-width:0; display:flex; align-items:center; gap:10px;}
   .badge{
-    display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:700;
-    background:var(--paper-dark); color:var(--forest); white-space:nowrap;
+    display:inline-block; padding:4px 12px; border-radius:999px; font-size:12px; font-weight:700;
+    background:#e9e4d2; color:var(--forest); white-space:nowrap; flex-shrink:0;
   }
   .badge.done{background:#E6F0EA; color:var(--ok);}
   .badge.progress{background:#FDF1DC; color:#8a5a12;}
   .badge.cancel{background:#F6E7E4; color:var(--maroon);}
-  .row{font-size:14px; margin-top:6px; line-height:1.6;}
-  .row .lbl{color:#7a7460; margin-right:4px;}
-  .card-comment{
-    background:var(--paper-dark); border-radius:8px; padding:10px 12px; margin-top:8px; font-size:13.5px;
+
+  .card-body{ padding:14px 16px 16px; }
+  .info-grid{ display:flex; flex-direction:column; gap:9px; }
+  .info-item{ display:flex; gap:9px; align-items:flex-start; font-size:13.5px; line-height:1.5; }
+  .info-item .ic{ flex-shrink:0; width:18px; text-align:center; }
+  .info-item .lbl{ color:#8a8571; font-size:11.5px; display:block; margin-bottom:1px; }
+  .info-item .val{ color:var(--ink); font-weight:600; word-break:break-word; }
+
+  .link-row{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .link-chip{
+    display:inline-flex; align-items:center; gap:5px; padding:6px 12px; border-radius:8px;
+    background:var(--paper-dark); border:1px solid var(--line); color:var(--forest);
+    font-size:12.5px; font-weight:700; text-decoration:none;
   }
+
+  .card-comment{
+    background:var(--paper-dark); border-radius:9px; padding:11px 13px; margin-top:12px; font-size:13.5px; line-height:1.55;
+  }
+
+  .card-divider{ border:none; border-top:1px dashed var(--line); margin:14px 0 0; }
+
   .card-actions{display:flex; gap:8px; margin-top:12px;}
   .card-actions input.statusInput{
-    flex:1; padding:9px; border-radius:8px; border:1.5px solid var(--line); font-family:inherit; font-size:14px; outline:none;
+    flex:1; padding:10px 11px; border-radius:9px; border:1.5px solid var(--line); font-family:inherit; font-size:14px; outline:none;
   }
   .card-actions button{
-    padding:9px 14px; border:none; border-radius:8px; background:var(--forest); color:#fff;
+    padding:10px 14px; border:none; border-radius:9px; background:var(--forest); color:#fff;
     font-weight:700; font-family:inherit; cursor:pointer; font-size:14px;
   }
   .card-actions button:disabled{opacity:.6; cursor:wait;}
-  .card a.ss-link{color:var(--forest); font-weight:600; text-decoration:underline; font-size:13.5px;}
   #loadingMsg, #emptyMsg{text-align:center; color:#8a8571; padding:30px 0; display:none;}
 
   .dashboard{display:flex; gap:8px; overflow-x:auto; margin-bottom:12px; padding-bottom:2px;}
@@ -140,12 +158,13 @@
     background:#fff; color:var(--forest); font-family:inherit; font-weight:700; font-size:14px; cursor:pointer;
   }
   .deleteBtn{
-    padding:9px 12px; border:1.5px solid var(--maroon); border-radius:8px; background:#fff;
+    padding:10px 13px; border:1.5px solid var(--maroon); border-radius:9px; background:#fff;
     color:var(--maroon); font-family:inherit; font-weight:700; cursor:pointer; font-size:13px;
   }
   .waBtn{
-    width:100%; padding:10px; border:none; border-radius:8px; background:#25D366;
+    width:100%; padding:11px; border:none; border-radius:9px; background:#25D366;
     color:#fff; font-family:inherit; font-weight:700; cursor:pointer; font-size:14px;
+    display:flex; align-items:center; justify-content:center; gap:6px;
   }
   #logoutBtn{
     background:transparent; border:1px solid rgba(255,255,255,0.5); color:var(--paper);
@@ -395,25 +414,35 @@ function renderList(rows){
 
     card.innerHTML =
       '<div class="card-top">' +
-        '<div><div class="card-name">' + esc(row.fullName) + '</div><div class="card-id">' + (row.appId === 'N/A' ? 'সারি #' + row.rowIndex : esc(row.appId)) + '</div></div>' +
-        (row.photoUrl ? '<img class="applicant-photo" src="' + row.photoUrl + '" alt="ছবি" onclick="window.open(\'' + row.photoUrl + '\', \'_blank\')">' : '') +
+        '<div>' +
+          (row.photoUrl ? '<img class="applicant-photo" src="' + row.photoUrl + '" alt="ছবি" onclick="window.open(\'' + row.photoUrl + '\', \'_blank\')">' : '') +
+          '<div><div class="card-name">' + esc(row.fullName) + '</div><div class="card-id">' + (row.appId === 'N/A' ? 'সারি #' + row.rowIndex : esc(row.appId)) + '</div></div>' +
+        '</div>' +
         '<span class="' + badgeClass(row.status) + '">' + esc(row.status) + '</span>' +
       '</div>' +
-      '<div class="row"><span class="lbl">তারিখ:</span>' + esc(row.date) + '</div>' +
-      '<div class="row"><span class="lbl">ফোন:</span>' + esc(row.phone) + '</div>' +
-      (row.email ? '<div class="row"><span class="lbl">ইমেইল:</span>' + esc(row.email) + '</div>' : '') +
-      '<div class="row"><span class="lbl">ঠিকানা:</span>' + esc(row.division) + ', ' + esc(row.district) + (row.areaDetail ? ' - ' + esc(row.areaDetail) : '') + '</div>' +
-      '<div class="row"><span class="lbl">পেমেন্ট:</span>' + esc(row.paymentMethod) + ' | TxnID: ' + esc(row.txnId) + ' | নম্বর: ' + esc(row.senderNumber) + '</div>' +
-      (row.idLink ? '<div class="row"><a class="ss-link" href="' + row.idLink + '" target="_blank">আইডি/প্রোফাইল লিংক দেখুন</a></div>' : '') +
-      (row.screenshotUrl ? '<div class="row"><a class="ss-link" href="' + row.screenshotUrl + '" target="_blank">পেমেন্ট স্ক্রিনশট দেখুন</a></div>' : '') +
-      (row.comment ? '<div class="card-comment">' + esc(row.comment) + '</div>' : '') +
-      '<div class="card-actions">' +
-        '<input type="text" class="statusInput" list="statusSuggestions" value="' + esc(row.status) + '" placeholder="স্ট্যাটাস লিখুন">' +
-        '<button class="saveBtn">আপডেট</button>' +
-        '<button class="deleteBtn">ডিলিট</button>' +
-      '</div>' +
-      '<div class="card-actions" style="margin-top:8px;">' +
-        '<button class="waBtn">📱 WhatsApp পাঠান</button>' +
+      '<div class="card-body">' +
+        '<div class="info-grid">' +
+          '<div class="info-item"><span class="ic">📅</span><div><span class="lbl">তারিখ</span><span class="val">' + esc(row.date) + '</span></div></div>' +
+          '<div class="info-item"><span class="ic">📱</span><div><span class="lbl">ফোন</span><span class="val">' + esc(row.phone) + '</span></div></div>' +
+          (row.email ? '<div class="info-item"><span class="ic">📧</span><div><span class="lbl">ইমেইল</span><span class="val">' + esc(row.email) + '</span></div></div>' : '') +
+          '<div class="info-item"><span class="ic">📍</span><div><span class="lbl">ঠিকানা</span><span class="val">' + esc(row.division) + ', ' + esc(row.district) + (row.areaDetail ? ' - ' + esc(row.areaDetail) : '') + '</span></div></div>' +
+          '<div class="info-item"><span class="ic">💳</span><div><span class="lbl">পেমেন্ট</span><span class="val">' + esc(row.paymentMethod) + ' • TxnID: ' + esc(row.txnId) + ' • ' + esc(row.senderNumber) + '</span></div></div>' +
+        '</div>' +
+        (row.idLink || row.screenshotUrl ?
+          '<div class="link-row">' +
+            (row.idLink ? '<a class="link-chip" href="' + row.idLink + '" target="_blank">🔗 আইডি/প্রোফাইল</a>' : '') +
+            (row.screenshotUrl ? '<a class="link-chip" href="' + row.screenshotUrl + '" target="_blank">🧾 পেমেন্ট স্ক্রিনশট</a>' : '') +
+          '</div>' : '') +
+        (row.comment ? '<div class="card-comment">' + esc(row.comment) + '</div>' : '') +
+        '<hr class="card-divider">' +
+        '<div class="card-actions">' +
+          '<input type="text" class="statusInput" list="statusSuggestions" value="' + esc(row.status) + '" placeholder="স্ট্যাটাস লিখুন">' +
+          '<button class="saveBtn">আপডেট</button>' +
+          '<button class="deleteBtn">🗑️</button>' +
+        '</div>' +
+        '<div class="card-actions" style="margin-top:8px;">' +
+          '<button class="waBtn">📱 WhatsApp পাঠান</button>' +
+        '</div>' +
       '</div>';
 
     const saveBtn = card.querySelector('.saveBtn');
