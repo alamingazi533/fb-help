@@ -109,8 +109,8 @@
     background:var(--paper-dark); border-radius:8px; padding:10px 12px; margin-top:8px; font-size:13.5px;
   }
   .card-actions{display:flex; gap:8px; margin-top:12px;}
-  .card-actions select{
-    flex:1; padding:9px; border-radius:8px; border:1.5px solid var(--line); font-family:inherit; font-size:14px;
+  .card-actions input.statusInput{
+    flex:1; padding:9px; border-radius:8px; border:1.5px solid var(--line); font-family:inherit; font-size:14px; outline:none;
   }
   .card-actions button{
     padding:9px 14px; border:none; border-radius:8px; background:var(--forest); color:#fff;
@@ -184,6 +184,12 @@
     <div id="loadingMsg">লোড হচ্ছে...</div>
     <div id="emptyMsg">কোনো এন্ট্রি পাওয়া যায়নি।</div>
     <div id="list"></div>
+    <datalist id="statusSuggestions">
+      <option value="অপেক্ষমান">
+      <option value="কাজ চলছে">
+      <option value="সম্পন্ন">
+      <option value="বাতিল">
+    </datalist>
   </main>
 </div>
 
@@ -387,11 +393,6 @@ function renderList(rows){
     const card = document.createElement('div');
     card.className = 'card';
 
-    let optionsHtml = '';
-    STATUS_OPTIONS.forEach(s => {
-      optionsHtml += '<option value="' + s + '"' + (s === row.status ? ' selected' : '') + '>' + s + '</option>';
-    });
-
     card.innerHTML =
       '<div class="card-top">' +
         '<div><div class="card-name">' + esc(row.fullName) + '</div><div class="card-id">' + (row.appId === 'N/A' ? 'সারি #' + row.rowIndex : esc(row.appId)) + '</div></div>' +
@@ -406,7 +407,7 @@ function renderList(rows){
       (row.screenshotUrl ? '<div class="row"><a class="ss-link" href="' + row.screenshotUrl + '" target="_blank">পেমেন্ট স্ক্রিনশট দেখুন</a></div>' : '') +
       (row.comment ? '<div class="card-comment">' + esc(row.comment) + '</div>' : '') +
       '<div class="card-actions">' +
-        '<select class="statusSelect">' + optionsHtml + '</select>' +
+        '<input type="text" class="statusInput" list="statusSuggestions" value="' + esc(row.status) + '" placeholder="স্ট্যাটাস লিখুন">' +
         '<button class="saveBtn">আপডেট</button>' +
         '<button class="deleteBtn">ডিলিট</button>' +
       '</div>' +
@@ -415,7 +416,7 @@ function renderList(rows){
       '</div>';
 
     const saveBtn = card.querySelector('.saveBtn');
-    const select = card.querySelector('.statusSelect');
+    const select = card.querySelector('.statusInput');
     const deleteBtn = card.querySelector('.deleteBtn');
     const waBtn = card.querySelector('.waBtn');
     saveBtn.addEventListener('click', () => updateStatus(row.rowIndex, select.value, saveBtn, card));
