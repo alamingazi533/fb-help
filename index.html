@@ -435,12 +435,47 @@
     background:#FBF6EA;
     font-family:'Hind Siliguri', sans-serif;
     color:#22281F;
+    position:relative;
+    overflow:hidden;
+    border:1px solid #D8CDAE;
+    box-shadow:0 0 0 6px #FBF6EA, 0 0 0 7px #D9AE6B;
+  }
+  #receipt .r-watermark{
+    position:absolute;
+    top:52%; left:50%;
+    transform:translate(-50%,-50%) rotate(-28deg);
+    font-family:'Noto Serif Bengali', serif;
+    font-size:64px;
+    font-weight:700;
+    color:#1F3B2C;
+    opacity:0.045;
+    white-space:nowrap;
+    pointer-events:none;
+    z-index:0;
+  }
+  #receipt .r-stamp{
+    position:absolute;
+    top:18px; right:20px;
+    width:78px; height:78px;
+    border:2px dashed #D9AE6B;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transform:rotate(-14deg);
+    color:#D9AE6B;
+    font-size:11px;
+    font-weight:700;
+    text-align:center;
+    line-height:1.3;
+    z-index:2;
+    letter-spacing:.02em;
   }
   #receipt .r-header{
     background:linear-gradient(135deg, #1F3B2C 0%, #2C4F3A 100%);
     color:#FBF6EA;
     padding:30px 20px 26px;
     text-align:center;
+    position:relative;
+    z-index:1;
   }
   #receipt .r-header img{
     width:100px; height:100px; border-radius:50%; object-fit:cover;
@@ -462,12 +497,24 @@
   #receipt .r-status{
     background:#E6F0EA; color:#2C6B4F; border:1px solid #BFDBC9;
     text-align:center; padding:10px; font-size:14px; font-weight:600;
+    position:relative; z-index:1;
   }
-  #receipt .r-body{ padding:22px 24px 30px; }
+  #receipt .r-body{ padding:22px 24px 30px; position:relative; z-index:1; }
+  #receipt .r-idbox{
+    background:#1F3B2C; color:#FBF6EA; border-radius:10px; padding:14px 16px;
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;
+  }
+  #receipt .r-idbox .r-idlabel{ font-size:11px; color:#D9AE6B; letter-spacing:.08em; margin-bottom:3px; }
+  #receipt .r-idbox .r-idvalue{ font-size:19px; font-weight:700; letter-spacing:.03em; }
+  #receipt .r-applicant-photo{
+    width:56px; height:56px; border-radius:8px; object-fit:cover;
+    border:2px solid #D9AE6B; flex-shrink:0;
+  }
   #receipt .r-section{
     font-size:12px; letter-spacing:.06em; color:#B8863B; font-weight:700;
     text-transform:uppercase; margin:20px 0 10px;
     border-bottom:1px solid #D8CDAE; padding-bottom:6px;
+    display:flex; align-items:center; gap:6px;
   }
   #receipt .r-section:first-child{ margin-top:0; }
   #receipt .r-row{
@@ -490,6 +537,10 @@
     color:#9a9587;
     border-top:1px solid #D8CDAE;
     padding-top:14px;
+    line-height:1.8;
+  }
+  #receipt .r-foot .r-contact{
+    color:#2C4F3A; font-weight:600; font-size:12.5px;
   }
 </style>
 </head>
@@ -670,6 +721,8 @@
 </main>
 
 <div id="receipt">
+  <div class="r-watermark">✓ যাচাইকৃত</div>
+  <div class="r-stamp">অনুমোদিত<br>✓</div>
   <div class="r-header">
     <img src="profile.jpg" alt="মোঃ আলামিন ইসলাম">
     <div class="r-eyebrow">ফেসবুক সমস্যা সমাধান সেবা</div>
@@ -678,7 +731,13 @@
   </div>
   <div class="r-status" id="r-status">✓ রেজিস্ট্রেশন সফল হয়েছে</div>
   <div class="r-body">
-    <div class="r-row"><span class="label">আবেদন নম্বর</span><span class="value" id="r-id"></span></div>
+    <div class="r-idbox">
+      <div>
+        <div class="r-idlabel">আবেদন নম্বর</div>
+        <div class="r-idvalue" id="r-id"></div>
+      </div>
+      <img class="r-applicant-photo" id="r-applicant-photo" src="" alt="আবেদনকারীর ছবি" style="display:none;">
+    </div>
     <div class="r-row"><span class="label">তারিখ ও সময়</span><span class="value" id="r-date"></span></div>
 
     <div class="r-section">ব্যক্তিগত তথ্য</div>
@@ -701,7 +760,10 @@
     <div class="r-row"><span class="label">ট্রানজেকশন আইডি</span><span class="value" id="r-txn"></span></div>
     <div class="r-row"><span class="label">প্রেরকের নম্বর</span><span class="value" id="r-sender"></span></div>
 
-    <div class="r-foot">এই রশিদটি সংরক্ষণ করুন — প্রয়োজনে যোগাযোগের সময় দেখাতে পারবেন।</div>
+    <div class="r-foot">
+      এই রশিদটি সংরক্ষণ করুন — প্রয়োজনে যোগাযোগের সময় দেখাতে পারবেন।<br>
+      <span class="r-contact">📞 হোয়াটসঅ্যাপ: 01764324313</span>
+    </div>
   </div>
 </div>
 
@@ -1080,6 +1142,13 @@ form.addEventListener('submit', async (e)=>{
     document.getElementById('r-payment').textContent = payload.paymentMethod || '-';
     document.getElementById('r-txn').textContent = payload.txnId || '-';
     document.getElementById('r-sender').textContent = payload.senderNumber || '-';
+    const rPhotoEl = document.getElementById('r-applicant-photo');
+    if(payload.photoBase64){
+      rPhotoEl.src = payload.photoBase64;
+      rPhotoEl.style.display = 'block';
+    } else {
+      rPhotoEl.style.display = 'none';
+    }
     downloadBtn.classList.add('show');
     document.getElementById('whatsappNote').classList.add('show');
 
@@ -1098,4 +1167,4 @@ form.addEventListener('submit', async (e)=>{
 });
 </script>
 </body>
-      </html>
+  </html>
