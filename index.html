@@ -1235,7 +1235,7 @@ form.addEventListener('submit', async (e)=>{
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch((err) => {
+    navigator.serviceWorker.register('sw.js', { scope: '/registration-form/' }).catch((err) => {
       console.log('Service worker registration failed:', err);
     });
   });
