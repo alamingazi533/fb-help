@@ -247,10 +247,10 @@ function renderFilterChips(){
 
 function exportCsv(){
   if(!allRows.length){ alert('ডাউনলোড করার মতো কোনো এন্ট্রি নেই।'); return; }
-  const headers = ['তারিখ','নাম','ফোন','জন্ম তারিখ','লিঙ্গ','ইমেইল','বিভাগ','জেলা','এলাকা','মন্তব্য','পেমেন্ট মেথড','TxnID','প্রেরক নম্বর','আবেদন নম্বর','স্ট্যাটাস','ছবি লিংক'];
+  const headers = ['তারিখ','নাম','ফোন','জন্ম তারিখ','লিঙ্গ','ইমেইল','বিভাগ','জেলা','এলাকা','মন্তব্য','পেমেন্ট মেথড','TxnID','প্রেরক নম্বর','আবেদন নম্বর','স্ট্যাটাস','ছবি লিংক','আইডি/প্রোফাইল লিংক'];
   const csvRows = [headers.join(',')];
   allRows.forEach(r => {
-    const line = [r.date, r.fullName, r.phone, r.dob, r.gender, r.email, r.division, r.district, r.areaDetail, r.comment, r.paymentMethod, r.txnId, r.senderNumber, r.appId, r.status, r.photoUrl]
+    const line = [r.date, r.fullName, r.phone, r.dob, r.gender, r.email, r.division, r.district, r.areaDetail, r.comment, r.paymentMethod, r.txnId, r.senderNumber, r.appId, r.status, r.photoUrl, r.idLink]
       .map(v => '"' + String(v === undefined || v === null ? '' : v).replace(/"/g, '""') + '"')
       .join(',');
     csvRows.push(line);
@@ -404,6 +404,7 @@ function renderList(rows){
       (row.email ? '<div class="row"><span class="lbl">ইমেইল:</span>' + esc(row.email) + '</div>' : '') +
       '<div class="row"><span class="lbl">ঠিকানা:</span>' + esc(row.division) + ', ' + esc(row.district) + (row.areaDetail ? ' - ' + esc(row.areaDetail) : '') + '</div>' +
       '<div class="row"><span class="lbl">পেমেন্ট:</span>' + esc(row.paymentMethod) + ' | TxnID: ' + esc(row.txnId) + ' | নম্বর: ' + esc(row.senderNumber) + '</div>' +
+      (row.idLink ? '<div class="row"><a class="ss-link" href="' + row.idLink + '" target="_blank">আইডি/প্রোফাইল লিংক দেখুন</a></div>' : '') +
       (row.screenshotUrl ? '<div class="row"><a class="ss-link" href="' + row.screenshotUrl + '" target="_blank">পেমেন্ট স্ক্রিনশট দেখুন</a></div>' : '') +
       (row.comment ? '<div class="card-comment">' + esc(row.comment) + '</div>' : '') +
       '<div class="card-actions">' +

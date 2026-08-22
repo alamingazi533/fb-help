@@ -167,6 +167,15 @@
   }
   textarea{resize:vertical; min-height:70px;}
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .photo-preview{
+    display:none;
+    width:88px; height:88px; border-radius:10px; object-fit:cover;
+    border:2px solid var(--gold-light); margin-top:10px;
+  }
+  .photo-preview.show{display:block;}
+  .field-hint{
+    font-size:12px; color:#8a8571; margin-top:-8px; margin-bottom:8px;
+  }
   button[type=submit]{
     width:100%;
     margin-top:28px;
@@ -526,6 +535,7 @@
   }
   #receipt .r-row .label{ color:#7a7460; }
   #receipt .r-row .value{ font-weight:600; color:#1F3B2C; text-align:right; max-width:260px; }
+  #receipt #r-idlink{ font-size:12px; word-break:break-all; max-width:280px; }
   #receipt .r-comment{
     font-size:13.5px; line-height:1.6; background:#F2EBDA; border-radius:8px;
     padding:12px 14px; margin-top:8px; color:#22281F;
@@ -571,7 +581,7 @@
 <main>
   <form id="regForm">
 
-    <div class="section-label">ব্যক্তিগত তথ্য</div>
+    <div class="section-label">👤 ব্যক্তিগত তথ্য</div>
 
     <label>পূর্ণ নাম <span class="req">*</span></label>
     <input type="text" id="fullName" required placeholder="যেমনঃ মোঃ আলামিন ইসলাম">
@@ -581,15 +591,19 @@
 
     <label>আপনার ছবি আপলোড করুন <span class="req">*</span></label>
     <input type="file" id="applicantPhoto" accept="image/*" required>
+    <img id="photoPreview" class="photo-preview" alt="ছবি প্রিভিউ">
+
+    <label>আপনার ফেসবুক আইডি / প্রোফাইল লিংক <span class="req">*</span></label>
+    <input type="url" id="idLink" required placeholder="https://facebook.com/আপনার-আইডি">
 
     <div class="row2">
       <div>
-        <label>জন্ম তারিখ</label>
-        <input type="date" id="dob">
+        <label>জন্ম তারিখ <span class="req">*</span></label>
+        <input type="date" id="dob" required>
       </div>
       <div>
-        <label>লিঙ্গ</label>
-        <select id="gender">
+        <label>লিঙ্গ <span class="req">*</span></label>
+        <select id="gender" required>
           <option value="">নির্বাচন করুন</option>
           <option value="পুরুষ">পুরুষ</option>
           <option value="মহিলা">মহিলা</option>
@@ -597,11 +611,12 @@
         </select>
       </div>
     </div>
+    <div class="field-hint" id="dobHint">আবেদন করতে হলে বয়স কমপক্ষে ১৩ বছর হতে হবে।</div>
 
-    <label>ইমেইল ঠিকানা</label>
-    <input type="email" id="email" placeholder="example@gmail.com">
+    <label>ইমেইল ঠিকানা <span class="req">*</span></label>
+    <input type="email" id="email" required placeholder="example@gmail.com">
 
-    <div class="section-label">ঠিকানা</div>
+    <div class="section-label">📍 ঠিকানা</div>
 
     <label>বিভাগ <span class="req">*</span></label>
     <select id="division" required>
@@ -613,23 +628,23 @@
       <option value="">প্রথমে বিভাগ নির্বাচন করুন</option>
     </select>
 
-    <label>উপজেলা</label>
-    <select id="upazila" disabled>
+    <label>উপজেলা <span class="req">*</span></label>
+    <select id="upazila" required disabled>
       <option value="">প্রথমে জেলা নির্বাচন করুন</option>
     </select>
 
-    <label>গ্রাম / এলাকা</label>
-    <input type="text" id="areaDetail" placeholder="বিস্তারিত ঠিকানা লিখুন (ঐচ্ছিক)">
+    <label>গ্রাম / এলাকা <span class="req">*</span></label>
+    <input type="text" id="areaDetail" required placeholder="বিস্তারিত ঠিকানা লিখুন">
 
-    <div class="section-label">সমস্যার বিবরণ</div>
+    <div class="section-label">⚠️ সমস্যার বিবরণ</div>
 
     <label>আপনার ফেসবুক সমস্যার বিবরণ <span class="req">*</span></label>
     <textarea id="comment" required placeholder="যেমনঃ পেজ হ্যাক হয়ে গেছে, অ্যাকাউন্ট নিষ্ক্রিয় হয়ে গেছে, মনিটাইজেশন বন্ধ হয়ে গেছে ইত্যাদি — বিস্তারিত লিখুন"></textarea>
 
-    <label>সমস্যার স্ক্রিনশট আপলোড করুন (ঐচ্ছিক)</label>
-    <input type="file" id="screenshot" accept="image/*">
+    <label>সমস্যার স্ক্রিনশট আপলোড করুন <span class="req">*</span></label>
+    <input type="file" id="screenshot" accept="image/*" required>
 
-    <div class="section-label">আবেদন ফি</div>
+    <div class="section-label">💳 আবেদন ফি</div>
 
     <div class="fee-box">
       <p class="fee-amount">আবেদন ফি মাত্র <strong>২০ টাকা</strong></p>
@@ -738,6 +753,7 @@
       </div>
       <img class="r-applicant-photo" id="r-applicant-photo" src="" alt="আবেদনকারীর ছবি" style="display:none;">
     </div>
+    <div class="r-row"><span class="label">আইডি/প্রোফাইল লিংক</span><span class="value" id="r-idlink"></span></div>
     <div class="r-row"><span class="label">তারিখ ও সময়</span><span class="value" id="r-date"></span></div>
 
     <div class="r-section">ব্যক্তিগত তথ্য</div>
@@ -937,6 +953,39 @@ const statusBox = document.getElementById('status');
 const submitBtn = document.getElementById('submitBtn');
 const downloadBtn = document.getElementById('downloadBtn');
 
+// ============ জন্ম তারিখ: বয়স কমপক্ষে ১৩ বছর ============
+const dobInput = document.getElementById('dob');
+(function setDobLimits(){
+  const today = new Date();
+  const maxDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate());
+  const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
+  const fmt = (d) => d.toISOString().split('T')[0];
+  dobInput.max = fmt(maxDate);
+  dobInput.min = fmt(minDate);
+})();
+
+function calcAge(dobStr){
+  const dob = new Date(dobStr);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if(m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  return age;
+}
+
+// ============ ছবি প্রিভিউ ============
+const photoPreviewEl = document.getElementById('photoPreview');
+document.getElementById('applicantPhoto').addEventListener('change', (e)=>{
+  const f = e.target.files[0];
+  if(!f){ photoPreviewEl.classList.remove('show'); return; }
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    photoPreviewEl.src = ev.target.result;
+    photoPreviewEl.classList.add('show');
+  };
+  reader.readAsDataURL(f);
+});
+
 downloadBtn.addEventListener('click', async ()=>{
   downloadBtn.disabled = true;
   downloadBtn.textContent = 'তৈরি হচ্ছে...';
@@ -1058,6 +1107,16 @@ form.addEventListener('submit', async (e)=>{
     return;
   }
 
+  const dobVal = document.getElementById('dob').value;
+  if(!dobVal){
+    showStatus('err', 'জন্ম তারিখ দিন।');
+    return;
+  }
+  if(calcAge(dobVal) < 13){
+    showStatus('err', 'দুঃখিত, আবেদন করতে হলে বয়স কমপক্ষে ১৩ বছর হতে হবে।');
+    return;
+  }
+
   const appId = 'APP-' + Date.now().toString().slice(-8);
 
   const payload = {
@@ -1067,6 +1126,7 @@ form.addEventListener('submit', async (e)=>{
     dob: document.getElementById('dob').value.trim(),
     gender: document.getElementById('gender').value.trim(),
     email: document.getElementById('email').value.trim(),
+    idLink: document.getElementById('idLink').value.trim(),
     division: divisionSelect.options[divisionSelect.selectedIndex]?.text || '',
     district: districtSelect.options[districtSelect.selectedIndex]?.text || '',
     areaDetail: document.getElementById('areaDetail').value.trim(),
@@ -1142,6 +1202,7 @@ form.addEventListener('submit', async (e)=>{
     document.getElementById('r-payment').textContent = payload.paymentMethod || '-';
     document.getElementById('r-txn').textContent = payload.txnId || '-';
     document.getElementById('r-sender').textContent = payload.senderNumber || '-';
+    document.getElementById('r-idlink').textContent = payload.idLink || '-';
     const rPhotoEl = document.getElementById('r-applicant-photo');
     if(payload.photoBase64){
       rPhotoEl.src = payload.photoBase64;
