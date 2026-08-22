@@ -1,23 +1,32 @@
 {
-  "name": "রেজিস্ট্রেশন অ্যাডমিন প্যানেল",
-  "short_name": "অ্যাডমিন প্যানেল",
-  "start_url": "./admin.html",
+  "name": "ফেসবুক সমস্যা সমাধান সেবা - রেজিস্ট্রেশন",
+  "short_name": "FB সমাধান",
+  "description": "ফেসবুক পেজ/অ্যাকাউন্ট হ্যাক, নিষ্ক্রিয় বা মনিটাইজেশন সমস্যায় রেজিস্ট্রেশন করুন।",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#FBF6EA",
   "theme_color": "#1F3B2C",
-  "orientation": "portrait",
+  "lang": "bn",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "profile.jpg",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/jpeg",
+      "purpose": "any"
     },
     {
-      "src": "icon-512.png",
+      "src": "profile.jpg",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "profile.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "maskable"
     }
   ]
 }

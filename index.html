@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ফেসবুক সমস্যা সমাধান - রেজিস্ট্রেশন</title>
 <link rel="icon" type="image/jpeg" href="profile.jpg">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="profile.jpg">
+<meta name="theme-color" content="#1F3B2C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FB সমাধান">
 
 <meta name="description" content="ফেসবুক পেজ/অ্যাকাউন্ট হ্যাক, নিষ্ক্রিয়, মনিটাইজেশন সমস্যা বা অন্য যেকোনো ফেসবুক সমস্যায় রেজিস্ট্রেশন করুন — মোঃ আলামিন ইসলাম, গোপসেনা, কেশবপুর, যশোর।">
 
@@ -1226,6 +1232,14 @@ form.addEventListener('submit', async (e)=>{
     submitBtn.textContent = 'রেজিস্ট্রেশন সম্পন্ন করুন';
   }
 });
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch((err) => {
+      console.log('Service worker registration failed:', err);
+    });
+  });
+}
 </script>
 </body>
   </html>
