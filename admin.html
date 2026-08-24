@@ -180,7 +180,46 @@
     padding:6px 12px; border-radius:7px; font-size:12.5px; font-family:inherit; cursor:pointer;
     position:absolute; right:14px; top:22px;
   }
+  #pwChangeBtn{
+    background:transparent; border:1px solid rgba(255,255,255,0.5); color:var(--paper);
+    padding:6px 12px; border-radius:7px; font-size:12.5px; font-family:inherit; cursor:pointer;
+    position:absolute; right:100px; top:22px;
+  }
   header{position:relative;}
+
+  .pw-modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.55);
+    display:flex; align-items:center; justify-content:center;
+    z-index:999; padding:20px;
+  }
+  .pw-modal-box{
+    background:var(--paper); border-radius:14px; padding:24px 20px;
+    width:100%; max-width:360px; box-shadow:0 20px 44px -20px rgba(0,0,0,0.5);
+  }
+  .pw-modal-box h3{
+    margin:0 0 16px; font-family:'Noto Serif Bengali', serif; color:var(--forest); font-size:19px;
+  }
+  .pw-modal-box label{
+    display:block; font-size:13.5px; font-weight:600; color:var(--forest); margin:12px 0 5px;
+  }
+  .pw-modal-box input{
+    width:100%; padding:10px 12px; border-radius:8px; border:1.5px solid var(--line);
+    background:#fff; font-family:inherit; font-size:14.5px; outline:none;
+  }
+  .pw-modal-box button:not(.pw-close){
+    width:100%; margin-top:14px; padding:11px; border:none; border-radius:9px;
+    background:var(--forest); color:var(--paper); font-family:inherit;
+    font-size:14.5px; font-weight:700; cursor:pointer;
+  }
+  .pw-modal-box button:disabled{ opacity:.6; cursor:wait; }
+  .pw-close{
+    width:100%; margin-top:10px; padding:10px; border:1.5px solid var(--line); border-radius:9px;
+    background:#fff; color:var(--forest); font-family:inherit; font-size:14px; cursor:pointer;
+  }
+  .pw-hint{ font-size:12.5px; color:#6b6752; line-height:1.6; margin:0 0 6px; }
+  .pw-msg{ font-size:13px; margin-top:10px; display:none; }
+  .pw-msg.ok{ display:block; color:var(--ok, #2C6B4F); }
+  .pw-msg.err{ display:block; color:var(--maroon); }
 </style>
 </head>
 <body>
@@ -195,6 +234,7 @@
 <div id="panel" style="display:none;">
   <header>
     <h1>রেজিস্ট্রেশন - অ্যাডমিন প্যানেল</h1>
+    <button id="pwChangeBtn" onclick="openPwModal()">🔒 পাসওয়ার্ড</button>
     <button id="logoutBtn" onclick="logout()">লগ-আউট</button>
   </header>
   <main>
@@ -219,6 +259,31 @@
       <option value="বাতিল">
     </datalist>
   </main>
+</div>
+
+<div id="pwModal" class="pw-modal-overlay" style="display:none;">
+  <div class="pw-modal-box">
+    <h3>পাসওয়ার্ড পরিবর্তন</h3>
+
+    <div id="pwStep1">
+      <label>বর্তমান পাসওয়ার্ড</label>
+      <input type="password" id="pwCurrent" placeholder="বর্তমান পাসওয়ার্ড দিন" autocomplete="off">
+      <button onclick="sendPwOtp()" id="pwOtpBtn">ইমেইলে OTP পাঠান</button>
+      <div id="pwStep1Msg" class="pw-msg"></div>
+    </div>
+
+    <div id="pwStep2" style="display:none;">
+      <p class="pw-hint">আপনার ইমেইলে (alamingazi533@gmail.com) একটি ৬-সংখ্যার কোড পাঠানো হয়েছে। ১০ মিনিটের মধ্যে ব্যবহার করুন।</p>
+      <label>OTP কোড</label>
+      <input type="text" id="pwOtp" inputmode="numeric" placeholder="৬ সংখ্যার কোড">
+      <label>নতুন পাসওয়ার্ড</label>
+      <input type="password" id="pwNew" placeholder="নতুন পাসওয়ার্ড দিন" autocomplete="off">
+      <button onclick="confirmPwChange()" id="pwConfirmBtn">পাসওয়ার্ড বদলান</button>
+      <div id="pwStep2Msg" class="pw-msg"></div>
+    </div>
+
+    <button class="pw-close" onclick="closePwModal()">বাতিল</button>
+  </div>
 </div>
 
 <script>
@@ -370,6 +435,103 @@ function logout(){
   document.getElementById('panel').style.display = 'none';
   document.getElementById('loginBox').style.display = 'block';
   document.getElementById('pwInput').value = '';
+}
+
+function openPwModal(){
+  document.getElementById('pwModal').style.display = 'flex';
+  document.getElementById('pwStep1').style.display = 'block';
+  document.getElementById('pwStep2').style.display = 'none';
+  document.getElementById('pwCurrent').value = '';
+  document.getElementById('pwOtp').value = '';
+  document.getElementById('pwNew').value = '';
+  document.getElementById('pwStep1Msg').className = 'pw-msg';
+  document.getElementById('pwStep2Msg').className = 'pw-msg';
+}
+
+function closePwModal(){
+  document.getElementById('pwModal').style.display = 'none';
+}
+
+function sendPwOtp(){
+  const current = document.getElementById('pwCurrent').value.trim();
+  const msgEl = document.getElementById('pwStep1Msg');
+  if(!current){
+    msgEl.className = 'pw-msg err';
+    msgEl.textContent = 'বর্তমান পাসওয়ার্ড দিন।';
+    return;
+  }
+  const btn = document.getElementById('pwOtpBtn');
+  btn.disabled = true;
+  btn.textContent = 'পাঠানো হচ্ছে...';
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'requestPwOtp', password: current })
+  })
+    .then(r => r.json())
+    .then(res => {
+      btn.disabled = false;
+      btn.textContent = 'ইমেইলে OTP পাঠান';
+      if(res.success){
+        document.getElementById('pwStep1').style.display = 'none';
+        document.getElementById('pwStep2').style.display = 'block';
+      }else{
+        msgEl.className = 'pw-msg err';
+        msgEl.textContent = 'বর্তমান পাসওয়ার্ড ভুল হয়েছে।';
+      }
+    })
+    .catch(()=>{
+      btn.disabled = false;
+      btn.textContent = 'ইমেইলে OTP পাঠান';
+      msgEl.className = 'pw-msg err';
+      msgEl.textContent = 'সংযোগে সমস্যা হয়েছে, আবার চেষ্টা করুন।';
+    });
+}
+
+function confirmPwChange(){
+  const otp = document.getElementById('pwOtp').value.trim();
+  const newPw = document.getElementById('pwNew').value.trim();
+  const msgEl = document.getElementById('pwStep2Msg');
+  if(!otp || !newPw){
+    msgEl.className = 'pw-msg err';
+    msgEl.textContent = 'OTP এবং নতুন পাসওয়ার্ড দুটোই দিন।';
+    return;
+  }
+  if(newPw.length < 4){
+    msgEl.className = 'pw-msg err';
+    msgEl.textContent = 'নতুন পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে।';
+    return;
+  }
+  const btn = document.getElementById('pwConfirmBtn');
+  btn.disabled = true;
+  btn.textContent = 'যাচাই করা হচ্ছে...';
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'confirmPwChange', otp: otp, newPassword: newPw })
+  })
+    .then(r => r.json())
+    .then(res => {
+      btn.disabled = false;
+      btn.textContent = 'পাসওয়ার্ড বদলান';
+      if(res.success){
+        msgEl.className = 'pw-msg ok';
+        msgEl.textContent = 'পাসওয়ার্ড সফলভাবে বদলানো হয়েছে। নতুন পাসওয়ার্ড দিয়ে আবার লগইন করুন।';
+        setTimeout(()=>{
+          closePwModal();
+          logout();
+        }, 2000);
+      }else{
+        msgEl.className = 'pw-msg err';
+        if(res.error === 'otp expired') msgEl.textContent = 'OTP-এর মেয়াদ শেষ, আবার চেষ্টা করুন।';
+        else if(res.error === 'wrong otp') msgEl.textContent = 'ভুল OTP কোড দেওয়া হয়েছে।';
+        else msgEl.textContent = 'কিছু একটা সমস্যা হয়েছে, আবার চেষ্টা করুন।';
+      }
+    })
+    .catch(()=>{
+      btn.disabled = false;
+      btn.textContent = 'পাসওয়ার্ড বদলান';
+      msgEl.className = 'pw-msg err';
+      msgEl.textContent = 'সংযোগে সমস্যা হয়েছে, আবার চেষ্টা করুন।';
+    });
 }
 
 function loadEntries(){
