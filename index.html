@@ -271,6 +271,79 @@
     font-weight:600;
     letter-spacing:.02em;
   }
+  .stats-bar{
+    display:flex;
+    justify-content:center;
+    gap:0;
+    max-width:520px;
+    margin:14px auto 0;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:0 18px 40px -20px rgba(31,59,44,0.35);
+    overflow:hidden;
+  }
+  .stat-item{
+    flex:1;
+    text-align:center;
+    padding:16px 8px;
+    border-right:1px solid var(--line);
+  }
+  .stat-item:last-child{ border-right:none; }
+  .stat-num{
+    font-family:'Noto Serif Bengali', serif;
+    font-size:21px;
+    font-weight:700;
+    color:var(--forest);
+    display:block;
+  }
+  .stat-label{
+    font-size:11.5px;
+    color:#8a8571;
+    margin-top:3px;
+    display:block;
+  }
+  .online-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:rgba(37,211,102,0.12);
+    color:#1a7a3e;
+    font-size:12.5px;
+    font-weight:700;
+    padding:6px 14px;
+    border-radius:999px;
+    margin-top:12px;
+  }
+  .online-dot{
+    width:8px; height:8px; border-radius:50%;
+    background:#25D366;
+    box-shadow:0 0 0 0 rgba(37,211,102,0.6);
+    animation:pulseDot 1.6s infinite;
+  }
+  @keyframes pulseDot{
+    0%{ box-shadow:0 0 0 0 rgba(37,211,102,0.5); }
+    70%{ box-shadow:0 0 0 8px rgba(37,211,102,0); }
+    100%{ box-shadow:0 0 0 0 rgba(37,211,102,0); }
+  }
+  .testi-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:0 18px 40px -20px rgba(31,59,44,0.35);
+    padding:22px 20px;
+    margin-top:16px;
+  }
+  .testi-item{
+    background:var(--paper-dark);
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:12px;
+  }
+  .testi-item:last-child{ margin-bottom:0; }
+  .testi-stars{ color:var(--gold); font-size:14px; margin-bottom:6px; }
+  .testi-text{ font-size:14px; line-height:1.6; color:var(--ink); margin:0 0 8px; }
+  .testi-name{ font-size:12.5px; font-weight:700; color:var(--forest); }
   .faq-card{
     background:var(--paper);
     border:1px solid var(--line);
@@ -572,7 +645,23 @@
     যাদের ফেসবুক পেজ/অ্যাকাউন্ট হ্যাক হয়েছে, নিষ্ক্রিয় হয়ে গেছে, মনিটাইজেশন সমস্যা বা অন্য যেকোনো ফেসবুক সংক্রান্ত সমস্যা আছে — নিচের ফর্মটি পূরণ করুন, আমি দেখে যোগাযোগ করব।
   </p>
   <div class="trust-badge">✓ সরাসরি যোগাযোগ &nbsp;•&nbsp; ✓ নিরাপদ তথ্য &nbsp;•&nbsp; ✓ দ্রুত সাড়া</div>
+  <div class="online-badge"><span class="online-dot"></span> এখন অনলাইন আছি</div>
 </header>
+
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num">১০০+</span>
+    <span class="stat-label">সমাধান হয়েছে</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">২ ঘণ্টা</span>
+    <span class="stat-label">গড় রেসপন্স টাইম</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">৪.৮★</span>
+    <span class="stat-label">কাস্টমার রেটিং</span>
+  </div>
+</div>
 
 <a class="whatsapp-btn" href="https://wa.me/8801764324313?text=আসসালামু%20আলাইকুম%2C%20আমি%20ফেসবুক%20সমস্যা%20নিয়ে%20যোগাযোগ%20করতে%20চাই।" target="_blank" rel="noopener">
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.9-4.45 9.9-9.9C21.95 6.45 17.5 2 12.04 2Zm0 18.06h-.01a8.14 8.14 0 0 1-4.15-1.14l-.3-.18-3.11.82.83-3.03-.19-.31a8.15 8.15 0 0 1-1.25-4.31c0-4.5 3.66-8.16 8.19-8.16 2.19 0 4.24.85 5.79 2.4a8.13 8.13 0 0 1 2.4 5.78c0 4.5-3.67 8.13-8.2 8.13Zm4.48-6.1c-.24-.12-1.45-.72-1.68-.8-.22-.08-.39-.12-.55.12-.16.24-.63.8-.78.96-.14.16-.29.18-.53.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.35-1.67-.14-.24-.02-.37.11-.49.11-.11.24-.29.37-.43.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.42-.55-.42-.14 0-.31-.02-.47-.02-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.02 0 1.19.87 2.34 1 2.5.12.16 1.71 2.61 4.14 3.66.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.45-.59 1.65-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"/></svg>
@@ -700,6 +789,28 @@
     <input type="text" id="checkId" placeholder="APP-XXXXXXXX">
     <button type="button" id="checkBtn" class="check-btn">যাচাই করুন</button>
     <div class="check-result" id="checkResult"></div>
+  </div>
+
+  <div class="testi-card">
+    <div class="section-label" style="margin-top:0;">কাস্টমারদের মতামত</div>
+
+    <div class="testi-item">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">[এখানে আপনার একজন সন্তুষ্ট কাস্টমারের আসল মন্তব্য লিখুন — যেমন কীভাবে তার পেজ/আইডি সমস্যা সমাধান হয়েছিল]</p>
+      <div class="testi-name">— [কাস্টমারের নাম বা শুধু জেলার নাম]</div>
+    </div>
+
+    <div class="testi-item">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">[আরেকজন কাস্টমারের আসল মন্তব্য এখানে বসান]</p>
+      <div class="testi-name">— [কাস্টমারের নাম বা শুধু জেলার নাম]</div>
+    </div>
+
+    <div class="testi-item">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">[তৃতীয় একজন কাস্টমারের আসল মন্তব্য এখানে বসান]</p>
+      <div class="testi-name">— [কাস্টমারের নাম বা শুধু জেলার নাম]</div>
+    </div>
   </div>
 
   <div class="faq-card">
