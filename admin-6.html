@@ -229,6 +229,13 @@
     <div class="filterRow" id="filterRow"></div>
     <div class="toolbar" style="margin-top:0;">
       <button class="exportBtn" onclick="exportCsv()">CSV ডাউনলোড করুন</button>
+      <button onclick="toggleReviewsPanel()" id="toggleReviewsBtn">গ্রাহক রিভিউ দেখুন</button>
+    </div>
+    <div id="reviewsPanel" style="display:none; margin:14px 0;">
+      <div style="background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px;">
+        <div style="font-weight:700; color:var(--forest); margin-bottom:10px;">রিভিউ মডারেশন</div>
+        <div id="reviewsList">লোড হচ্ছে...</div>
+      </div>
     </div>
     <div class="summary" id="summary"></div>
     <div class="summary" id="lastUpdated" style="margin-top:-6px;">প্রতি ৩০ সেকেন্ডে অটো-আপডেট হয়</div>
@@ -434,6 +441,59 @@ function confirmResetPassword(){
       btn.textContent = 'পাসওয়ার্ড পরিবর্তন করুন';
       showForgotMsg('সংযোগে সমস্যা হয়েছে।', true);
     });
+}
+
+// ============ রিভিউ মডারেশন ============
+let reviewsPanelOpen = false;
+
+function toggleReviewsPanel(){
+  reviewsPanelOpen = !reviewsPanelOpen;
+  document.getElementById('reviewsPanel').style.display = reviewsPanelOpen ? 'block' : 'none';
+  if(reviewsPanelOpen){
+    loadAdminReviews();
+  }
+}
+
+function loadAdminReviews(){
+  const listEl = document.getElementById('reviewsList');
+  listEl.textContent = 'লোড হচ্ছে...';
+  const pw = sessionStorage.getItem('adminPw') || '';
+  fetch(SCRIPT_URL + '?action=listReviews&password=' + encodeURIComponent(pw))
+    .then(r => r.json())
+    .then(data => {
+      if(!data.success){
+        listEl.textContent = 'রিভিউ লোড করতে সমস্যা হয়েছে।';
+        return;
+      }
+      if(data.reviews.length === 0){
+        listEl.textContent = 'কোনো রিভিউ নেই।';
+        return;
+      }
+      listEl.innerHTML = data.reviews.map(rev => {
+        const stars = '★'.repeat(rev.rating) + '☆'.repeat(5 - rev.rating);
+        const statusColor = rev.status === 'approved' ? '#2C6B4F' : (rev.status === 'rejected' ? '#7A2E2E' : '#B8863B');
+        const safeName = String(rev.name).replace(/</g,'&lt;');
+        const safeText = String(rev.text).replace(/</g,'&lt;');
+        return '<div style="border-bottom:1px solid var(--line); padding:10px 0;">' +
+          '<div style="font-size:13px; color:' + statusColor + '; font-weight:700;">' + rev.status + ' • ' + stars + '</div>' +
+          '<div style="font-size:13.5px; margin:6px 0;">' + safeText + '</div>' +
+          '<div style="font-size:12px; color:#8a8571; margin-bottom:8px;">— ' + safeName + ' • ' + rev.date + '</div>' +
+          '<div style="display:flex; gap:6px;">' +
+            (rev.status !== 'approved' ? '<button onclick="reviewAction(' + rev.rowIndex + ',\'approved\')" style="padding:6px 12px; border:none; border-radius:6px; background:var(--ok); color:#fff; font-size:12.5px;">অনুমোদন</button>' : '') +
+            (rev.status !== 'rejected' ? '<button onclick="reviewAction(' + rev.rowIndex + ',\'rejected\')" style="padding:6px 12px; border:none; border-radius:6px; background:var(--maroon); color:#fff; font-size:12.5px;">বাতিল</button>' : '') +
+            '<button onclick="reviewAction(' + rev.rowIndex + ',\'delete\')" style="padding:6px 12px; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink); font-size:12.5px;">মুছুন</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    })
+    .catch(()=>{ listEl.textContent = 'সংযোগে সমস্যা হয়েছে।'; });
+}
+
+function reviewAction(row, status){
+  const pw = sessionStorage.getItem('adminPw') || '';
+  fetch(SCRIPT_URL + '?action=reviewAction&password=' + encodeURIComponent(pw) + '&row=' + row + '&status=' + status)
+    .then(r => r.json())
+    .then(()=> loadAdminReviews());
 }
 
 function login(){

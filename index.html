@@ -793,23 +793,24 @@
 
   <div class="testi-card">
     <div class="section-label" style="margin-top:0;">কাস্টমারদের মতামত</div>
-
-    <div class="testi-item">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-text">[এখানে আপনার একজন সন্তুষ্ট কাস্টমারের আসল মন্তব্য লিখুন — যেমন কীভাবে তার পেজ/আইডি সমস্যা সমাধান হয়েছিল]</p>
-      <div class="testi-name">— [কাস্টমারের নাম বা শুধু জেলার নাম]</div>
+    <div id="reviewsContainer">
+      <p style="font-size:13.5px; color:#8a8571; text-align:center; padding:10px 0;">রিভিউ লোড হচ্ছে...</p>
     </div>
+  </div>
 
-    <div class="testi-item">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-text">[আরেকজন কাস্টমারের আসল মন্তব্য এখানে বসান]</p>
-      <div class="testi-name">— [কাস্টমারের নাম বা শুধু জেলার নাম]</div>
-    </div>
-
-    <div class="testi-item">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-text">[তৃতীয় একজন কাস্টমারের আসল মন্তব্য এখানে বসান]</p>
-      <div class="testi-name">— [কাস্টমারের নাম বা শুধু জেলার নাম]</div>
+  <div class="testi-card">
+    <div class="section-label" style="margin-top:0;">আপনার অভিজ্ঞতা জানান</div>
+    <div id="reviewFormBox">
+      <label>রেটিং দিন <span class="req">*</span></label>
+      <div id="starPicker" style="font-size:28px; letter-spacing:4px; margin:6px 0 14px; cursor:pointer;">
+        <span data-val="1">☆</span><span data-val="2">☆</span><span data-val="3">☆</span><span data-val="4">☆</span><span data-val="5">☆</span>
+      </div>
+      <label>আপনার নাম (ঐচ্ছিক)</label>
+      <input type="text" id="reviewName" placeholder="যেমনঃ মোঃ করিম">
+      <label>আপনার মতামত <span class="req">*</span></label>
+      <textarea id="reviewText" placeholder="আপনার অভিজ্ঞতা লিখুন..."></textarea>
+      <button type="button" id="reviewSubmitBtn" style="width:100%; margin-top:14px; padding:13px; border:none; border-radius:9px; background:var(--forest); color:var(--paper); font-family:inherit; font-size:15px; font-weight:700; cursor:pointer;">রিভিউ জমা দিন</button>
+      <div id="reviewMsg" style="display:none; margin-top:12px; padding:11px 13px; border-radius:8px; font-size:13.5px;"></div>
     </div>
   </div>
 
@@ -1342,7 +1343,102 @@ form.addEventListener('submit', async (e)=>{
     submitBtn.disabled = false;
     submitBtn.textContent = 'রেজিস্ট্রেশন সম্পন্ন করুন';
   }
-});
+});// ============ রিভিউ সেকশন ============
+function renderStars(container, val){
+  container.querySelectorAll('span').forEach(s=>{
+    s.textContent = parseInt(s.dataset.val,10) <= val ? '★' : '☆';
+    s.style.color = parseInt(s.dataset.val,10) <= val ? '#B8863B' : '#8a8571';
+  });
+}
+
+let selectedRating = 0;
+const starPicker = document.getElementById('starPicker');
+if(starPicker){
+  starPicker.querySelectorAll('span').forEach(s=>{
+    s.addEventListener('click', ()=>{
+      selectedRating = parseInt(s.dataset.val, 10);
+      renderStars(starPicker, selectedRating);
+    });
+  });
+}
+
+function loadReviews(){
+  const container = document.getElementById('reviewsContainer');
+  fetch(SCRIPT_URL + '?action=getReviews')
+    .then(r => r.json())
+    .then(data => {
+      if(!data.success || !data.reviews || data.reviews.length === 0){
+        container.innerHTML = '<p style="font-size:13.5px; color:#8a8571; text-align:center; padding:10px 0;">এখনো কোনো রিভিউ নেই — প্রথম রিভিউ দিন!</p>';
+        return;
+      }
+      container.innerHTML = data.reviews.map(rev => {
+        const stars = '★'.repeat(rev.rating) + '☆'.repeat(5 - rev.rating);
+        const safeName = String(rev.name).replace(/</g,'&lt;');
+        const safeText = String(rev.text).replace(/</g,'&lt;');
+        return '<div class="testi-item">' +
+          '<div class="testi-stars">' + stars + '</div>' +
+          '<p class="testi-text">' + safeText + '</p>' +
+          '<div class="testi-name">— ' + safeName + '</div>' +
+        '</div>';
+      }).join('');
+    })
+    .catch(()=>{
+      container.innerHTML = '<p style="font-size:13.5px; color:#8a8571; text-align:center; padding:10px 0;">রিভিউ লোড করতে সমস্যা হয়েছে।</p>';
+    });
+}
+loadReviews();
+
+const reviewSubmitBtn = document.getElementById('reviewSubmitBtn');
+if(reviewSubmitBtn){
+  reviewSubmitBtn.addEventListener('click', async ()=>{
+    const text = document.getElementById('reviewText').value.trim();
+    const name = document.getElementById('reviewName').value.trim();
+    const msgBox = document.getElementById('reviewMsg');
+
+    if(selectedRating < 1){
+      msgBox.style.display = 'block';
+      msgBox.style.background = '#F6E7E4';
+      msgBox.style.color = 'var(--maroon)';
+      msgBox.textContent = 'রেটিং দিন (কমপক্ষে ১ তারা)।';
+      return;
+    }
+    if(!text){
+      msgBox.style.display = 'block';
+      msgBox.style.background = '#F6E7E4';
+      msgBox.style.color = 'var(--maroon)';
+      msgBox.textContent = 'আপনার মতামত লিখুন।';
+      return;
+    }
+
+    reviewSubmitBtn.disabled = true;
+    reviewSubmitBtn.textContent = 'জমা হচ্ছে...';
+
+    try{
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'submitReview', rating: selectedRating, text: text, name: name })
+      });
+      msgBox.style.display = 'block';
+      msgBox.style.background = '#E6F0EA';
+      msgBox.style.color = 'var(--ok)';
+      msgBox.textContent = '✓ ধন্যবাদ! আপনার রিভিউ জমা হয়েছে, অনুমোদনের পর এখানে দেখানো হবে।';
+      document.getElementById('reviewText').value = '';
+      document.getElementById('reviewName').value = '';
+      selectedRating = 0;
+      renderStars(starPicker, 0);
+    }catch(err){
+      msgBox.style.display = 'block';
+      msgBox.style.background = '#F6E7E4';
+      msgBox.style.color = 'var(--maroon)';
+      msgBox.textContent = 'দুঃখিত, রিভিউ জমা দিতে সমস্যা হয়েছে।';
+    }finally{
+      reviewSubmitBtn.disabled = false;
+      reviewSubmitBtn.textContent = 'রিভিউ জমা দিন';
+    }
+  });
+}
 </script>
 </body>
   </html>
