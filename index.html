@@ -658,8 +658,8 @@
     <span class="stat-label">গড় রেসপন্স টাইম</span>
   </div>
   <div class="stat-item">
-    <span class="stat-num">৪.৮★</span>
-    <span class="stat-label">কাস্টমার রেটিং</span>
+    <span class="stat-num" id="ratingStatNum">৪.৮★</span>
+    <span class="stat-label" id="ratingStatLabel">কাস্টমার রেটিং</span>
   </div>
 </div>
 
@@ -1362,11 +1362,26 @@ if(starPicker){
   });
 }
 
+function toBengaliNumber(n){
+  const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
+  return String(n).split('').map(ch => map[ch] !== undefined ? map[ch] : ch).join('');
+}
+
 function loadReviews(){
   const container = document.getElementById('reviewsContainer');
   fetch(SCRIPT_URL + '?action=getReviews')
     .then(r => r.json())
     .then(data => {
+      const ratingNumEl = document.getElementById('ratingStatNum');
+      const ratingLabelEl = document.getElementById('ratingStatLabel');
+      if(data.success && data.totalCount > 0){
+        ratingNumEl.textContent = toBengaliNumber(data.avgRating) + '★';
+        ratingLabelEl.textContent = 'কাস্টমার রেটিং (' + toBengaliNumber(data.totalCount) + ' রিভিউ)';
+      } else {
+        ratingNumEl.textContent = '—';
+        ratingLabelEl.textContent = 'এখনো রেটিং নেই';
+      }
+
       if(!data.success || !data.reviews || data.reviews.length === 0){
         container.innerHTML = '<p style="font-size:13.5px; color:#8a8571; text-align:center; padding:10px 0;">এখনো কোনো রিভিউ নেই — প্রথম রিভিউ দিন!</p>';
         return;
@@ -1437,6 +1452,12 @@ if(reviewSubmitBtn){
       reviewSubmitBtn.disabled = false;
       reviewSubmitBtn.textContent = 'রিভিউ জমা দিন';
     }
+  });
+}// ============ Service Worker রেজিস্ট্রেশন (অফলাইন সাপোর্ট) ============
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js')
+      .catch(err => console.log('Service worker registration failed:', err));
   });
 }
 </script>
