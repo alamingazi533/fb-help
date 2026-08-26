@@ -1,9 +1,11 @@
-const CACHE_NAME = 'fb-somadhan-cache-v1';
+const CACHE_NAME = 'fb-somadhan-cache-v2';
 const URLS_TO_CACHE = [
   './',
   './index.html',
   './profile.jpg',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
