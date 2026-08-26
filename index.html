@@ -384,6 +384,88 @@
     max-height:200px;
     margin-top:9px;
   }
+  .step-progress{
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    margin-bottom:24px;
+  }
+  .step-dot{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    flex-shrink:0;
+  }
+  .step-dot span{
+    width:32px; height:32px;
+    border-radius:50%;
+    background:var(--paper-dark);
+    border:2px solid var(--line);
+    color:#9a9587;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:14px;
+    transition:all .2s;
+  }
+  .step-dot label{
+    font-size:11px; color:#9a9587; margin:0; font-weight:600;
+  }
+  .step-dot.active span{
+    background:var(--forest); border-color:var(--forest); color:var(--paper);
+  }
+  .step-dot.active label{ color:var(--forest); }
+  .step-dot.done span{
+    background:var(--ok); border-color:var(--ok); color:#fff;
+  }
+  .step-dot.done label{ color:var(--ok); }
+  .step-line{
+    flex:1;
+    height:2px;
+    background:var(--line);
+    margin-top:16px;
+    max-width:60px;
+  }
+  .step-next-btn, .step-back-btn{
+    padding:13px;
+    border-radius:9px;
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:22px;
+  }
+  .step-next-btn{
+    width:100%;
+    border:none;
+    background:var(--forest);
+    color:var(--paper);
+  }
+  .step-btn-row{
+    display:flex;
+    gap:10px;
+    margin-top:22px;
+  }
+  .step-btn-row .step-next-btn, .step-btn-row #submitBtn{
+    flex:2;
+    margin-top:0;
+  }
+  .step-back-btn{
+    flex:1;
+    border:1.5px solid var(--forest);
+    background:#fff;
+    color:var(--forest);
+    margin-top:0;
+  }
+  #submitBtn{
+    border:none;
+    border-radius:9px;
+    background:var(--forest);
+    color:var(--paper);
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+  }
   .captcha-box{
     display:flex;
     align-items:center;
@@ -676,7 +758,16 @@
 <main>
   <form id="regForm">
 
-    <div class="section-label">👤 ব্যক্তিগত তথ্য</div>
+    <div class="step-progress">
+      <div class="step-dot active" id="stepDot1"><span>১</span><label>ব্যক্তিগত</label></div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="stepDot2"><span>২</span><label>ঠিকানা</label></div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="stepDot3"><span>৩</span><label>আবেদন ফি</label></div>
+    </div>
+
+    <div class="form-step" id="step1">
+    <div class="section-label" style="margin-top:0;">👤 ব্যক্তিগত তথ্য</div>
 
     <label>পূর্ণ নাম <span class="req">*</span></label>
     <input type="text" id="fullName" required placeholder="যেমনঃ মোঃ আলামিন ইসলাম">
@@ -711,7 +802,11 @@
     <label>ইমেইল ঠিকানা <span class="req">*</span></label>
     <input type="email" id="email" required placeholder="example@gmail.com">
 
-    <div class="section-label">📍 ঠিকানা</div>
+    <button type="button" class="step-next-btn" onclick="goToStep(2)">পরবর্তী ধাপ →</button>
+    </div>
+
+    <div class="form-step" id="step2" style="display:none;">
+    <div class="section-label" style="margin-top:0;">📍 ঠিকানা</div>
 
     <label>বিভাগ <span class="req">*</span></label>
     <select id="division" required>
@@ -739,11 +834,18 @@
     <label>সমস্যার স্ক্রিনশট আপলোড করুন <span class="req">*</span></label>
     <input type="file" id="screenshot" accept="image/*" required>
 
-    <div class="section-label">💳 আবেদন ফি</div>
+    <div class="step-btn-row">
+      <button type="button" class="step-back-btn" onclick="goToStep(1)">← আগের ধাপ</button>
+      <button type="button" class="step-next-btn" onclick="goToStep(3)">পরবর্তী ধাপ →</button>
+    </div>
+    </div>
+
+    <div class="form-step" id="step3" style="display:none;">
+    <div class="section-label" style="margin-top:0;">💳 আবেদন ফি</div>
 
     <div class="fee-box">
       <p class="fee-amount">আবেদন ফি মাত্র <strong>২০ টাকা</strong></p>
-      <p class="fee-note">এটা করা হয়েছে কারণ, মজা করে যাতে কেউ আবেদন না করতে পারে তার জন্য ফি রাখা হচ্ছে।</p>
+      <p class="fee-note">এটা করা হয়েছে কারণ, মজা করে যাতে কেউ আবেদন না করতে পারে তার জন্য ফি রাখা হচ্ছে।</p>
       <div class="fee-methods">
         <div class="fee-method"><strong>বিকাশ</strong> (পার্সোনাল) — 01309519503</div>
         <div class="fee-method"><strong>নগদ</strong> (পার্সোনাল) — 01764324313</div>
@@ -751,7 +853,7 @@
         <div class="fee-method"><strong>উপায়</strong> (পার্সোনাল) — 01764324313</div>
       </div>
       <p class="fee-note">উপরের যেকোনো একটি নম্বরে ২০ টাকা <strong>Send Money</strong> করে নিচে ট্রানজেকশন আইডি লিখুন।</p>
-      <p class="fee-note fee-highlight">⚠️ সকল সার্ভিসের জন্য আলোচনা সাপেক্ষে টাকা চার্জ করে থাকি। কোনো কাজ ফ্রি করা হয় না। তাই কাজ করানোর আগেই উপরে Whatapk বাটুনে ক্লিক করে কথা বলে নেওয়া ভালো। কাজ ছোট হোক কিংবা বড় সকল কাজের জন্য  চার্জ প্রয়োজ্য।</p>
+      <p class="fee-note fee-highlight">⚠️ সকল সার্ভিসের জন্য আলোচনা সাপেক্ষে টাকা চার্জ করে থাকি। কোনো কাজ ফ্রি করা হয় না। তাই কাজ করানোর আগেই উপরে Whatapk বাটুনে ক্লিক করে কথা বলে নেওয়া ভালো। কাজ ছোট হোক কিংবা বড় সকল কাজের জন্য  চার্জ প্রয়োজ্য।</p>
     </div>
 
     <label>পেমেন্ট মাধ্যম <span class="req">*</span></label>
@@ -775,11 +877,15 @@
       <input type="text" id="captchaAns" required inputmode="numeric" placeholder="উত্তর">
     </div>
 
-    <button type="submit" id="submitBtn">রেজিস্ট্রেশন সম্পন্ন করুন</button>
+    <div class="step-btn-row">
+      <button type="button" class="step-back-btn" onclick="goToStep(2)">← আগের ধাপ</button>
+      <button type="submit" id="submitBtn">রেজিস্ট্রেশন সম্পন্ন করুন</button>
+    </div>
     <div class="status" id="status"></div>
     <button type="button" class="download-btn" id="downloadBtn">রশিদ ডাউনলোড করুন (PDF)</button>
     <div class="whatsapp-note" id="whatsappNote">
       <p>উপরের বাটনে চাপলে রশিদ ডাউনলোড হবে এবং শেয়ার মেনু খুলবে — সেখান থেকে WhatsApp সিলেক্ট করে আমাদের 01764324313 নম্বরে পাঠিয়ে দিন। ধন্যবাদ 🙏</p>
+    </div>
     </div>
   </form>
 
@@ -1206,6 +1312,69 @@ function newCaptcha(){
 }
 newCaptcha();
 
+// ============ ধাপে ধাপে ফর্ম নেভিগেশন ============
+const stepFields = {
+  1: ['fullName', 'phone', 'applicantPhoto', 'idLink', 'dob', 'gender', 'email'],
+  2: ['division', 'district', 'upazila', 'areaDetail', 'comment', 'screenshot'],
+  3: ['paymentMethod', 'txnId', 'senderNumber', 'captchaAns']
+};
+
+function validateStep(stepNum){
+  const fields = stepFields[stepNum];
+  for(const id of fields){
+    const el = document.getElementById(id);
+    if(!el) continue;
+    if(el.type === 'file'){
+      if(!el.files || el.files.length === 0){
+        el.reportValidity ? el.reportValidity() : alert('সব প্রয়োজনীয় ঘর পূরণ করুন।');
+        el.focus();
+        return false;
+      }
+    } else if(!el.value || !el.value.trim()){
+      el.reportValidity ? el.reportValidity() : alert('সব প্রয়োজনীয় ঘর পূরণ করুন।');
+      el.focus();
+      return false;
+    } else if(el.checkValidity && !el.checkValidity()){
+      el.reportValidity();
+      el.focus();
+      return false;
+    }
+  }
+  if(stepNum === 1){
+    const dobVal = document.getElementById('dob').value;
+    if(dobVal && calcAge(dobVal) < 13){
+      showStatus('err', 'দুঃখিত, আবেদন করতে হলে বয়স কমপক্ষে ১৩ বছর হতে হবে।');
+      return false;
+    }
+  }
+  return true;
+}
+
+function goToStep(stepNum){
+  const current = document.querySelector('.form-step:not([style*="display: none"])');
+  const currentNum = current ? parseInt(current.id.replace('step',''), 10) : 1;
+
+  if(stepNum > currentNum && !validateStep(currentNum)){
+    return;
+  }
+
+  document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+  document.getElementById('step' + stepNum).style.display = 'block';
+
+  for(let i = 1; i <= 3; i++){
+    const dot = document.getElementById('stepDot' + i);
+    dot.classList.remove('active', 'done');
+    if(i < stepNum) dot.classList.add('done');
+    else if(i === stepNum) dot.classList.add('active');
+  }
+
+  window.scrollTo({ top: document.getElementById('regForm').offsetTop - 20, behavior: 'smooth' });
+}
+
+function resetToStep1(){
+  goToStep(1);
+}
+
 // ============ FAQ ============
 function toggleFaq(el){
   el.parentElement.classList.toggle('open');
@@ -1336,6 +1505,7 @@ form.addEventListener('submit', async (e)=>{
     upazilaSelect.disabled = true;
     districtSelect.innerHTML = '<option value="">প্রথমে বিভাগ নির্বাচন করুন</option>';
     upazilaSelect.innerHTML = '<option value="">প্রথমে জেলা নির্বাচন করুন</option>';
+    resetToStep1();
   }catch(err){
     console.error(err);
     showStatus('err', 'দুঃখিত, পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
