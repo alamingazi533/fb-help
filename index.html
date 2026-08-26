@@ -877,6 +877,11 @@
       <input type="text" id="captchaAns" required inputmode="numeric" placeholder="উত্তর">
     </div>
 
+    <label style="display:flex; align-items:flex-start; gap:10px; margin-top:18px; font-weight:500; font-size:14px; cursor:pointer;">
+      <input type="checkbox" id="confirmCheck" required style="width:auto; margin-top:3px; flex-shrink:0;">
+      <span>সকল তথ্য সঠিক থাকলে চেক বক্সে ক্লিক করুন <span class="req">*</span></span>
+    </label>
+
     <div class="step-btn-row">
       <button type="button" class="step-back-btn" onclick="goToStep(2)">← আগের ধাপ</button>
       <button type="submit" id="submitBtn">রেজিস্ট্রেশন সম্পন্ন করুন</button>
@@ -1210,6 +1215,20 @@ document.getElementById('applicantPhoto').addEventListener('change', (e)=>{
   reader.readAsDataURL(f);
 });
 
+function resetFormAfterDownload(){
+  form.reset();
+  districtSelect.disabled = true;
+  upazilaSelect.disabled = true;
+  districtSelect.innerHTML = '<option value="">প্রথমে বিভাগ নির্বাচন করুন</option>';
+  upazilaSelect.innerHTML = '<option value="">প্রথমে জেলা নির্বাচন করুন</option>';
+  downloadBtn.classList.remove('show');
+  document.getElementById('whatsappNote').classList.remove('show');
+  statusBox.className = 'status';
+  photoPreviewEl.classList.remove('show');
+  newCaptcha();
+  resetToStep1();
+}
+
 downloadBtn.addEventListener('click', async ()=>{
   downloadBtn.disabled = true;
   downloadBtn.textContent = 'তৈরি হচ্ছে...';
@@ -1241,6 +1260,9 @@ downloadBtn.addEventListener('click', async ()=>{
         console.log('Share cancelled or unsupported', shareErr);
       }
     }
+
+    // ডাউনলোড সম্পন্ন হয়েছে — এবার ফর্মটা পরের আবেদনকারীর জন্য রিসেট করা হচ্ছে
+    resetFormAfterDownload();
   }catch(err){
     console.error(err);
     alert('রশিদ ডাউনলোড করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।');
@@ -1383,6 +1405,11 @@ function toggleFaq(el){
 form.addEventListener('submit', async (e)=>{
   e.preventDefault();
 
+  if(!document.getElementById('confirmCheck').checked){
+    showStatus('err', 'সকল তথ্য সঠিক থাকলে চেক বক্সে ক্লিক করুন।');
+    return;
+  }
+
   if(parseInt(document.getElementById('captchaAns').value.trim(), 10) !== captchaAnswer){
     showStatus('err', 'যাচাই ঘরের উত্তরটি সঠিক নয়, আবার চেষ্টা করুন।');
     newCaptcha();
@@ -1499,13 +1526,6 @@ form.addEventListener('submit', async (e)=>{
     }
     downloadBtn.classList.add('show');
     document.getElementById('whatsappNote').classList.add('show');
-
-    form.reset();
-    districtSelect.disabled = true;
-    upazilaSelect.disabled = true;
-    districtSelect.innerHTML = '<option value="">প্রথমে বিভাগ নির্বাচন করুন</option>';
-    upazilaSelect.innerHTML = '<option value="">প্রথমে জেলা নির্বাচন করুন</option>';
-    resetToStep1();
   }catch(err){
     console.error(err);
     showStatus('err', 'দুঃখিত, পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
