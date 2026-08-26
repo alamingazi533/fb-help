@@ -1323,6 +1323,33 @@ function fileToBase64(file){
   });
 }
 
+// ============ ছবি কমপ্রেশন (ধীরগতির নেটে দ্রুত সাবমিটের জন্য) ============
+function compressImage(file, maxDim, quality){
+  return new Promise((resolve, reject)=>{
+    if(!file.type.startsWith('image/')){ resolve({ dataUrl: null, blob: file }); return; }
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        if(w > maxDim || h > maxDim){
+          if(w > h){ h = Math.round(h * maxDim / w); w = maxDim; }
+          else { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality || 0.75);
+        resolve({ dataUrl: dataUrl });
+      };
+      img.onerror = ()=> resolve({ dataUrl: e.target.result });
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 // ============ CAPTCHA ============
 let captchaAnswer = 0;
 function newCaptcha(){
@@ -1469,36 +1496,49 @@ form.addEventListener('submit', async (e)=>{
 
   try{
     if(photoFile){
-      if(photoFile.size > 5 * 1024 * 1024){
-        showStatus('err', 'আপনার ছবির সাইজ ৫ এমবি এর কম হতে হবে।');
+      if(photoFile.size > 8 * 1024 * 1024){
+        showStatus('err', 'আপনার ছবির সাইজ ৮ এমবি এর কম হতে হবে।');
         submitBtn.disabled = false;
         submitBtn.textContent = 'রেজিস্ট্রেশন সম্পন্ন করুন';
         return;
       }
-      payload.photoBase64 = await fileToBase64(photoFile);
-      payload.photoName = photoFile.name;
-      payload.photoType = photoFile.type;
+      showStatus('loading', 'ছবি প্রস্তুত করা হচ্ছে...');
+      const compressedPhoto = await compressImage(photoFile, 1000, 0.75);
+      payload.photoBase64 = compressedPhoto.dataUrl || await fileToBase64(photoFile);
+      payload.photoName = photoFile.name.replace(/\.[^.]+$/, '.jpg');
+      payload.photoType = 'image/jpeg';
     }
 
     if(file){
-      // ৫ এমবি এর বেশি ছবি পাঠানো এড়িয়ে চলুন (Apps Script এর সীমা মাথায় রেখে)
-      if(file.size > 5 * 1024 * 1024){
-        showStatus('err', 'ছবির সাইজ ৫ এমবি এর কম হতে হবে।');
+      if(file.size > 8 * 1024 * 1024){
+        showStatus('err', 'ছবির সাইজ ৮ এমবি এর কম হতে হবে।');
         submitBtn.disabled = false;
         submitBtn.textContent = 'রেজিস্ট্রেশন সম্পন্ন করুন';
         return;
       }
-      payload.screenshotBase64 = await fileToBase64(file);
-      payload.screenshotName = file.name;
-      payload.screenshotType = file.type;
+      showStatus('loading', 'স্ক্রিনশট প্রস্তুত করা হচ্ছে...');
+      const compressedShot = await compressImage(file, 1280, 0.8);
+      payload.screenshotBase64 = compressedShot.dataUrl || await fileToBase64(file);
+      payload.screenshotName = file.name.replace(/\.[^.]+$/, '.jpg');
+      payload.screenshotType = 'image/jpeg';
     }
 
-    await fetch(SCRIPT_URL, {
+    showStatus('loading', 'অনুগ্রহ করে অপেক্ষা করুন...');
+    const submitRes = await fetch(SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload)
     });
+    let submitData = {};
+    try { submitData = await submitRes.json(); } catch(parseErr) { submitData = { status: 'success' }; }
+
+    if(submitData.status === 'duplicate'){
+      showStatus('err', submitData.error || 'এই ট্রানজেকশন আইডি দিয়ে ইতিমধ্যে একটি আবেদন জমা হয়েছে।');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'রেজিস্ট্রেশন সম্পন্ন করুন';
+      return;
+    }
+
     showStatus('ok', '✓ রেজিস্ট্রেশন সফল হয়েছে। ধন্যবাদ!');
 
     const now = new Date();
