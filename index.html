@@ -1633,6 +1633,9 @@ function loadReviews(){
 }
 loadReviews();
 
+// ============ ভিজিট ট্র্যাক করা (নীরবে, গণনার জন্য মাত্র) ============
+fetch(SCRIPT_URL + '?action=trackVisit').catch(()=>{});
+
 const reviewSubmitBtn = document.getElementById('reviewSubmitBtn');
 if(reviewSubmitBtn){
   reviewSubmitBtn.addEventListener('click', async ()=>{

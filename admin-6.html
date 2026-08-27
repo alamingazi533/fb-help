@@ -226,12 +226,34 @@
       <button onclick="manualRefresh()">রিফ্রেশ</button>
     </div>
     <div class="dashboard" id="dashboard"></div>
+    <div id="visitorCountBox" style="text-align:center; font-size:12.5px; color:#8a8571; margin:-6px 0 10px;"></div>
     <div class="filterRow" id="filterRow"></div>
+    <div class="filterRow" id="dateFilterRow" style="margin-top:-6px;">
+      <button class="chip active" data-days="0" onclick="setDateFilter(0, this)">সব সময়</button>
+      <button class="chip" data-days="1" onclick="setDateFilter(1, this)">আজ</button>
+      <button class="chip" data-days="7" onclick="setDateFilter(7, this)">গত ৭ দিন</button>
+      <button class="chip" data-days="30" onclick="setDateFilter(30, this)">গত ৩০ দিন</button>
+    </div>
+
+    <div id="bulkActionBar" style="display:none; background:#fff; border:1px solid var(--gold); border-radius:10px; padding:10px 12px; margin-bottom:12px; display:none; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span id="bulkSelectedCount" style="font-size:13px; font-weight:700; color:var(--forest);"></span>
+      <select id="bulkStatusSelect" style="flex:1; min-width:120px; padding:8px; border-radius:6px; border:1px solid var(--line);">
+        <option value="অপেক্ষমান">অপেক্ষমান</option>
+        <option value="কাজ চলছে">কাজ চলছে</option>
+        <option value="সম্পন্ন">সম্পন্ন</option>
+        <option value="বাতিল">বাতিল</option>
+      </select>
+      <button onclick="applyBulkStatus()" style="padding:8px 14px; border:none; border-radius:6px; background:var(--forest); color:#fff; font-size:13px; font-weight:700;">সবগুলোতে প্রয়োগ করুন</button>
+      <button onclick="clearBulkSelection()" style="padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:#fff; font-size:13px;">বাতিল</button>
+    </div>
 
     <div style="background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px; margin:14px 0;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <div style="font-weight:700; color:var(--forest);">গ্রাহক রিভিউ <span id="pendingReviewBadge"></span></div>
-        <button onclick="loadAdminReviews()" style="padding:6px 12px; font-size:12.5px; border:1px solid var(--forest); border-radius:6px; background:#fff; color:var(--forest);">রিফ্রেশ</button>
+        <div style="display:flex; gap:6px;">
+          <button onclick="exportReviewsCsv()" style="padding:6px 12px; font-size:12.5px; border:1px solid var(--forest); border-radius:6px; background:#fff; color:var(--forest);">CSV</button>
+          <button onclick="loadAdminReviews()" style="padding:6px 12px; font-size:12.5px; border:1px solid var(--forest); border-radius:6px; background:#fff; color:var(--forest);">রিফ্রেশ</button>
+        </div>
       </div>
       <div id="reviewsList">লোড হচ্ছে...</div>
     </div>
@@ -261,12 +283,37 @@ const STATUS_OPTIONS = ["অপেক্ষমান", "কাজ চলছে",
 let allRows = [];
 let autoRefreshTimer = null;
 let activeStatusFilter = 'সব';
+let activeDateFilterDays = 0;
+let selectedRowIndexes = new Set();
+
+function parseAdminDate(dateStr){
+  // ফরম্যাট: dd/MM/yyyy HH:mm
+  if(!dateStr) return null;
+  const parts = String(dateStr).split(/[\/\s:]/);
+  if(parts.length < 3) return null;
+  return new Date(parts[2], parts[1] - 1, parts[0], parts[3] || 0, parts[4] || 0);
+}
+
+function setDateFilter(days, btnEl){
+  activeDateFilterDays = days;
+  document.querySelectorAll('#dateFilterRow .chip').forEach(b => b.classList.remove('active'));
+  btnEl.classList.add('active');
+  applyCurrentFilter();
+}
 
 function applyCurrentFilter(){
   const q = document.getElementById('searchBox').value.trim().toLowerCase();
   let filtered = allRows;
   if(activeStatusFilter !== 'সব'){
     filtered = filtered.filter(r => r.status === activeStatusFilter);
+  }
+  if(activeDateFilterDays > 0){
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - activeDateFilterDays);
+    filtered = filtered.filter(r => {
+      const d = parseAdminDate(r.date);
+      return d && d >= cutoff;
+    });
   }
   if(q){
     filtered = filtered.filter(r =>
@@ -497,6 +544,45 @@ function reviewAction(row, status){
 }
 
 // ============ ব্যাকআপ রিমাইন্ডার ============
+function loadVisitorCount(){
+  const pw = sessionStorage.getItem('adminPw') || '';
+  fetch(SCRIPT_URL + '?action=getVisitorCount&password=' + encodeURIComponent(pw))
+    .then(r => r.json())
+    .then(data => {
+      if(data.success){
+        document.getElementById('visitorCountBox').textContent = '👁️ মোট ভিজিট: ' + data.count;
+      }
+    })
+    .catch(()=>{});
+}
+
+function exportReviewsCsv(){
+  const pw = sessionStorage.getItem('adminPw') || '';
+  fetch(SCRIPT_URL + '?action=listReviews&password=' + encodeURIComponent(pw))
+    .then(r => r.json())
+    .then(data => {
+      if(!data.success || !data.reviews.length){
+        alert('কোনো রিভিউ নেই।');
+        return;
+      }
+      const headers = ['তারিখ', 'নাম', 'রেটিং', 'মন্তব্য', 'স্ট্যাটাস'];
+      const csvRows = [headers.join(',')];
+      data.reviews.forEach(r => {
+        const line = [r.date, r.name, r.rating, '"' + String(r.text).replace(/"/g,'""') + '"', r.status];
+        csvRows.push(line.join(','));
+      });
+      const csvContent = '\uFEFF' + csvRows.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'reviews_' + new Date().toISOString().slice(0,10) + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    })
+    .catch(()=> alert('ডাউনলোড করতে সমস্যা হয়েছে।'));
+}
+
 function updateBackupReminder(){
   const el = document.getElementById('backupReminder');
   const last = localStorage.getItem('lastCsvExport');
@@ -541,6 +627,7 @@ function verifyAndEnter(){
         startAutoRefresh();
         loadAdminReviews();
         updateBackupReminder();
+        loadVisitorCount();
       } else {
         sessionStorage.removeItem('adminPw');
         document.getElementById('loginErr').style.display = 'block';
@@ -611,7 +698,8 @@ function renderList(rows){
 
     card.innerHTML =
       '<div class="card-top">' +
-        '<div>' +
+        '<div style="display:flex; align-items:center; gap:8px;">' +
+          '<input type="checkbox" class="bulkCheck" data-row="' + row.rowIndex + '" style="width:18px; height:18px; flex-shrink:0;">' +
           (row.photoUrl ? '<img class="applicant-photo" src="' + row.photoUrl + '" alt="ছবি" onclick="window.open(\'' + row.photoUrl + '\', \'_blank\')">' : '') +
           '<div><div class="card-name">' + esc(row.fullName) + '</div><div class="card-id">' + (row.appId === 'N/A' ? 'সারি #' + row.rowIndex : esc(row.appId)) + '</div></div>' +
         '</div>' +
@@ -644,18 +732,83 @@ function renderList(rows){
         '<div class="card-actions" style="margin-top:8px;">' +
           '<button class="waBtn">📱 WhatsApp পাঠান</button>' +
         '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<textarea class="noteInput" placeholder="প্রাইভেট নোট (শুধু আপনি দেখবেন)..." style="width:100%; min-height:44px; padding:8px; border-radius:6px; border:1px solid var(--line); font-family:inherit; font-size:13px; resize:vertical;">' + esc(row.note || '') + '</textarea>' +
+          '<button class="noteSaveBtn" style="margin-top:6px; padding:6px 12px; font-size:12px; border:1px solid var(--forest); border-radius:6px; background:#fff; color:var(--forest);">নোট সেভ করুন</button>' +
+        '</div>' +
       '</div>';
 
     const saveBtn = card.querySelector('.saveBtn');
     const select = card.querySelector('.statusInput');
     const deleteBtn = card.querySelector('.deleteBtn');
     const waBtn = card.querySelector('.waBtn');
+    const bulkCheck = card.querySelector('.bulkCheck');
+    const noteInput = card.querySelector('.noteInput');
+    const noteSaveBtn = card.querySelector('.noteSaveBtn');
     saveBtn.addEventListener('click', () => updateStatus(row.rowIndex, select.value, saveBtn, card));
     deleteBtn.addEventListener('click', () => deleteEntry(row.rowIndex, row.fullName, card));
     waBtn.addEventListener('click', () => sendWhatsApp(row.phone, row.fullName, row.appId, select.value));
+    bulkCheck.checked = selectedRowIndexes.has(row.rowIndex);
+    bulkCheck.addEventListener('change', () => {
+      if(bulkCheck.checked) selectedRowIndexes.add(row.rowIndex);
+      else selectedRowIndexes.delete(row.rowIndex);
+      updateBulkBar();
+    });
+    noteSaveBtn.addEventListener('click', () => saveNote(row.rowIndex, noteInput.value, noteSaveBtn));
 
     listEl.appendChild(card);
   });
+}
+
+function updateBulkBar(){
+  const bar = document.getElementById('bulkActionBar');
+  const countEl = document.getElementById('bulkSelectedCount');
+  if(selectedRowIndexes.size > 0){
+    bar.style.display = 'flex';
+    countEl.textContent = selectedRowIndexes.size + 'টি নির্বাচিত';
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+function clearBulkSelection(){
+  selectedRowIndexes.clear();
+  document.querySelectorAll('.bulkCheck').forEach(c => c.checked = false);
+  updateBulkBar();
+}
+
+function applyBulkStatus(){
+  const status = document.getElementById('bulkStatusSelect').value;
+  const pw = sessionStorage.getItem('adminPw');
+  const rowsCsv = Array.from(selectedRowIndexes).join(',');
+  if(!rowsCsv) return;
+  fetch(SCRIPT_URL + '?action=bulkUpdateStatus&password=' + encodeURIComponent(pw) + '&rows=' + encodeURIComponent(rowsCsv) + '&status=' + encodeURIComponent(status))
+    .then(r => r.json())
+    .then(data => {
+      if(data.success){
+        clearBulkSelection();
+        manualRefresh();
+      } else {
+        alert('আপডেট করতে সমস্যা হয়েছে।');
+      }
+    })
+    .catch(()=> alert('সংযোগে সমস্যা হয়েছে।'));
+}
+
+function saveNote(rowIndex, note, btn){
+  const pw = sessionStorage.getItem('adminPw');
+  btn.disabled = true;
+  btn.textContent = 'সেভ হচ্ছে...';
+  fetch(SCRIPT_URL + '?action=updateNote&password=' + encodeURIComponent(pw) + '&row=' + rowIndex + '&note=' + encodeURIComponent(note))
+    .then(r => r.json())
+    .then(data => {
+      btn.textContent = data.success ? '✓ সেভ হয়েছে' : 'ব্যর্থ হয়েছে';
+      setTimeout(()=>{ btn.textContent = 'নোট সেভ করুন'; btn.disabled = false; }, 1500);
+    })
+    .catch(()=>{
+      btn.textContent = 'ব্যর্থ হয়েছে';
+      btn.disabled = false;
+    });
 }
 
 function updateStatus(rowIndex, newStatus, btn, card){
