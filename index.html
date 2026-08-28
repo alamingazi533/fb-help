@@ -286,19 +286,19 @@
   .stat-item{
     flex:1;
     text-align:center;
-    padding:16px 8px;
+    padding:16px 6px;
     border-right:1px solid var(--line);
   }
   .stat-item:last-child{ border-right:none; }
   .stat-num{
     font-family:'Noto Serif Bengali', serif;
-    font-size:21px;
+    font-size:19px;
     font-weight:700;
     color:var(--forest);
     display:block;
   }
   .stat-label{
-    font-size:11.5px;
+    font-size:11px;
     color:#8a8571;
     margin-top:3px;
     display:block;
@@ -732,16 +732,20 @@
 
 <div class="stats-bar">
   <div class="stat-item">
-    <span class="stat-num">১০০+</span>
+    <span class="stat-num" id="solvedStatNum">—</span>
     <span class="stat-label">সমাধান হয়েছে</span>
   </div>
   <div class="stat-item">
-    <span class="stat-num">২ ঘণ্টা</span>
+    <span class="stat-num" id="responseStatNum">—</span>
     <span class="stat-label">গড় রেসপন্স টাইম</span>
   </div>
   <div class="stat-item">
     <span class="stat-num" id="ratingStatNum">৪.৮★</span>
     <span class="stat-label" id="ratingStatLabel">কাস্টমার রেটিং</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" id="visitStatNum">—</span>
+    <span class="stat-label">মোট ভিজিট</span>
   </div>
 </div>
 
@@ -949,7 +953,7 @@
         <span>কোন ধরনের সমস্যা সমাধান করা হয়?</span>
         <span class="arrow">▾</span>
       </div>
-      <div class="faq-a">আইডি বা পেজ ফুল সেট-আপ করা হয়, আইডি রিভিউ করা হয়, পে আউট একাউন্ট করা হয়, পে আউট এর ভুল নাম ঠিক করা হয়, যে কোনো ইস্যু ঠিক করা হয়, টিন সাটিফিকেট খোলা হয়, ব্যাংক একাউন্ট সেট-আপ করা। আইডি সাচপেন্ড হলে ঠিক করা। পেজ/অ্যাকাউন্ট হ্যাক হলে রিকভারি করা হয়, নিষ্ক্রিয় হয়ে যাওয়া আইডি বা পেজ ফেরত আনা হয়, মনিটাইজেশন বন্ধ হয়ে যাওয়া এবং এই সংক্রান্ত অন্যান্য সমস্যা নিয়ে কাজ করা হয়।</div>
+      <div class="faq-a">আইডি বা পেজ ফুল সেট-আপ করা হয়, আইডি রিভিউ করা হয়, পে আউট একাউন্ট করা হয়, পে আউট এর ভুল নাম ঠিক করা হয়, যে কোনো ইস্যু ঠিক করা হয়, টিন সাটিফিকেট খোলা হয়, ব্যাংক একাউন্ট সেট-আপ করা। আইডি সাচপেন্ড হলে ঠিক করা। পেজ/অ্যাকাউন্ট হ্যাক হলে রিকভারি করা হয়, নিষ্ক্রিয় হয়ে যাওয়া আইডি বা পেজ ফেরত আনা হয়, মনিটাইজেশন বন্ধ হয়ে যাওয়া এবং এই সংক্রান্ত অন্যান্য সমস্যা নিয়ে কাজ করা হয়।</div>
     </div>
 
     <div class="faq-item">
@@ -1566,6 +1570,9 @@ form.addEventListener('submit', async (e)=>{
     }
     downloadBtn.classList.add('show');
     document.getElementById('whatsappNote').classList.add('show');
+
+    // সাবমিট সফল হওয়ার পর সংখ্যাগুলো আপডেট করা (নতুন আবেদন যোগ হয়েছে)
+    loadStats();
   }catch(err){
     console.error(err);
     showStatus('err', 'দুঃখিত, পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
@@ -1595,6 +1602,39 @@ if(starPicker){
 function toBengaliNumber(n){
   const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
   return String(n).split('').map(ch => map[ch] !== undefined ? map[ch] : ch).join('');
+}
+
+// ============ আসল পরিসংখ্যান (ভিজিট, সমাধান সংখ্যা, গড় রেসপন্স টাইম) ============
+function formatResponseDuration(minutes){
+  if(!minutes || minutes <= 0) return '—';
+  if(minutes < 60){
+    return toBengaliNumber(Math.round(minutes)) + ' মিনিট';
+  }
+  const hours = minutes / 60;
+  if(hours < 24){
+    const rounded = Math.round(hours * 10) / 10;
+    return toBengaliNumber(rounded) + ' ঘণ্টা';
+  }
+  const days = hours / 24;
+  const roundedDays = Math.round(days * 10) / 10;
+  return toBengaliNumber(roundedDays) + ' দিন';
+}
+
+function loadStats(){
+  fetch(SCRIPT_URL + '?action=getStats')
+    .then(r => r.json())
+    .then(data => {
+      if(!data.success) return;
+      const solvedEl = document.getElementById('solvedStatNum');
+      const responseEl = document.getElementById('responseStatNum');
+      const visitEl = document.getElementById('visitStatNum');
+      if(solvedEl) solvedEl.textContent = toBengaliNumber(data.solvedCount || 0);
+      if(responseEl) responseEl.textContent = formatResponseDuration(data.avgResponseMinutes);
+      if(visitEl) visitEl.textContent = toBengaliNumber(data.visitorCount || 0);
+    })
+    .catch(()=>{
+      // ব্যর্থ হলে চুপচাপ থাকা, ড্যাশ দেখানো থাকবে
+    });
 }
 
 function loadReviews(){
@@ -1632,9 +1672,12 @@ function loadReviews(){
     });
 }
 loadReviews();
+loadStats();
 
 // ============ ভিজিট ট্র্যাক করা (নীরবে, গণনার জন্য মাত্র) ============
-fetch(SCRIPT_URL + '?action=trackVisit').catch(()=>{});
+fetch(SCRIPT_URL + '?action=trackVisit')
+  .then(()=> loadStats())
+  .catch(()=>{});
 
 const reviewSubmitBtn = document.getElementById('reviewSubmitBtn');
 if(reviewSubmitBtn){
