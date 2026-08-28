@@ -42,6 +42,26 @@
     --ok:#42B72A;
     --star:#F7B928;
   }
+  [data-theme="dark"]{
+    --paper:#18191A;
+    --paper-dark:#242526;
+    --ink:#E4E6EB;
+    --forest:#2E89FF;
+    --forest-2:#1877F2;
+    --gold:#4293F5;
+    --gold-light:#8FBDFB;
+    --maroon:#F02849;
+    --line:#3A3B3C;
+    --ok:#45BD62;
+    --star:#F7B928;
+  }
+  [data-theme="dark"] body{ background-image:none; }
+  [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea{
+    background:#3A3B3C;
+    color:var(--ink);
+  }
+  [data-theme="dark"] .profile-pic{ border-color:#3A3B3C; }
+  [data-theme="dark"] #receipt{ background:#242526 !important; }
   *{box-sizing:border-box;}
   body{
     margin:0;
@@ -68,6 +88,28 @@
     height:6px;
     background:repeating-linear-gradient(90deg, var(--gold) 0 14px, transparent 14px 22px);
   }
+  .top-action-bar{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    max-width:420px;
+    margin:0 auto 6px;
+  }
+  .icon-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:rgba(255,255,255,0.16);
+    border:1px solid rgba(255,255,255,0.3);
+    color:#fff;
+    font-family:inherit;
+    font-size:12.5px;
+    font-weight:600;
+    padding:7px 12px;
+    border-radius:999px;
+    cursor:pointer;
+  }
+  .icon-btn svg{width:15px; height:15px; flex-shrink:0;}
   .eyebrow{
     letter-spacing:.14em;
     font-size:12.5px;
@@ -749,6 +791,16 @@
 <body>
 
 <header>
+  <div class="top-action-bar">
+    <button type="button" class="icon-btn" id="shareBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>
+      শেয়ার
+    </button>
+    <button type="button" class="icon-btn" id="themeToggleBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      <span id="themeToggleLabel">ডার্ক মোড</span>
+    </button>
+  </div>
   <img class="profile-pic" src="profile.jpg" alt="মোঃ আলামিন ইসলাম">
   <div class="eyebrow">ফেসবুক সমস্যা সমাধান সেবা</div>
   <p class="tagline">আপনার স্বপ্নই হোক আপনার ভবিষ্যৎ</p>
@@ -1056,6 +1108,68 @@
 // এখানে আপনার Google Apps Script Web App URL বসান (নতুন Deploy করে যেটা পাবেন)
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTc7Kg6lsjmY8nGyqcI5AsZxwNZxliQQ78r6Lr_YrWE0I4GPQQ1JhW0ssT2t9yjy4/exec";
 // ==================================
+
+// ============ ডার্ক মোড ============
+(function initTheme(){
+  const saved = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = saved || (prefersDark ? 'dark' : 'light');
+  applyTheme(theme);
+})();
+
+function applyTheme(theme){
+  if(theme === 'dark'){
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('themeToggleLabel').textContent = 'লাইট মোড';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    document.getElementById('themeToggleLabel').textContent = 'ডার্ক মোড';
+  }
+  localStorage.setItem('theme', theme);
+}
+
+document.getElementById('themeToggleBtn').addEventListener('click', ()=>{
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  applyTheme(isDark ? 'light' : 'dark');
+});
+
+// ============ শেয়ার বাটন ============
+document.getElementById('shareBtn').addEventListener('click', async ()=>{
+  const shareData = {
+    title: 'ফেসবুক সমস্যা সমাধান — রেজিস্ট্রেশন',
+    text: 'ফেসবুক পেজ/অ্যাকাউন্ট হ্যাক, নিষ্ক্রিয় বা মনিটাইজেশন সমস্যায় রেজিস্ট্রেশন করুন:',
+    url: window.location.href
+  };
+  if(navigator.share){
+    try{ await navigator.share(shareData); }
+    catch(err){ /* ব্যবহারকারী শেয়ার বাতিল করলে কিছু করার দরকার নেই */ }
+  } else {
+    try{
+      await navigator.clipboard.writeText(shareData.url);
+      alert('লিংক কপি হয়েছে! এখন যেকোনো জায়গায় পেস্ট করে শেয়ার করতে পারবেন।');
+    }catch(err){
+      alert('শেয়ার করতে সমস্যা হয়েছে। লিংক: ' + shareData.url);
+    }
+  }
+});
+
+// ============ ব্রাউজার নোটিফিকেশন (আবেদন সফল হলে) ============
+function notifyApplicationSuccess(appId){
+  if(!('Notification' in window)) return;
+  const fire = () => {
+    try{
+      new Notification('✓ রেজিস্ট্রেশন সফল হয়েছে', {
+        body: 'আবেদন নম্বর: ' + appId + ' — শীঘ্রই যোগাযোগ করা হবে।',
+        icon: 'icon-192.png'
+      });
+    }catch(err){ /* নোটিফিকেশন দেখাতে ব্যর্থ হলেও ফর্ম সাবমিট প্রভাবিত হবে না */ }
+  };
+  if(Notification.permission === 'granted'){
+    fire();
+  } else if(Notification.permission !== 'denied'){
+    Notification.requestPermission().then(perm => { if(perm === 'granted') fire(); });
+  }
+}
 
 // বিভাগ ও জেলার তালিকা সরাসরি কোডে রাখা হয়েছে, তাই ইন্টারনেট/CDN এর উপর নির্ভর না করে
 // সাথে সাথে লোড হবে এবং কখনো ফাঁকা থাকবে না।
@@ -1608,6 +1722,7 @@ form.addEventListener('submit', async (e)=>{
 
     // সাবমিট সফল হওয়ার পর সংখ্যাগুলো আপডেট করা (নতুন আবেদন যোগ হয়েছে)
     loadStats();
+    notifyApplicationSuccess(appId);
   }catch(err){
     console.error(err);
     showStatus('err', 'দুঃখিত, পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
