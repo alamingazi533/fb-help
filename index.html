@@ -235,6 +235,75 @@
   .field-hint{
     font-size:12px; color:var(--muted); margin-top:-8px; margin-bottom:8px;
   }
+  .field-error{
+    font-size:12.5px; color:var(--maroon); margin-top:-8px; margin-bottom:8px; display:none;
+    font-weight:600;
+  }
+  .field-error.show{display:block;}
+  input.invalid, select.invalid{
+    border-color:var(--maroon) !important;
+    box-shadow:0 0 0 3px rgba(250,56,62,0.14) !important;
+  }
+  input.valid-ok{
+    border-color:var(--ok) !important;
+  }
+  .draft-restore-note{
+    display:none;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    font-size:13px;
+    background:var(--ok-bg);
+    border:1px solid var(--ok-border);
+    color:var(--ok);
+    padding:10px 14px;
+    border-radius:10px;
+    margin-bottom:16px;
+  }
+  .draft-restore-note button{
+    background:none;
+    border:1.5px solid currentColor;
+    color:inherit;
+    border-radius:7px;
+    padding:5px 10px;
+    font-size:12px;
+    font-weight:600;
+    font-family:inherit;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .pay-methods{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin:6px 0 14px;
+  }
+  .pay-method-btn{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:11px 12px;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    background:#fff;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:14.5px;
+    font-weight:600;
+    color:var(--ink);
+    transition:border-color .15s, box-shadow .15s;
+  }
+  [data-theme="dark"] .pay-method-btn{background:#3A3B3C;}
+  .pay-method-btn.selected{
+    border-color:var(--forest);
+    box-shadow:0 0 0 3px rgba(24,119,242,0.16);
+  }
+  .pay-icon{
+    width:30px; height:30px; border-radius:8px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:800; color:#fff;
+    font-family:'Noto Serif Bengali', serif;
+  }
   button[type=submit]{
     width:100%;
     margin-top:28px;
@@ -859,6 +928,11 @@
 <main>
   <form id="regForm">
 
+    <div class="draft-restore-note" id="draftBanner">
+      <span>✓ আপনার আগের অসম্পূর্ণ তথ্য পুনরুদ্ধার করা হয়েছে।</span>
+      <button type="button" id="clearDraftBtn">মুছে নতুন শুরু</button>
+    </div>
+
     <div class="step-progress">
       <div class="step-dot active" id="stepDot1"><span>১</span><label>ব্যক্তিগত</label></div>
       <div class="step-line"></div>
@@ -958,6 +1032,12 @@
     </div>
 
     <label>পেমেন্ট মাধ্যম <span class="req">*</span></label>
+    <div class="pay-methods" id="payMethodPicker">
+      <button type="button" class="pay-method-btn" data-val="বিকাশ"><span class="pay-icon" style="background:#E2136E;">বি</span>বিকাশ</button>
+      <button type="button" class="pay-method-btn" data-val="নগদ"><span class="pay-icon" style="background:#F6921E;">ন</span>নগদ</button>
+      <button type="button" class="pay-method-btn" data-val="রকেট"><span class="pay-icon" style="background:#8C3494;">র</span>রকেট</button>
+      <button type="button" class="pay-method-btn" data-val="উপায়"><span class="pay-icon" style="background:#00A99D;">উ</span>উপায়</button>
+    </div>
     <select id="paymentMethod" required>
       <option value="">নির্বাচন করুন</option>
       <option value="বিকাশ">বিকাশ</option>
@@ -1592,6 +1672,130 @@ function toggleFaq(el){
   el.parentElement.classList.toggle('open');
 }
 
+// ============ পেমেন্ট মেথড আইকন পিকার ============
+const paymentSelect = document.getElementById('paymentMethod');
+document.querySelectorAll('.pay-method-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.pay-method-btn').forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
+    paymentSelect.value = btn.dataset.val;
+    paymentSelect.dispatchEvent(new Event('change'));
+  });
+});
+paymentSelect.addEventListener('change', ()=>{
+  document.querySelectorAll('.pay-method-btn').forEach(b=>{
+    b.classList.toggle('selected', b.dataset.val === paymentSelect.value);
+  });
+});
+
+// ============ রিয়েল-টাইম ভ্যালিডেশন (ফোন/ইমেইল) ============
+function attachLiveValidation(id, testFn, errorMsg){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const errEl = document.createElement('div');
+  errEl.className = 'field-error';
+  errEl.textContent = errorMsg;
+  el.insertAdjacentElement('afterend', errEl);
+
+  function check(){
+    const val = el.value.trim();
+    if(!val){
+      el.classList.remove('invalid', 'valid-ok');
+      errEl.classList.remove('show');
+      return;
+    }
+    const ok = testFn(val);
+    el.classList.toggle('invalid', !ok);
+    el.classList.toggle('valid-ok', ok);
+    errEl.classList.toggle('show', !ok);
+  }
+  el.addEventListener('input', check);
+  el.addEventListener('blur', check);
+}
+
+attachLiveValidation('phone', v => /^01[0-9]{9}$/.test(v), 'সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমনঃ 01712345678)।');
+attachLiveValidation('senderNumber', v => /^01[0-9]{9}$/.test(v), 'সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমনঃ 01712345678)।');
+attachLiveValidation('email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), 'সঠিক ইমেইল ঠিকানা দিন (যেমনঃ example@gmail.com)।');
+
+// ============ ড্রাফট অটো-সেভ ============
+const DRAFT_KEY = 'fbFormDraftV1';
+const draftFieldIds = ['fullName','phone','idLink','dob','gender','email','division','district','upazila','areaDetail','comment','paymentMethod','txnId','senderNumber'];
+
+function saveDraft(){
+  const draft = {};
+  draftFieldIds.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) draft[id] = el.value;
+  });
+  try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); }catch(err){}
+}
+
+let draftSaveTimer = null;
+function scheduleDraftSave(){
+  clearTimeout(draftSaveTimer);
+  draftSaveTimer = setTimeout(saveDraft, 400);
+}
+
+function clearDraft(){
+  try{ localStorage.removeItem(DRAFT_KEY); }catch(err){}
+  const banner = document.getElementById('draftBanner');
+  if(banner) banner.style.display = 'none';
+}
+
+function restoreDraft(){
+  let draft = null;
+  try{ draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); }catch(err){ draft = null; }
+  if(!draft) return;
+
+  const hasData = Object.values(draft).some(v => v && String(v).trim());
+  if(!hasData) return;
+
+  ['fullName','phone','idLink','dob','gender','email','areaDetail','comment','txnId','senderNumber'].forEach(id=>{
+    if(draft[id]) document.getElementById(id).value = draft[id];
+  });
+
+  if(draft.paymentMethod){
+    paymentSelect.value = draft.paymentMethod;
+    document.querySelectorAll('.pay-method-btn').forEach(btn=>{
+      btn.classList.toggle('selected', btn.dataset.val === draft.paymentMethod);
+    });
+  }
+
+  if(draft.division){
+    divisionSelect.value = draft.division;
+    divisionSelect.dispatchEvent(new Event('change'));
+    if(draft.district){
+      districtSelect.value = draft.district;
+      districtSelect.dispatchEvent(new Event('change'));
+      if(draft.upazila){
+        upazilaSelect.value = draft.upazila;
+      }
+    }
+  }
+
+  const banner = document.getElementById('draftBanner');
+  if(banner) banner.style.display = 'flex';
+}
+
+draftFieldIds.forEach(id=>{
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('input', scheduleDraftSave);
+  if(el.tagName === 'SELECT') el.addEventListener('change', scheduleDraftSave);
+});
+
+restoreDraft();
+
+const clearDraftBtn = document.getElementById('clearDraftBtn');
+if(clearDraftBtn){
+  clearDraftBtn.addEventListener('click', ()=>{
+    if(confirm('আপনার সংরক্ষিত অসম্পূর্ণ তথ্য মুছে ফেলা হবে, আপনি কি নিশ্চিত?')){
+      clearDraft();
+      location.reload();
+    }
+  });
+}
+
 form.addEventListener('submit', async (e)=>{
   e.preventDefault();
 
@@ -1733,6 +1937,7 @@ form.addEventListener('submit', async (e)=>{
     // সাবমিট সফল হওয়ার পর সংখ্যাগুলো আপডেট করা (নতুন আবেদন যোগ হয়েছে)
     loadStats();
     notifyApplicationSuccess(appId);
+    clearDraft();
   }catch(err){
     console.error(err);
     showStatus('err', 'দুঃখিত, পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
