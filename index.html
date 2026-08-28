@@ -787,6 +787,21 @@
     cursor:pointer;
   }
   .download-btn.show{display:block;}
+  .copy-id-btn{
+    display:none;
+    width:100%;
+    margin-top:8px;
+    padding:11px;
+    border:1.5px dashed var(--forest);
+    border-radius:9px;
+    background:transparent;
+    color:var(--forest);
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .copy-id-btn.show{display:block;}
   #receipt{
     position:fixed;
     left:-9999px;
@@ -1122,6 +1137,7 @@
     </div>
     <div class="status" id="status"></div>
     <button type="button" class="download-btn" id="downloadBtn">রশিদ ডাউনলোড করুন (PDF)</button>
+    <button type="button" class="copy-id-btn" id="copyIdBtn">📋 আবেদন নম্বর কপি করুন</button>
     <div class="whatsapp-note" id="whatsappNote">
       <p>উপরের বাটনে চাপলে রশিদ ডাউনলোড হবে এবং শেয়ার মেনু খুলবে — সেখান থেকে WhatsApp সিলেক্ট করে আমাদের 01764324313 নম্বরে পাঠিয়ে দিন। ধন্যবাদ 🙏</p>
     </div>
@@ -1550,6 +1566,8 @@ function resetFormAfterDownload(){
   upazilaSelect.innerHTML = '<option value="">প্রথমে জেলা নির্বাচন করুন</option>';
   downloadBtn.classList.remove('show');
   document.getElementById('whatsappNote').classList.remove('show');
+  const copyIdBtnEl = document.getElementById('copyIdBtn');
+  if(copyIdBtnEl) copyIdBtnEl.classList.remove('show');
   statusBox.className = 'status';
   photoPreviewEl.classList.remove('show');
   newCaptcha();
@@ -1598,6 +1616,23 @@ downloadBtn.addEventListener('click', async ()=>{
     downloadBtn.textContent = 'রশিদ ডাউনলোড করুন (PDF)';
   }
 });
+
+// ============ আবেদন নম্বর কপি করুন ============
+const copyIdBtn = document.getElementById('copyIdBtn');
+if(copyIdBtn){
+  copyIdBtn.addEventListener('click', async ()=>{
+    const idVal = copyIdBtn.dataset.appId || '';
+    if(!idVal) return;
+    try{
+      await navigator.clipboard.writeText(idVal);
+      const original = copyIdBtn.textContent;
+      copyIdBtn.textContent = '✓ কপি হয়েছে';
+      setTimeout(()=>{ copyIdBtn.textContent = original; }, 1800);
+    }catch(err){
+      alert('আবেদন নম্বর: ' + idVal);
+    }
+  });
+}
 
 const checkBtn = document.getElementById('checkBtn');
 const checkResult = document.getElementById('checkResult');
@@ -1924,6 +1959,11 @@ form.addEventListener('submit', async (e)=>{
     return;
   }
 
+  if('onLine' in navigator && !navigator.onLine){
+    showStatus('err', 'ইন্টারনেট সংযোগ নেই। সংযোগ চেক করে আবার চেষ্টা করুন।');
+    return;
+  }
+
   const dobVal = document.getElementById('dob').value;
   if(!dobVal){
     showStatus('err', 'জন্ম তারিখ দিন।');
@@ -2019,6 +2059,13 @@ form.addEventListener('submit', async (e)=>{
       return;
     }
 
+    if(submitData.status === 'error'){
+      showStatus('err', submitData.error || 'দুঃখিত, তথ্য যাচাই করা যায়নি। আবার চেষ্টা করুন।');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'রেজিস্ট্রেশন সম্পন্ন করুন';
+      return;
+    }
+
     showStatus('ok', '✓ রেজিস্ট্রেশন সফল হয়েছে। ধন্যবাদ!');
 
     const now = new Date();
@@ -2046,6 +2093,12 @@ form.addEventListener('submit', async (e)=>{
     }
     downloadBtn.classList.add('show');
     document.getElementById('whatsappNote').classList.add('show');
+    const copyIdBtn = document.getElementById('copyIdBtn');
+    copyIdBtn.classList.add('show');
+    copyIdBtn.dataset.appId = appId;
+    // পরে যাচাই করা সহজ করতে অ্যাপ আইডি স্বয়ংক্রিয়ভাবে "অবস্থা যাচাই" ঘরে বসানো
+    const checkIdField = document.getElementById('checkId');
+    if(checkIdField) checkIdField.value = appId;
 
     // সাবমিট সফল হওয়ার পর সংখ্যাগুলো আপডেট করা (নতুন আবেদন যোগ হয়েছে)
     loadStats();
