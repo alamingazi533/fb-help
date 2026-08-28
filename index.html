@@ -7,7 +7,7 @@
 <link rel="icon" type="image/jpeg" href="profile.jpg">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="theme-color" content="#1F3B2C">
+<meta name="theme-color" content="#1877F2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FB সমাধান">
@@ -30,23 +30,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
-    --paper:#FBF6EA;
-    --paper-dark:#F2EBDA;
-    --ink:#22281F;
-    --forest:#1F3B2C;
-    --forest-2:#2C4F3A;
-    --gold:#B8863B;
-    --gold-light:#D9AE6B;
-    --maroon:#7A2E2E;
-    --line:#D8CDAE;
-    --ok:#2C6B4F;
+    --paper:#F0F2F5;
+    --paper-dark:#E4E6EB;
+    --ink:#050505;
+    --forest:#1877F2;
+    --forest-2:#0C5DD0;
+    --gold:#1877F2;
+    --gold-light:#8FBDFB;
+    --maroon:#FA383E;
+    --line:#DADDE1;
+    --ok:#42B72A;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
     background:var(--paper);
     background-image:
-      radial-gradient(circle at 1px 1px, rgba(31,59,44,0.06) 1px, transparent 0);
+      radial-gradient(circle at 1px 1px, rgba(24,119,242,0.06) 1px, transparent 0);
     background-size:22px 22px;
     font-family:'Hind Siliguri', sans-serif;
     color:var(--ink);
@@ -113,7 +113,7 @@
     background:var(--paper);
     border:1px solid var(--line);
     border-radius:14px;
-    box-shadow:0 18px 40px -20px rgba(31,59,44,0.35);
+    box-shadow:0 18px 40px -20px rgba(24,119,242,0.35);
     padding:26px 20px 28px;
   }
   .section-label{
@@ -164,12 +164,12 @@
   }
   select:disabled{
     background-color:var(--paper-dark);
-    color:#9a9587;
+    color:#8A8D91;
     cursor:not-allowed;
   }
   input:focus, select:focus, textarea:focus{
     border-color:var(--forest);
-    box-shadow:0 0 0 3px rgba(31,59,44,0.12);
+    box-shadow:0 0 0 3px rgba(24,119,242,0.12);
   }
   textarea{resize:vertical; min-height:70px;}
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
@@ -180,7 +180,7 @@
   }
   .photo-preview.show{display:block;}
   .field-hint{
-    font-size:12px; color:#8a8571; margin-top:-8px; margin-bottom:8px;
+    font-size:12px; color:#65676B; margin-top:-8px; margin-bottom:8px;
   }
   button[type=submit]{
     width:100%;
@@ -253,12 +253,12 @@
     margin-top:16px;
     padding:16px;
     border-radius:10px;
-    background:linear-gradient(135deg, #1F3B2C 0%, #2C4F3A 100%);
+    background:linear-gradient(135deg, #1877F2 0%, #0C5DD0 100%);
     text-align:center;
   }
   .whatsapp-note.show{display:block;}
   .whatsapp-note p{
-    color:#FBF6EA;
+    color:#F0F2F5;
     font-size:17px;
     font-weight:700;
     line-height:1.6;
@@ -280,7 +280,7 @@
     background:var(--paper);
     border:1px solid var(--line);
     border-radius:14px;
-    box-shadow:0 18px 40px -20px rgba(31,59,44,0.35);
+    box-shadow:0 18px 40px -20px rgba(24,119,242,0.35);
     overflow:hidden;
   }
   .stat-item{
@@ -299,7 +299,7 @@
   }
   .stat-label{
     font-size:11px;
-    color:#8a8571;
+    color:#65676B;
     margin-top:3px;
     display:block;
   }
@@ -349,7 +349,7 @@
     background:var(--paper);
     border:1px solid var(--line);
     border-radius:14px;
-    box-shadow:0 18px 40px -20px rgba(31,59,44,0.35);
+    box-shadow:0 18px 40px -20px rgba(24,119,242,0.35);
     padding:22px 20px;
     margin-top:16px;
   }
@@ -367,7 +367,7 @@
     background:var(--paper);
     border:1px solid var(--line);
     border-radius:14px;
-    box-shadow:0 18px 40px -20px rgba(31,59,44,0.35);
+    box-shadow:0 18px 40px -20px rgba(24,119,242,0.35);
     padding:22px 20px 16px;
     margin-top:16px;
   }
@@ -421,13 +421,13 @@
     border-radius:50%;
     background:var(--paper-dark);
     border:2px solid var(--line);
-    color:#9a9587;
+    color:#8A8D91;
     display:flex; align-items:center; justify-content:center;
     font-weight:700; font-size:14px;
     transition:all .2s;
   }
   .step-dot label{
-    font-size:11px; color:#9a9587; margin:0; font-weight:600;
+    font-size:11px; color:#8A8D91; margin:0; font-weight:600;
   }
   .step-dot.active span{
     background:var(--forest); border-color:var(--forest); color:var(--paper);
@@ -509,7 +509,7 @@
     background:var(--paper);
     border:1px solid var(--line);
     border-radius:14px;
-    box-shadow:0 18px 40px -20px rgba(31,59,44,0.35);
+    box-shadow:0 18px 40px -20px rgba(24,119,242,0.35);
     padding:22px 20px 24px;
     margin-top:16px;
   }
@@ -557,7 +557,7 @@
   footer{
     text-align:center;
     font-size:12px;
-    color:#8a8571;
+    color:#65676B;
     margin-top:20px;
   }
   .fee-box{
@@ -621,13 +621,13 @@
     left:-9999px;
     top:0;
     width:480px;
-    background:#FBF6EA;
+    background:#F0F2F5;
     font-family:'Hind Siliguri', sans-serif;
-    color:#22281F;
+    color:#050505;
     position:relative;
     overflow:hidden;
-    border:1px solid #D8CDAE;
-    box-shadow:0 0 0 6px #FBF6EA, 0 0 0 7px #D9AE6B;
+    border:1px solid #DADDE1;
+    box-shadow:0 0 0 6px #F0F2F5, 0 0 0 7px #8FBDFB;
   }
   #receipt .r-watermark{
     position:absolute;
@@ -636,7 +636,7 @@
     font-family:'Noto Serif Bengali', serif;
     font-size:64px;
     font-weight:700;
-    color:#1F3B2C;
+    color:#1877F2;
     opacity:0.045;
     white-space:nowrap;
     pointer-events:none;
@@ -646,11 +646,11 @@
     position:absolute;
     top:18px; right:20px;
     width:78px; height:78px;
-    border:2px dashed #D9AE6B;
+    border:2px dashed #8FBDFB;
     border-radius:50%;
     display:flex; align-items:center; justify-content:center;
     transform:rotate(-14deg);
-    color:#D9AE6B;
+    color:#8FBDFB;
     font-size:11px;
     font-weight:700;
     text-align:center;
@@ -659,8 +659,8 @@
     letter-spacing:.02em;
   }
   #receipt .r-header{
-    background:linear-gradient(135deg, #1F3B2C 0%, #2C4F3A 100%);
-    color:#FBF6EA;
+    background:linear-gradient(135deg, #1877F2 0%, #0C5DD0 100%);
+    color:#F0F2F5;
     padding:30px 20px 26px;
     text-align:center;
     position:relative;
@@ -669,11 +669,11 @@
   #receipt .r-header img{
     width:100px; height:100px; border-radius:50%; object-fit:cover;
     object-position:center 25%;
-    border:3px solid #D9AE6B;
+    border:3px solid #8FBDFB;
     margin-bottom:10px;
   }
   #receipt .r-eyebrow{
-    font-size:11px; letter-spacing:.12em; color:#D9AE6B; font-weight:600; margin-bottom:6px;
+    font-size:11px; letter-spacing:.12em; color:#8FBDFB; font-weight:600; margin-bottom:6px;
   }
   #receipt .r-title{
     font-family:'Noto Serif Bengali', serif;
@@ -684,25 +684,25 @@
     font-size:13px; color:#DCE6DD; margin-top:6px;
   }
   #receipt .r-status{
-    background:#E6F0EA; color:#2C6B4F; border:1px solid #BFDBC9;
+    background:#E6F0EA; color:#42B72A; border:1px solid #BFDBC9;
     text-align:center; padding:10px; font-size:14px; font-weight:600;
     position:relative; z-index:1;
   }
   #receipt .r-body{ padding:22px 24px 30px; position:relative; z-index:1; }
   #receipt .r-idbox{
-    background:#1F3B2C; color:#FBF6EA; border-radius:10px; padding:14px 16px;
+    background:#1877F2; color:#F0F2F5; border-radius:10px; padding:14px 16px;
     display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;
   }
-  #receipt .r-idbox .r-idlabel{ font-size:11px; color:#D9AE6B; letter-spacing:.08em; margin-bottom:3px; }
+  #receipt .r-idbox .r-idlabel{ font-size:11px; color:#8FBDFB; letter-spacing:.08em; margin-bottom:3px; }
   #receipt .r-idbox .r-idvalue{ font-size:19px; font-weight:700; letter-spacing:.03em; }
   #receipt .r-applicant-photo{
     width:56px; height:56px; border-radius:8px; object-fit:cover;
-    border:2px solid #D9AE6B; flex-shrink:0;
+    border:2px solid #8FBDFB; flex-shrink:0;
   }
   #receipt .r-section{
-    font-size:12px; letter-spacing:.06em; color:#B8863B; font-weight:700;
+    font-size:12px; letter-spacing:.06em; color:#1877F2; font-weight:700;
     text-transform:uppercase; margin:20px 0 10px;
-    border-bottom:1px solid #D8CDAE; padding-bottom:6px;
+    border-bottom:1px solid #DADDE1; padding-bottom:6px;
     display:flex; align-items:center; gap:6px;
   }
   #receipt .r-section:first-child{ margin-top:0; }
@@ -714,23 +714,23 @@
     font-size:14px;
   }
   #receipt .r-row .label{ color:#7a7460; }
-  #receipt .r-row .value{ font-weight:600; color:#1F3B2C; text-align:right; max-width:260px; }
+  #receipt .r-row .value{ font-weight:600; color:#1877F2; text-align:right; max-width:260px; }
   #receipt #r-idlink{ font-size:12px; word-break:break-all; max-width:280px; }
   #receipt .r-comment{
-    font-size:13.5px; line-height:1.6; background:#F2EBDA; border-radius:8px;
-    padding:12px 14px; margin-top:8px; color:#22281F;
+    font-size:13.5px; line-height:1.6; background:#E4E6EB; border-radius:8px;
+    padding:12px 14px; margin-top:8px; color:#050505;
   }
   #receipt .r-foot{
     margin-top:22px;
     text-align:center;
     font-size:11.5px;
-    color:#9a9587;
-    border-top:1px solid #D8CDAE;
+    color:#8A8D91;
+    border-top:1px solid #DADDE1;
     padding-top:14px;
     line-height:1.8;
   }
   #receipt .r-foot .r-contact{
-    color:#2C4F3A; font-weight:600; font-size:12.5px;
+    color:#0C5DD0; font-weight:600; font-size:12.5px;
   }
 </style>
 </head>
@@ -930,13 +930,6 @@
   </div>
 
   <div class="testi-card">
-    <div class="section-label" style="margin-top:0;">কাস্টমারদের মতামত</div>
-    <div id="reviewsContainer">
-      <p style="font-size:13.5px; color:#8a8571; text-align:center; padding:10px 0;">রিভিউ লোড হচ্ছে...</p>
-    </div>
-  </div>
-
-  <div class="testi-card">
     <div class="section-label" style="margin-top:0;">আপনার অভিজ্ঞতা জানান</div>
     <div id="reviewFormBox">
       <label>রেটিং দিন <span class="req">*</span></label>
@@ -949,6 +942,13 @@
       <textarea id="reviewText" placeholder="আপনার অভিজ্ঞতা লিখুন..."></textarea>
       <button type="button" id="reviewSubmitBtn" style="width:100%; margin-top:14px; padding:13px; border:none; border-radius:9px; background:var(--forest); color:var(--paper); font-family:inherit; font-size:15px; font-weight:700; cursor:pointer;">রিভিউ জমা দিন</button>
       <div id="reviewMsg" style="display:none; margin-top:12px; padding:11px 13px; border-radius:8px; font-size:13.5px;"></div>
+    </div>
+  </div>
+
+  <div class="testi-card">
+    <div class="section-label" style="margin-top:0;">কাস্টমারদের মতামত</div>
+    <div id="reviewsContainer">
+      <p style="font-size:13.5px; color:#65676B; text-align:center; padding:10px 0;">রিভিউ লোড হচ্ছে...</p>
     </div>
   </div>
 
@@ -1607,7 +1607,7 @@ form.addEventListener('submit', async (e)=>{
 function renderStars(container, val){
   container.querySelectorAll('span').forEach(s=>{
     s.textContent = parseInt(s.dataset.val,10) <= val ? '★' : '☆';
-    s.style.color = parseInt(s.dataset.val,10) <= val ? '#B8863B' : '#8a8571';
+    s.style.color = parseInt(s.dataset.val,10) <= val ? '#1877F2' : '#65676B';
   });
 }
 
@@ -1678,7 +1678,7 @@ function loadReviews(){
       }
 
       if(!data.success || !data.reviews || data.reviews.length === 0){
-        container.innerHTML = '<p style="font-size:13.5px; color:#8a8571; text-align:center; padding:10px 0;">এখনো কোনো রিভিউ নেই — প্রথম রিভিউ দিন!</p>';
+        container.innerHTML = '<p style="font-size:13.5px; color:#65676B; text-align:center; padding:10px 0;">এখনো কোনো রিভিউ নেই — প্রথম রিভিউ দিন!</p>';
         return;
       }
       container.innerHTML = data.reviews.map(rev => {
@@ -1693,7 +1693,7 @@ function loadReviews(){
       }).join('');
     })
     .catch(()=>{
-      container.innerHTML = '<p style="font-size:13.5px; color:#8a8571; text-align:center; padding:10px 0;">রিভিউ লোড করতে সমস্যা হয়েছে।</p>';
+      container.innerHTML = '<p style="font-size:13.5px; color:#65676B; text-align:center; padding:10px 0;">রিভিউ লোড করতে সমস্যা হয়েছে।</p>';
     });
 }
 loadReviews();
