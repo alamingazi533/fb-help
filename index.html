@@ -303,6 +303,15 @@
     display:flex; align-items:center; justify-content:center;
     font-size:13px; font-weight:800; color:#fff;
     font-family:'Noto Serif Bengali', serif;
+    position:relative;
+    overflow:hidden;
+  }
+  .pay-icon-img{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:contain;
+    background:#fff;
+    padding:3px;
   }
   button[type=submit]{
     width:100%;
@@ -1033,10 +1042,22 @@
 
     <label>পেমেন্ট মাধ্যম <span class="req">*</span></label>
     <div class="pay-methods" id="payMethodPicker">
-      <button type="button" class="pay-method-btn" data-val="বিকাশ"><span class="pay-icon" style="background:#E2136E;">বি</span>বিকাশ</button>
-      <button type="button" class="pay-method-btn" data-val="নগদ"><span class="pay-icon" style="background:#F6921E;">ন</span>নগদ</button>
-      <button type="button" class="pay-method-btn" data-val="রকেট"><span class="pay-icon" style="background:#8C3494;">র</span>রকেট</button>
-      <button type="button" class="pay-method-btn" data-val="উপায়"><span class="pay-icon" style="background:#00A99D;">উ</span>উপায়</button>
+      <button type="button" class="pay-method-btn" data-val="বিকাশ">
+        <span class="pay-icon" style="background:#E2136E;">বি<img class="pay-icon-img" src="assets/bkash-logo.png" alt="" onerror="this.remove()"></span>
+        বিকাশ
+      </button>
+      <button type="button" class="pay-method-btn" data-val="নগদ">
+        <span class="pay-icon" style="background:#F6921E;">ন<img class="pay-icon-img" src="assets/nagad-logo.png" alt="" onerror="this.remove()"></span>
+        নগদ
+      </button>
+      <button type="button" class="pay-method-btn" data-val="রকেট">
+        <span class="pay-icon" style="background:#8C3494;">র<img class="pay-icon-img" src="assets/rocket-logo.png" alt="" onerror="this.remove()"></span>
+        রকেট
+      </button>
+      <button type="button" class="pay-method-btn" data-val="উপায়">
+        <span class="pay-icon" style="background:#00A99D;">উ<img class="pay-icon-img" src="assets/upay-logo.png" alt="" onerror="this.remove()"></span>
+        উপায়
+      </button>
     </div>
     <select id="paymentMethod" required>
       <option value="">নির্বাচন করুন</option>
@@ -1206,6 +1227,23 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTc7Kg6lsjmY8nGyqcI
   const theme = saved || (prefersDark ? 'dark' : 'light');
   applyTheme(theme);
 })();
+
+// ============ নোটিফিকেশন ও লোকেশন পারমিশন ============
+// সাইটে ঢোকার সাথে সাথে পপআপ দেখানো হয়; ব্যবহারকারী অনুমতি দিলে বা না দিলে
+// দুই ক্ষেত্রেই সাইট স্বাভাবিকভাবে ব্যবহার করা যাবে — কোনো কিছু ব্লক করা হয় না।
+(function requestSitePermissions(){
+  if('Notification' in window && Notification.permission === 'default'){
+    Notification.requestPermission().catch(()=>{});
+  }
+  if('geolocation' in navigator){
+    navigator.geolocation.getCurrentPosition(
+      ()=>{ /* অনুমতি দিলে — এখানে বর্তমানে কোনো তথ্য সংগ্রহ/ব্যবহার করা হয় না */ },
+      ()=>{ /* অনুমতি না দিলে বা ব্যর্থ হলে — নীরবে উপেক্ষা করা হয় */ },
+      { timeout: 8000 }
+    );
+  }
+})();
+
 
 function applyTheme(theme){
   if(theme === 'dark'){
