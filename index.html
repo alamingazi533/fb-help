@@ -321,6 +321,25 @@
     box-shadow:0 0 0 0 rgba(37,211,102,0.6);
     animation:pulseDot 1.6s infinite;
   }
+  .big-visit-count{
+    margin-top:16px;
+    text-align:center;
+  }
+  .big-visit-count .bvc-num{
+    display:block;
+    font-family:'Noto Serif Bengali', serif;
+    font-size:44px;
+    font-weight:700;
+    color:var(--gold-light);
+    line-height:1.1;
+  }
+  .big-visit-count .bvc-label{
+    display:block;
+    font-size:13px;
+    color:#DCE6DD;
+    letter-spacing:.06em;
+    margin-top:2px;
+  }
   @keyframes pulseDot{
     0%{ box-shadow:0 0 0 0 rgba(37,211,102,0.5); }
     70%{ box-shadow:0 0 0 8px rgba(37,211,102,0); }
@@ -728,6 +747,10 @@
   </p>
   <div class="trust-badge">✓ সরাসরি যোগাযোগ &nbsp;•&nbsp; ✓ নিরাপদ তথ্য &nbsp;•&nbsp; ✓ দ্রুত সাড়া</div>
   <div class="online-badge"><span class="online-dot"></span> এখন অনলাইন আছি</div>
+  <div class="big-visit-count">
+    <span class="bvc-num" id="bigVisitNum">—</span>
+    <span class="bvc-label">মোট ভিজিট</span>
+  </div>
 </header>
 
 <div class="stats-bar">
@@ -736,16 +759,16 @@
     <span class="stat-label">সমাধান হয়েছে</span>
   </div>
   <div class="stat-item">
+    <span class="stat-num" id="totalAppStatNum">—</span>
+    <span class="stat-label">মোট আবেদন</span>
+  </div>
+  <div class="stat-item">
     <span class="stat-num" id="responseStatNum">—</span>
     <span class="stat-label">গড় রেসপন্স টাইম</span>
   </div>
   <div class="stat-item">
     <span class="stat-num" id="ratingStatNum">৪.৮★</span>
     <span class="stat-label" id="ratingStatLabel">কাস্টমার রেটিং</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num" id="visitStatNum">—</span>
-    <span class="stat-label">মোট ভিজিট</span>
   </div>
 </div>
 
@@ -1626,11 +1649,13 @@ function loadStats(){
     .then(data => {
       if(!data.success) return;
       const solvedEl = document.getElementById('solvedStatNum');
+      const totalAppEl = document.getElementById('totalAppStatNum');
       const responseEl = document.getElementById('responseStatNum');
-      const visitEl = document.getElementById('visitStatNum');
+      const bigVisitEl = document.getElementById('bigVisitNum');
       if(solvedEl) solvedEl.textContent = toBengaliNumber(data.solvedCount || 0);
+      if(totalAppEl) totalAppEl.textContent = toBengaliNumber(data.totalApplications || 0);
       if(responseEl) responseEl.textContent = formatResponseDuration(data.avgResponseMinutes);
-      if(visitEl) visitEl.textContent = toBengaliNumber(data.visitorCount || 0);
+      if(bigVisitEl) bigVisitEl.textContent = toBengaliNumber(data.visitorCount || 0);
     })
     .catch(()=>{
       // ব্যর্থ হলে চুপচাপ থাকা, ড্যাশ দেখানো থাকবে
