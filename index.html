@@ -541,6 +541,35 @@
     opacity:1;
     margin-top:9px;
   }
+  .faq-item.open .faq-a.privacy-text{ max-height:900px; }
+  .back-to-top{
+    position:fixed;
+    right:18px;
+    bottom:22px;
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    background:var(--forest);
+    color:#fff;
+    border:none;
+    box-shadow:0 10px 20px -6px rgba(24,119,242,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+    cursor:pointer;
+    z-index:60;
+    opacity:0;
+    transform:translateY(10px);
+    pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease, background .15s;
+  }
+  .back-to-top.show{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+  .back-to-top:active{ background:var(--forest-2); }
   .step-progress{
     display:flex;
     align-items:flex-start;
@@ -937,6 +966,9 @@
 <main>
   <form id="regForm">
 
+    <input type="text" id="hpField" name="website" autocomplete="off" tabindex="-1" aria-hidden="true"
+      style="position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; opacity:0;">
+
     <div class="draft-restore-note" id="draftBanner">
       <span>✓ আপনার আগের অসম্পূর্ণ তথ্য পুনরুদ্ধার করা হয়েছে।</span>
       <button type="button" id="clearDraftBtn">মুছে নতুন শুরু</button>
@@ -1161,10 +1193,24 @@
       </div>
       <div class="faq-a">সমস্যার ধরন অনুযায়ী খরচ ভিন্ন হয়। আবেদন যাচাইয়ের পর সরাসরি আলোচনা করে খরচ জানিয়ে দেওয়া হয় — কোনো কাজ ফ্রি করা হয় না।</div>
     </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>গোপনীয়তা নীতি</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="faq-a privacy-text">
+        আপনার দেওয়া নাম, মোবাইল নম্বর, ইমেইল, জন্ম তারিখ, ঠিকানা, ছবি ও ফেসবুক প্রোফাইল লিংক শুধুমাত্র আপনার আবেদন যাচাই ও যোগাযোগের কাজে ব্যবহার করা হয়। এই তথ্য আমাদের নিজস্ব Google Sheet ও Google Drive-এ সংরক্ষিত থাকে এবং তৃতীয় কোনো পক্ষের সাথে শেয়ার বা বিক্রি করা হয় না।<br><br>
+        পেমেন্ট স্ক্রিনশট ও ট্রানজেকশন আইডি শুধু ফি পরিশোধ যাচাইয়ের জন্য রাখা হয়।<br><br>
+        নোটিফিকেশন বা লোকেশন পারমিশন সম্পূর্ণ ঐচ্ছিক — অনুমতি না দিলেও ফর্ম পূরণ ও রেজিস্ট্রেশন করা যাবে।<br><br>
+        আপনার তথ্য মুছে ফেলতে বা সংক্রান্ত কোনো প্রশ্ন থাকলে উপরের WhatsApp নম্বরে যোগাযোগ করুন।
+      </div>
+    </div>
   </div>
 
   <footer>আপনার তথ্য নিরাপদে সংরক্ষণ করা হবে</footer>
 </main>
+
+<button type="button" class="back-to-top" id="backToTopBtn" aria-label="উপরে ফিরুন">↑</button>
 
 <div id="receipt">
   <div class="r-watermark">✓ যাচাইকৃত</div>
@@ -1754,6 +1800,18 @@ function attachLiveValidation(id, testFn, errorMsg){
 attachLiveValidation('phone', v => /^01[0-9]{9}$/.test(v), 'সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমনঃ 01712345678)।');
 attachLiveValidation('senderNumber', v => /^01[0-9]{9}$/.test(v), 'সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমনঃ 01712345678)।');
 attachLiveValidation('email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), 'সঠিক ইমেইল ঠিকানা দিন (যেমনঃ example@gmail.com)।');
+attachLiveValidation('txnId', v => v.replace(/\s/g,'').length >= 6, 'ট্রানজেকশন আইডি কমপক্ষে ৬ ক্যারেক্টারের হতে হবে।');
+
+// ============ উপরে ফিরুন বাটন ============
+const backToTopBtn = document.getElementById('backToTopBtn');
+if(backToTopBtn){
+  window.addEventListener('scroll', ()=>{
+    backToTopBtn.classList.toggle('show', window.scrollY > 420);
+  }, { passive: true });
+  backToTopBtn.addEventListener('click', ()=>{
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
 
 // ============ ড্রাফট অটো-সেভ ============
 const DRAFT_KEY = 'fbFormDraftV1';
@@ -1836,6 +1894,14 @@ if(clearDraftBtn){
 
 form.addEventListener('submit', async (e)=>{
   e.preventDefault();
+
+  // ============ হানিপট চেক (বট প্রতিরোধ) ============
+  // এই ফিল্ডটা মানুষের কাছে অদৃশ্য; শুধু বট এটা পূরণ করে। পূরণ থাকলে
+  // নীরবে বাতিল করা হয়, কোনো এরর দেখানো হয় না যাতে বট বুঝতে না পারে।
+  const hpField = document.getElementById('hpField');
+  if(hpField && hpField.value.trim()){
+    return;
+  }
 
   if(!document.getElementById('confirmCheck').checked){
     showStatus('err', 'সকল তথ্য সঠিক থাকলে চেক বক্সে ক্লিক করুন।');
