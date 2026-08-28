@@ -41,6 +41,11 @@
     --line:#DADDE1;
     --ok:#42B72A;
     --star:#F7B928;
+    --muted:#65676B;
+    --ok-bg:#E6F0EA;
+    --ok-border:#BFDBC9;
+    --err-bg:#F6E7E4;
+    --err-border:#E3C3BC;
   }
   [data-theme="dark"]{
     --paper:#18191A;
@@ -54,6 +59,11 @@
     --line:#3A3B3C;
     --ok:#45BD62;
     --star:#F7B928;
+    --muted:#B0B3B8;
+    --ok-bg:rgba(69,189,98,0.15);
+    --ok-border:rgba(69,189,98,0.4);
+    --err-bg:rgba(240,40,73,0.15);
+    --err-border:rgba(240,40,73,0.4);
   }
   [data-theme="dark"] body{ background-image:none; }
   [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea{
@@ -207,7 +217,7 @@
   }
   select:disabled{
     background-color:var(--paper-dark);
-    color:#8A8D91;
+    color:var(--muted);
     cursor:not-allowed;
   }
   input:focus, select:focus, textarea:focus{
@@ -223,7 +233,7 @@
   }
   .photo-preview.show{display:block;}
   .field-hint{
-    font-size:12px; color:#65676B; margin-top:-8px; margin-bottom:8px;
+    font-size:12px; color:var(--muted); margin-top:-8px; margin-bottom:8px;
   }
   button[type=submit]{
     width:100%;
@@ -290,8 +300,8 @@
     display:none;
   }
   .status.show{display:block;}
-  .status.ok{background:#E6F0EA; color:var(--ok); border:1px solid #BFDBC9;}
-  .status.err{background:#F6E7E4; color:var(--maroon); border:1px solid #E3C3BC;}
+  .status.ok{background:var(--ok-bg); color:var(--ok); border:1px solid var(--ok-border);}
+  .status.err{background:var(--err-bg); color:var(--maroon); border:1px solid var(--err-border);}
   .status.loading{background:var(--paper-dark); color:var(--forest);}
   .whatsapp-note{
     display:none;
@@ -344,7 +354,7 @@
   }
   .stat-label{
     font-size:11px;
-    color:#65676B;
+    color:var(--muted);
     margin-top:3px;
     display:block;
   }
@@ -445,7 +455,7 @@
     transition:max-height .3s cubic-bezier(.4,0,.2,1), opacity .25s ease, margin-top .3s ease;
     opacity:0;
     font-size:13.5px;
-    color:#4a4a4a;
+    color:var(--muted);
     line-height:1.6;
   }
   .faq-item.open .faq-a{
@@ -471,13 +481,13 @@
     border-radius:50%;
     background:var(--paper-dark);
     border:2px solid var(--line);
-    color:#8A8D91;
+    color:var(--muted);
     display:flex; align-items:center; justify-content:center;
     font-weight:700; font-size:14px;
     transition:all .2s;
   }
   .step-dot label{
-    font-size:11px; color:#8A8D91; margin:0; font-weight:600;
+    font-size:11px; color:var(--muted); margin:0; font-weight:600;
   }
   .step-dot.active span{
     background:var(--forest); border-color:var(--forest); color:var(--paper);
@@ -524,7 +534,7 @@
   .step-back-btn{
     flex:1;
     border:1.5px solid var(--forest);
-    background:#fff;
+    background:var(--paper);
     color:var(--forest);
     margin-top:0;
   }
@@ -593,10 +603,10 @@
     line-height:1.7;
   }
   .check-result .cr-found{
-    background:#E6F0EA; border:1px solid #BFDBC9; color:var(--ok);
+    background:var(--ok-bg); border:1px solid var(--ok-border); color:var(--ok);
   }
   .check-result .cr-notfound{
-    background:#F6E7E4; border:1px solid #E3C3BC; color:var(--maroon);
+    background:var(--err-bg); border:1px solid var(--err-border); color:var(--maroon);
   }
   .check-result .cr-status-badge{
     display:inline-block;
@@ -611,7 +621,7 @@
   footer{
     text-align:center;
     font-size:12px;
-    color:#65676B;
+    color:var(--muted);
     margin-top:20px;
   }
   .fee-box{
@@ -648,7 +658,7 @@
     gap:8px;
   }
   .fee-method{
-    background:#fff;
+    background:var(--paper);
     border:1px solid var(--line);
     border-radius:7px;
     padding:9px 12px;
@@ -662,7 +672,7 @@
     padding:13px;
     border:1.5px solid var(--forest);
     border-radius:9px;
-    background:#fff;
+    background:var(--paper);
     color:var(--forest);
     font-family:inherit;
     font-size:15px;
@@ -738,7 +748,7 @@
     font-size:13px; color:#DCE6DD; margin-top:6px;
   }
   #receipt .r-status{
-    background:#E6F0EA; color:#42B72A; border:1px solid #BFDBC9;
+    background:var(--ok-bg); color:var(--ok); border:1px solid var(--ok-border);
     text-align:center; padding:10px; font-size:14px; font-weight:600;
     position:relative; z-index:1;
   }
@@ -778,7 +788,7 @@
     margin-top:22px;
     text-align:center;
     font-size:11.5px;
-    color:#8A8D91;
+    color:var(--muted);
     border-top:1px solid #DADDE1;
     padding-top:14px;
     line-height:1.8;
@@ -1012,7 +1022,7 @@
   <div class="testi-card">
     <div class="section-label" style="margin-top:0;">কাস্টমারদের মতামত</div>
     <div id="reviewsContainer">
-      <p style="font-size:13.5px; color:#65676B; text-align:center; padding:10px 0;">রিভিউ লোড হচ্ছে...</p>
+      <p style="font-size:13.5px; color:var(--muted); text-align:center; padding:10px 0;">রিভিউ লোড হচ্ছে...</p>
     </div>
   </div>
 
@@ -1734,7 +1744,7 @@ form.addEventListener('submit', async (e)=>{
 function renderStars(container, val){
   container.querySelectorAll('span').forEach(s=>{
     s.textContent = parseInt(s.dataset.val,10) <= val ? '★' : '☆';
-    s.style.color = parseInt(s.dataset.val,10) <= val ? '#F7B928' : '#65676B';
+    s.style.color = parseInt(s.dataset.val,10) <= val ? '#F7B928' : 'var(--muted)';
   });
 }
 
@@ -1805,7 +1815,7 @@ function loadReviews(){
       }
 
       if(!data.success || !data.reviews || data.reviews.length === 0){
-        container.innerHTML = '<p style="font-size:13.5px; color:#65676B; text-align:center; padding:10px 0;">এখনো কোনো রিভিউ নেই — প্রথম রিভিউ দিন!</p>';
+        container.innerHTML = '<p style="font-size:13.5px; color:var(--muted); text-align:center; padding:10px 0;">এখনো কোনো রিভিউ নেই — প্রথম রিভিউ দিন!</p>';
         return;
       }
       container.innerHTML = data.reviews.map(rev => {
@@ -1820,7 +1830,7 @@ function loadReviews(){
       }).join('');
     })
     .catch(()=>{
-      container.innerHTML = '<p style="font-size:13.5px; color:#65676B; text-align:center; padding:10px 0;">রিভিউ লোড করতে সমস্যা হয়েছে।</p>';
+      container.innerHTML = '<p style="font-size:13.5px; color:var(--muted); text-align:center; padding:10px 0;">রিভিউ লোড করতে সমস্যা হয়েছে।</p>';
     });
 }
 loadReviews();
@@ -1840,14 +1850,14 @@ if(reviewSubmitBtn){
 
     if(selectedRating < 1){
       msgBox.style.display = 'block';
-      msgBox.style.background = '#F6E7E4';
+      msgBox.style.background = 'var(--err-bg)';
       msgBox.style.color = 'var(--maroon)';
       msgBox.textContent = 'রেটিং দিন (কমপক্ষে ১ তারা)।';
       return;
     }
     if(!text){
       msgBox.style.display = 'block';
-      msgBox.style.background = '#F6E7E4';
+      msgBox.style.background = 'var(--err-bg)';
       msgBox.style.color = 'var(--maroon)';
       msgBox.textContent = 'আপনার মতামত লিখুন।';
       return;
@@ -1864,7 +1874,7 @@ if(reviewSubmitBtn){
         body: JSON.stringify({ action: 'submitReview', rating: selectedRating, text: text, name: name })
       });
       msgBox.style.display = 'block';
-      msgBox.style.background = '#E6F0EA';
+      msgBox.style.background = 'var(--ok-bg)';
       msgBox.style.color = 'var(--ok)';
       msgBox.textContent = '✓ ধন্যবাদ! আপনার রিভিউ জমা হয়েছে, অনুমোদনের পর এখানে দেখানো হবে।';
       document.getElementById('reviewText').value = '';
@@ -1873,7 +1883,7 @@ if(reviewSubmitBtn){
       renderStars(starPicker, 0);
     }catch(err){
       msgBox.style.display = 'block';
-      msgBox.style.background = '#F6E7E4';
+      msgBox.style.background = 'var(--err-bg)';
       msgBox.style.color = 'var(--maroon)';
       msgBox.textContent = 'দুঃখিত, রিভিউ জমা দিতে সমস্যা হয়েছে।';
     }finally{
