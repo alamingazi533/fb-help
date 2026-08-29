@@ -739,9 +739,17 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
+    flex-wrap:wrap;
+    row-gap:8px;
     gap:10px;
   }
-  .fee-method .fee-method-label{ flex-shrink:0; }
+  .fee-method .fee-method-label{ flex-shrink:0; display:flex; align-items:center; gap:6px; }
+  .fee-method .fee-logo{
+    width:22px; height:22px;
+    object-fit:contain;
+    border-radius:4px;
+    flex-shrink:0;
+  }
   .fee-method .fee-number{
     font-size:16px;
     font-weight:700;
@@ -1077,10 +1085,10 @@
       <p class="fee-amount">আবেদন ফি মাত্র <strong>২০ টাকা</strong></p>
       <p class="fee-note">এটা করা হয়েছে কারণ, মজা করে যাতে কেউ আবেদন না করতে পারে তার জন্য ফি রাখা হচ্ছে।</p>
       <div class="fee-methods">
-        <div class="fee-method" id="feeMethod-বিকাশ"><span class="fee-method-label"><strong>বিকাশ</strong> (পার্সোনাল)</span><span class="fee-number">01309519503</span><button type="button" class="copy-btn" onclick="copyFeeNumber(this,'01309519503','বিকাশ')">📋 কপি</button></div>
-        <div class="fee-method" id="feeMethod-নগদ"><span class="fee-method-label"><strong>নগদ</strong> (পার্সোনাল)</span><span class="fee-number">01764324313</span><button type="button" class="copy-btn" onclick="copyFeeNumber(this,'01764324313','নগদ')">📋 কপি</button></div>
-        <div class="fee-method" id="feeMethod-রকেট"><span class="fee-method-label"><strong>রকেট</strong> (পার্সোনাল)</span><span class="fee-number">01764324313</span><button type="button" class="copy-btn" onclick="copyFeeNumber(this,'01764324313','রকেট')">📋 কপি</button></div>
-        <div class="fee-method" id="feeMethod-উপায়"><span class="fee-method-label"><strong>উপায়</strong> (পার্সোনাল)</span><span class="fee-number">01764324313</span><button type="button" class="copy-btn" onclick="copyFeeNumber(this,'01764324313','উপায়')">📋 কপি</button></div>
+        <div class="fee-method" id="feeMethod-বিকাশ"><span class="fee-method-label"><img class="fee-logo" src="assets/bkash-logo.png" alt="বিকাশ"><strong>বিকাশ</strong> (পার্সোনাল)</span><span class="fee-number">01309519503</span><button type="button" class="copy-btn" onclick="copyFeeNumber(this,'01309519503','বিকাশ')">📋 কপি</button></div>
+        <div class="fee-method" id="feeMethod-নগদ"><span class="fee-method-label"><img class="fee-logo" src="assets/nagad-logo.png" alt="নগদ"><strong>নগদ</strong> (পার্সোনাল)</span><span class="fee-number">01764324313</span><button type="button" class="copy-btn" onclick="copyFeeNumber(this,'01764324313','নগদ')">📋 কপি</button></div>
+        <div class="fee-method" id="feeMethod-রকেট"><span class="fee-method-label"><img class="fee-logo" src="assets/rocket-logo.jpg" alt="রকেট"><strong>রকেট</strong> (পার্সোনাল)</span><span class="fee-number">01764324313</span><button type="button" class="copy-btn" onclick="copyFeeNumber(this,'01764324313','রকেট')">📋 কপি</button></div>
+        <div class="fee-method" id="feeMethod-উপায়"><span class="fee-method-label"><img class="fee-logo" src="assets/upay-logo.png" alt="উপায়"><strong>উপায়</strong> (পার্সোনাল)</span><span class="fee-number">01764324313</span><button type="button" class="copy-btn" onclick="copyFeeNumber(this,'01764324313','উপায়')">📋 কপি</button></div>
       </div>
       <div id="selectedMethodStatus" class="selected-method-status"></div>
       <p class="fee-note">উপরের যেকোনো একটি নম্বরে ২০ টাকা <strong>Send Money</strong> করে নিচে ট্রানজেকশন আইডি লিখুন।</p>
