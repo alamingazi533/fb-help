@@ -733,12 +733,11 @@
     border:1px solid var(--line);
     border-left:4px solid var(--gold);
     border-radius:7px;
-    padding:0 12px;
-    min-height:66px;
+    padding:6px 12px;
     font-size:14.5px;
     color:var(--forest);
     display:flex;
-    align-items:stretch;
+    align-items:center;
     justify-content:space-between;
     flex-wrap:wrap;
     row-gap:8px;
@@ -747,13 +746,10 @@
     transition:background .12s;
   }
   .fee-method:active{ background:var(--paper-dark); }
-  .fee-method .fee-method-label{ flex-shrink:0; display:flex; align-items:center; align-self:center; }
-  .fee-method .fee-number{ display:flex; align-items:center; align-self:center; }
-  .fee-method .copy-btn{ align-self:center; }
+  .fee-method .fee-method-label{ flex-shrink:0; display:flex; align-items:center; }
   .fee-method .fee-logo{
-    height:100%;
+    height:80px;
     width:auto;
-    align-self:stretch;
     object-fit:contain;
     flex-shrink:0;
   }
