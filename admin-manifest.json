@@ -1,8 +1,8 @@
 {
   "name": "অ্যাডমিন প্যানেল - ফেসবুক সমস্যা সমাধান",
   "short_name": "অ্যাডমিন প্যানেল",
-  "start_url": "admin-6.html",
-  "scope": "admin-6.html",
+  "start_url": "./admin.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#FBF6EA",
   "theme_color": "#1F3B2C",
