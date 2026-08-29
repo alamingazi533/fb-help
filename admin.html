@@ -26,6 +26,37 @@
     --maroon:#7A2E2E;
     --line:#D8CDAE;
     --ok:#2C6B4F;
+    --card-bg:#fff;
+    --muted:#6b6752;
+    --badge-bg:#e9e4d2;
+    --badge-done-bg:#E6F0EA;
+    --badge-progress-bg:#FDF1DC;
+    --badge-progress-text:#8a5a12;
+    --badge-cancel-bg:#F6E7E4;
+  }
+  [data-theme="dark"]{
+    --paper:#161A15;
+    --paper-dark:#1F251C;
+    --ink:#E8E4D5;
+    --forest:#3E7A5C;
+    --forest-2:#4F9670;
+    --gold:#D9AE6B;
+    --gold-light:#E8C98A;
+    --maroon:#E37272;
+    --line:#333B2E;
+    --ok:#4CAF7D;
+    --card-bg:#1F251C;
+    --muted:#A6A08A;
+    --badge-bg:#2C332A;
+    --badge-done-bg:#20362A;
+    --badge-progress-bg:#3A2E18;
+    --badge-progress-text:#E0B15C;
+    --badge-cancel-bg:#3A2222;
+  }
+  [data-theme="dark"] input,
+  [data-theme="dark"] select,
+  [data-theme="dark"] textarea{
+    background:var(--card-bg); color:var(--ink);
   }
   *{box-sizing:border-box;}
   body{
@@ -52,12 +83,13 @@
   #loginBox{
     max-width:360px;
     margin:60px auto;
-    background:#fff;
+    background:var(--card-bg);
     border:1px solid var(--line);
     border-radius:14px;
     padding:26px 22px;
     box-shadow:0 18px 40px -20px rgba(31,59,44,0.35);
     text-align:center;
+    position:relative;
   }
   #loginBox h2{font-family:'Noto Serif Bengali', serif; color:var(--forest); font-size:19px; margin:0 0 16px;}
   #loginBox input{
@@ -79,13 +111,13 @@
   }
   .toolbar button{
     padding:11px 16px; border-radius:8px; border:1.5px solid var(--forest);
-    background:#fff; color:var(--forest); font-weight:700; font-family:inherit; cursor:pointer;
+    background:var(--card-bg); color:var(--forest); font-weight:700; font-family:inherit; cursor:pointer;
   }
-  .summary{font-size:13px; color:#6b6752; margin-bottom:12px;}
+  .summary{font-size:13px; color:var(--muted); margin-bottom:12px;}
 
   /* কার্ড */
   .card{
-    background:#fff; border:1px solid var(--line); border-radius:14px;
+    background:var(--card-bg); border:1px solid var(--line); border-radius:14px;
     padding:0; margin-bottom:14px; box-shadow:0 12px 28px -18px rgba(31,59,44,0.32); overflow:hidden;
   }
   .card-top{
@@ -101,17 +133,17 @@
   .card-top > div:first-child{flex:1; min-width:0; display:flex; align-items:center; gap:10px;}
   .badge{
     display:inline-block; padding:4px 12px; border-radius:999px; font-size:12px; font-weight:700;
-    background:#e9e4d2; color:var(--forest); white-space:nowrap; flex-shrink:0;
+    background:var(--badge-bg); color:var(--forest); white-space:nowrap; flex-shrink:0;
   }
-  .badge.done{background:#E6F0EA; color:var(--ok);}
-  .badge.progress{background:#FDF1DC; color:#8a5a12;}
-  .badge.cancel{background:#F6E7E4; color:var(--maroon);}
+  .badge.done{background:var(--badge-done-bg); color:var(--ok);}
+  .badge.progress{background:var(--badge-progress-bg); color:var(--badge-progress-text);}
+  .badge.cancel{background:var(--badge-cancel-bg); color:var(--maroon);}
 
   .card-body{ padding:14px 16px 16px; }
   .info-grid{ display:flex; flex-direction:column; gap:9px; }
   .info-item{ display:flex; gap:9px; align-items:flex-start; font-size:13.5px; line-height:1.5; }
   .info-item .ic{ flex-shrink:0; width:18px; text-align:center; }
-  .info-item .lbl{ color:#8a8571; font-size:11.5px; display:block; margin-bottom:1px; }
+  .info-item .lbl{ color:var(--muted); font-size:11.5px; display:block; margin-bottom:1px; }
   .info-item .val{ color:var(--ink); font-weight:600; word-break:break-word; }
 
   .link-row{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
@@ -145,29 +177,29 @@
     font-weight:700; font-family:inherit; cursor:pointer; font-size:14px;
   }
   .card-actions button:disabled{opacity:.6; cursor:wait;}
-  #loadingMsg, #emptyMsg{text-align:center; color:#8a8571; padding:30px 0; display:none;}
+  #loadingMsg, #emptyMsg{text-align:center; color:var(--muted); padding:30px 0; display:none;}
 
   .dashboard{display:flex; gap:8px; overflow-x:auto; margin-bottom:12px; padding-bottom:2px;}
   .dash-item{
-    flex:0 0 auto; background:#fff; border:1px solid var(--line); border-radius:10px;
+    flex:0 0 auto; background:var(--card-bg); border:1px solid var(--line); border-radius:10px;
     padding:8px 14px; text-align:center; min-width:76px;
   }
   .dash-item .num{font-size:18px; font-weight:700; color:var(--forest);}
-  .dash-item .lbl{font-size:11px; color:#7a7460; margin-top:2px;}
+  .dash-item .lbl{font-size:11px; color:var(--muted); margin-top:2px;}
 
   .filterRow{display:flex; gap:7px; overflow-x:auto; margin-bottom:12px; padding-bottom:2px;}
   .chip{
     flex:0 0 auto; padding:7px 13px; border-radius:999px; border:1.5px solid var(--line);
-    background:#fff; color:var(--ink); font-size:13px; font-family:inherit; cursor:pointer; font-weight:600;
+    background:var(--card-bg); color:var(--ink); font-size:13px; font-family:inherit; cursor:pointer; font-weight:600;
   }
   .chip.active{background:var(--forest); border-color:var(--forest); color:#fff;}
 
   .exportBtn{
     width:100%; padding:10px; border:1.5px solid var(--forest); border-radius:8px;
-    background:#fff; color:var(--forest); font-family:inherit; font-weight:700; font-size:14px; cursor:pointer;
+    background:var(--card-bg); color:var(--forest); font-family:inherit; font-weight:700; font-size:14px; cursor:pointer;
   }
   .deleteBtn{
-    padding:10px 13px; border:1.5px solid var(--maroon); border-radius:9px; background:#fff;
+    padding:10px 13px; border:1.5px solid var(--maroon); border-radius:9px; background:var(--card-bg);
     color:var(--maroon); font-family:inherit; font-weight:700; cursor:pointer; font-size:13px;
   }
   .waBtn{
@@ -180,12 +212,18 @@
     padding:6px 12px; border-radius:7px; font-size:12.5px; font-family:inherit; cursor:pointer;
     position:absolute; right:14px; top:22px;
   }
+  #themeToggleBtn{
+    background:transparent; border:1px solid rgba(255,255,255,0.5); color:var(--paper);
+    padding:6px 10px; border-radius:7px; font-size:14px; font-family:inherit; cursor:pointer;
+    position:absolute; left:14px; top:22px;
+  }
   header{position:relative;}
 </style>
 </head>
 <body>
 
 <div id="loginBox">
+  <button id="loginThemeToggleBtn" onclick="toggleTheme()" title="ডার্ক/লাইট মোড" style="position:absolute; left:14px; top:14px; background:transparent; border:1px solid var(--line); color:var(--ink); padding:6px 10px; border-radius:7px; font-size:14px; cursor:pointer;">🌙</button>
   <h2>অ্যাডমিন লগইন</h2>
   <input type="password" id="pwInput" placeholder="পাসওয়ার্ড দিন" autocomplete="off">
   <button onclick="login()">লগইন করুন</button>
@@ -195,11 +233,11 @@
   </div>
 </div>
 
-<div id="forgotBox" style="display:none; max-width:360px; margin:30px auto; background:#fff; border:1px solid var(--line); border-radius:14px; padding:26px 22px; box-shadow:0 18px 40px -20px rgba(31,59,44,0.35); text-align:center;">
+<div id="forgotBox" style="display:none; max-width:360px; margin:30px auto; background:var(--card-bg); border:1px solid var(--line); border-radius:14px; padding:26px 22px; box-shadow:0 18px 40px -20px rgba(31,59,44,0.35); text-align:center;">
   <h2 style="font-family:'Noto Serif Bengali', serif; color:var(--forest); font-size:19px; margin:0 0 12px;">পাসওয়ার্ড রিসেট</h2>
 
   <div id="forgotStep1">
-    <p style="font-size:13.5px; color:#6b6752; margin:0 0 14px;">আপনার রেজিস্টার্ড ইমেইলে একটি ৬-সংখ্যার কোড পাঠানো হবে।</p>
+    <p style="font-size:13.5px; color:var(--muted); margin:0 0 14px;">আপনার রেজিস্টার্ড ইমেইলে একটি ৬-সংখ্যার কোড পাঠানো হবে।</p>
     <button onclick="sendResetCode()" id="sendCodeBtn" style="width:100%; padding:12px; border:none; border-radius:9px; background:var(--forest); color:var(--paper); font-family:inherit; font-size:15px; font-weight:700; cursor:pointer;">কোড পাঠান</button>
   </div>
 
@@ -217,6 +255,7 @@
 
 <div id="panel" style="display:none;">
   <header>
+    <button id="themeToggleBtn" onclick="toggleTheme()" title="ডার্ক/লাইট মোড">🌙</button>
     <h1>রেজিস্ট্রেশন - অ্যাডমিন প্যানেল</h1>
     <button id="logoutBtn" onclick="logout()">লগ-আউট</button>
   </header>
@@ -226,7 +265,7 @@
       <button onclick="manualRefresh()">রিফ্রেশ</button>
     </div>
     <div class="dashboard" id="dashboard"></div>
-    <div id="visitorCountBox" style="text-align:center; font-size:12.5px; color:#8a8571; margin:-6px 0 10px;"></div>
+    <div id="visitorCountBox" style="text-align:center; font-size:12.5px; color:var(--muted); margin:-6px 0 10px;"></div>
     <div class="filterRow" id="filterRow"></div>
     <div class="filterRow" id="dateFilterRow" style="margin-top:-6px;">
       <button class="chip active" data-days="0" onclick="setDateFilter(0, this)">সব সময়</button>
@@ -235,7 +274,7 @@
       <button class="chip" data-days="30" onclick="setDateFilter(30, this)">গত ৩০ দিন</button>
     </div>
 
-    <div id="bulkActionBar" style="display:none; background:#fff; border:1px solid var(--gold); border-radius:10px; padding:10px 12px; margin-bottom:12px; align-items:center; gap:8px; flex-wrap:wrap;">
+    <div id="bulkActionBar" style="display:none; background:var(--card-bg); border:1px solid var(--gold); border-radius:10px; padding:10px 12px; margin-bottom:12px; align-items:center; gap:8px; flex-wrap:wrap;">
       <span id="bulkSelectedCount" style="font-size:13px; font-weight:700; color:var(--forest);"></span>
       <select id="bulkStatusSelect" style="flex:1; min-width:120px; padding:8px; border-radius:6px; border:1px solid var(--line);">
         <option value="অপেক্ষমান">অপেক্ষমান</option>
@@ -244,15 +283,15 @@
         <option value="বাতিল">বাতিল</option>
       </select>
       <button onclick="applyBulkStatus()" style="padding:8px 14px; border:none; border-radius:6px; background:var(--forest); color:#fff; font-size:13px; font-weight:700;">সবগুলোতে প্রয়োগ করুন</button>
-      <button onclick="clearBulkSelection()" style="padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:#fff; font-size:13px;">বাতিল</button>
+      <button onclick="clearBulkSelection()" style="padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--card-bg); font-size:13px;">বাতিল</button>
     </div>
 
-    <div style="background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px; margin:14px 0;">
+    <div style="background:var(--card-bg); border:1px solid var(--line); border-radius:12px; padding:14px; margin:14px 0;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <div style="font-weight:700; color:var(--forest);">গ্রাহক রিভিউ <span id="pendingReviewBadge"></span></div>
         <div style="display:flex; gap:6px;">
-          <button onclick="exportReviewsCsv()" style="padding:6px 12px; font-size:12.5px; border:1px solid var(--forest); border-radius:6px; background:#fff; color:var(--forest);">CSV</button>
-          <button onclick="loadAdminReviews()" style="padding:6px 12px; font-size:12.5px; border:1px solid var(--forest); border-radius:6px; background:#fff; color:var(--forest);">রিফ্রেশ</button>
+          <button onclick="exportReviewsCsv()" style="padding:6px 12px; font-size:12.5px; border:1px solid var(--forest); border-radius:6px; background:var(--card-bg); color:var(--forest);">CSV</button>
+          <button onclick="loadAdminReviews()" style="padding:6px 12px; font-size:12.5px; border:1px solid var(--forest); border-radius:6px; background:var(--card-bg); color:var(--forest);">রিফ্রেশ</button>
         </div>
       </div>
       <div id="reviewsList">লোড হচ্ছে...</div>
@@ -260,7 +299,7 @@
 
     <div class="toolbar" style="margin-top:0; flex-direction:column; align-items:stretch;">
       <button class="exportBtn" onclick="exportCsv()">CSV ডাউনলোড করুন</button>
-      <div id="backupReminder" style="font-size:12px; color:#8a8571; margin-top:6px; text-align:center;"></div>
+      <div id="backupReminder" style="font-size:12px; color:var(--muted); margin-top:6px; text-align:center;"></div>
     </div>
     <div class="summary" id="summary"></div>
     <div class="summary" id="lastUpdated" style="margin-top:-6px;">প্রতি ৩০ সেকেন্ডে অটো-আপডেট হয়</div>
@@ -524,11 +563,11 @@ function loadAdminReviews(){
         return '<div style="border-bottom:1px solid var(--line); padding:10px 0;">' +
           '<div style="font-size:13px; color:' + statusColor + '; font-weight:700;">' + rev.status + ' • ' + stars + '</div>' +
           '<div style="font-size:13.5px; margin:6px 0;">' + safeText + '</div>' +
-          '<div style="font-size:12px; color:#8a8571; margin-bottom:8px;">— ' + safeName + ' • ' + rev.date + '</div>' +
+          '<div style="font-size:12px; color:var(--muted); margin-bottom:8px;">— ' + safeName + ' • ' + rev.date + '</div>' +
           '<div style="display:flex; gap:6px;">' +
             (rev.status !== 'approved' ? '<button onclick="reviewAction(' + rev.rowIndex + ',\'approved\')" style="padding:6px 12px; border:none; border-radius:6px; background:var(--ok); color:#fff; font-size:12.5px;">অনুমোদন</button>' : '') +
             (rev.status !== 'rejected' ? '<button onclick="reviewAction(' + rev.rowIndex + ',\'rejected\')" style="padding:6px 12px; border:none; border-radius:6px; background:var(--maroon); color:#fff; font-size:12.5px;">বাতিল</button>' : '') +
-            '<button onclick="reviewAction(' + rev.rowIndex + ',\'delete\')" style="padding:6px 12px; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink); font-size:12.5px;">মুছুন</button>' +
+            '<button onclick="reviewAction(' + rev.rowIndex + ',\'delete\')" style="padding:6px 12px; border:1px solid var(--line); border-radius:6px; background:var(--card-bg); color:var(--ink); font-size:12.5px;">মুছুন</button>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -600,7 +639,7 @@ function updateBackupReminder(){
     el.style.color = 'var(--ok)';
   } else {
     el.textContent = '✓ শেষ ব্যাকআপ ' + days + ' দিন আগে।';
-    el.style.color = '#8a8571';
+    el.style.color = 'var(--muted)';
   }
 }
 
@@ -737,7 +776,7 @@ function renderList(rows){
         '</div>' +
         '<div style="margin-top:10px;">' +
           '<textarea class="noteInput" placeholder="প্রাইভেট নোট (শুধু আপনি দেখবেন)..." style="width:100%; min-height:44px; padding:8px; border-radius:6px; border:1px solid var(--line); font-family:inherit; font-size:13px; resize:vertical;">' + esc(row.note || '') + '</textarea>' +
-          '<button class="noteSaveBtn" style="margin-top:6px; padding:6px 12px; font-size:12px; border:1px solid var(--forest); border-radius:6px; background:#fff; color:var(--forest);">নোট সেভ করুন</button>' +
+          '<button class="noteSaveBtn" style="margin-top:6px; padding:6px 12px; font-size:12px; border:1px solid var(--forest); border-radius:6px; background:var(--card-bg); color:var(--forest);">নোট সেভ করুন</button>' +
         '</div>' +
       '</div>';
 
@@ -869,6 +908,27 @@ function esc(str){
   div.textContent = String(str);
   return div.innerHTML;
 }
+
+// ============ ডার্ক/লাইট মোড ============
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  const icon = theme === 'dark' ? '☀️' : '🌙';
+  const btn1 = document.getElementById('themeToggleBtn');
+  const btn2 = document.getElementById('loginThemeToggleBtn');
+  if(btn1) btn1.textContent = icon;
+  if(btn2) btn2.textContent = icon;
+}
+function toggleTheme(){
+  const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('adminTheme', next);
+  applyTheme(next);
+}
+(function(){
+  const saved = localStorage.getItem('adminTheme');
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+})();
 
 document.getElementById('searchBox').addEventListener('input', applyCurrentFilter);
 
