@@ -307,22 +307,27 @@
   button[type=submit]{
     width:100%;
     margin-top:28px;
-    padding:14px;
+    padding:16px;
     border:none;
-    border-radius:9px;
+    border-radius:10px;
     background:var(--forest);
     color:var(--paper);
     font-family:inherit;
-    font-size:16px;
+    font-size:17px;
     font-weight:700;
     letter-spacing:.02em;
     cursor:pointer;
     box-shadow:0 10px 20px -8px rgba(24,119,242,0.55);
     transition:background .15s, transform .1s, box-shadow .15s;
+    animation:submitPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes submitPulse{
+    0%, 100%{ box-shadow:0 10px 20px -8px rgba(24,119,242,0.55); }
+    50%{ box-shadow:0 10px 26px -4px rgba(24,119,242,0.85); }
   }
   button[type=submit]:hover{ background:var(--forest-2); box-shadow:0 12px 24px -8px rgba(24,119,242,0.6); }
   button[type=submit]:active{transform:scale(0.98); box-shadow:0 6px 14px -8px rgba(24,119,242,0.5);}
-  button[type=submit]:disabled{background:#9aa79c; cursor:wait; box-shadow:none;}
+  button[type=submit]:disabled{background:#9aa79c; cursor:wait; box-shadow:none; animation:none;}
   .whatsapp-btn{
     display:flex;
     align-items:center;
@@ -753,16 +758,47 @@
     margin:12px 0;
     display:flex;
     flex-direction:column;
-    gap:8px;
+    gap:9px;
   }
   .fee-method{
     background:var(--paper);
     border:1px solid var(--line);
+    border-left:4px solid var(--gold);
     border-radius:7px;
-    padding:9px 12px;
+    padding:10px 12px;
     font-size:14.5px;
     color:var(--forest);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
   }
+  .fee-method .fee-method-label{ flex-shrink:0; }
+  .fee-method .fee-number{
+    font-size:16px;
+    font-weight:700;
+    color:var(--maroon);
+    letter-spacing:.02em;
+    font-family:inherit;
+    direction:ltr;
+    unicode-bidi:plaintext;
+  }
+  .fee-method .copy-btn{
+    flex-shrink:0;
+    border:1px solid var(--gold);
+    background:var(--paper-dark);
+    color:var(--forest);
+    font-size:11.5px;
+    font-weight:700;
+    font-family:inherit;
+    padding:6px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .15s, transform .1s;
+  }
+  .fee-method .copy-btn:active{ transform:scale(0.94); }
+  .fee-method .copy-btn.copied{ background:var(--ok); color:#fff; border-color:var(--ok); }
   .download-btn{
     display:none;
     width:100%;
@@ -1054,10 +1090,10 @@
       <p class="fee-amount">আবেদন ফি মাত্র <strong>২০ টাকা</strong></p>
       <p class="fee-note">এটা করা হয়েছে কারণ, মজা করে যাতে কেউ আবেদন না করতে পারে তার জন্য ফি রাখা হচ্ছে।</p>
       <div class="fee-methods">
-        <div class="fee-method"><strong>বিকাশ</strong> (পার্সোনাল) — 01309519503</div>
-        <div class="fee-method"><strong>নগদ</strong> (পার্সোনাল) — 01764324313</div>
-        <div class="fee-method"><strong>রকেট</strong> (পার্সোনাল) — 01764324313</div>
-        <div class="fee-method"><strong>উপায়</strong> (পার্সোনাল) — 01764324313</div>
+        <div class="fee-method"><span class="fee-method-label"><strong>বিকাশ</strong> (পার্সোনাল)</span><span class="fee-number">01309519503</span><button type="button" class="copy-btn" onclick="copyFeeNumber(this,'01309519503')">📋 কপি</button></div>
+        <div class="fee-method"><span class="fee-method-label"><strong>নগদ</strong> (পার্সোনাল)</span><span class="fee-number">01764324313</span><button type="button" class="copy-btn" onclick="copyFeeNumber(this,'01764324313')">📋 কপি</button></div>
+        <div class="fee-method"><span class="fee-method-label"><strong>রকেট</strong> (পার্সোনাল)</span><span class="fee-number">01764324313</span><button type="button" class="copy-btn" onclick="copyFeeNumber(this,'01764324313')">📋 কপি</button></div>
+        <div class="fee-method"><span class="fee-method-label"><strong>উপায়</strong> (পার্সোনাল)</span><span class="fee-number">01764324313</span><button type="button" class="copy-btn" onclick="copyFeeNumber(this,'01764324313')">📋 কপি</button></div>
       </div>
       <p class="fee-note">উপরের যেকোনো একটি নম্বরে ২০ টাকা <strong>Send Money</strong> করে নিচে ট্রানজেকশন আইডি লিখুন।</p>
       <p class="fee-note fee-highlight">⚠️ সকল সার্ভিসের জন্য আলোচনা সাপেক্ষে টাকা চার্জ করে থাকি। কোনো কাজ ফ্রি করা হয় না। তাই কাজ করানোর আগেই উপরে Whatapk বাটুনে ক্লিক করে কথা বলে নেওয়া ভালো। কাজ ছোট হোক কিংবা বড় সকল কাজের জন্য  চার্জ প্রয়োজ্য।</p>
@@ -1252,6 +1288,29 @@
 // এখানে আপনার Google Apps Script Web App URL বসান (নতুন Deploy করে যেটা পাবেন)
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTc7Kg6lsjmY8nGyqcI5AsZxwNZxliQQ78r6Lr_YrWE0I4GPQQ1JhW0ssT2t9yjy4/exec";
 // ==================================
+
+// ============ পেমেন্ট নম্বর কপি ============
+function copyFeeNumber(btn, number){
+  const done = ()=>{
+    const original = btn.textContent;
+    btn.textContent = '✓ কপি হয়েছে';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent = original; btn.classList.remove('copied'); }, 1500);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(number).then(done).catch(()=>{
+      const ta = document.createElement('textarea');
+      ta.value = number; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); done(); }catch(e){}
+      document.body.removeChild(ta);
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = number; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); done(); }catch(e){}
+    document.body.removeChild(ta);
+  }
+}
 
 // ============ ডার্ক মোড ============
 (function initTheme(){
