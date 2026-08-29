@@ -764,6 +764,15 @@
     flex-shrink:1;
     min-width:0;
   }
+  .fee-method .fee-check{
+    display:none;
+    color:#0d7a3a;
+    font-weight:900;
+    font-size:19px;
+    line-height:1;
+    flex-shrink:0;
+  }
+  .fee-method.selected .fee-check{ display:inline; }
   .fee-method .copy-btn{
     flex-shrink:0;
     border:1px solid var(--gold);
@@ -1090,10 +1099,10 @@
       <p class="fee-amount">আবেদন ফি মাত্র <strong>২০ টাকা</strong></p>
       <p class="fee-note">এটা করা হয়েছে কারণ, মজা করে যাতে কেউ আবেদন না করতে পারে তার জন্য ফি রাখা হচ্ছে।</p>
       <div class="fee-methods">
-        <div class="fee-method" id="feeMethod-বিকাশ" onclick="copyFeeNumber(this.querySelector('.copy-btn'),'01309519503','বিকাশ')"><span class="fee-method-label"><strong>বিকাশ</strong></span><img class="fee-logo" src="bkash-logo.png" alt="বিকাশ"><span class="fee-number">01309519503</span><button type="button" class="copy-btn" onclick="event.stopPropagation();copyFeeNumber(this,'01309519503','বিকাশ')">📋 কপি</button></div>
-        <div class="fee-method" id="feeMethod-নগদ" onclick="copyFeeNumber(this.querySelector('.copy-btn'),'01764324313','নগদ')"><span class="fee-method-label"><strong>নগদ</strong></span><img class="fee-logo" src="nagad-logo.png" alt="নগদ"><span class="fee-number">01764324313</span><button type="button" class="copy-btn" onclick="event.stopPropagation();copyFeeNumber(this,'01764324313','নগদ')">📋 কপি</button></div>
-        <div class="fee-method" id="feeMethod-রকেট" onclick="copyFeeNumber(this.querySelector('.copy-btn'),'01764324313','রকেট')"><span class="fee-method-label"><strong>রকেট</strong></span><img class="fee-logo" src="rocket-logo.jpg" alt="রকেট"><span class="fee-number">01764324313</span><button type="button" class="copy-btn" onclick="event.stopPropagation();copyFeeNumber(this,'01764324313','রকেট')">📋 কপি</button></div>
-        <div class="fee-method" id="feeMethod-উপায়" onclick="copyFeeNumber(this.querySelector('.copy-btn'),'01764324313','উপায়')"><span class="fee-method-label"><strong>উপায়</strong></span><img class="fee-logo" src="upay-logo.png" alt="উপায়"><span class="fee-number">01764324313</span><button type="button" class="copy-btn" onclick="event.stopPropagation();copyFeeNumber(this,'01764324313','উপায়')">📋 কপি</button></div>
+        <div class="fee-method" id="feeMethod-বিকাশ" onclick="copyFeeNumber(this.querySelector('.copy-btn'),'01309519503','বিকাশ')"><span class="fee-method-label"><strong>বিকাশ</strong></span><img class="fee-logo" src="bkash-logo.png" alt="বিকাশ"><span class="fee-number">01309519503</span><span class="fee-check">✓</span><button type="button" class="copy-btn" onclick="event.stopPropagation();copyFeeNumber(this,'01309519503','বিকাশ')">📋 কপি</button></div>
+        <div class="fee-method" id="feeMethod-নগদ" onclick="copyFeeNumber(this.querySelector('.copy-btn'),'01764324313','নগদ')"><span class="fee-method-label"><strong>নগদ</strong></span><img class="fee-logo" src="nagad-logo.png" alt="নগদ"><span class="fee-number">01764324313</span><span class="fee-check">✓</span><button type="button" class="copy-btn" onclick="event.stopPropagation();copyFeeNumber(this,'01764324313','নগদ')">📋 কপি</button></div>
+        <div class="fee-method" id="feeMethod-রকেট" onclick="copyFeeNumber(this.querySelector('.copy-btn'),'01764324313','রকেট')"><span class="fee-method-label"><strong>রকেট</strong></span><img class="fee-logo" src="rocket-logo.jpg" alt="রকেট"><span class="fee-number">01764324313</span><span class="fee-check">✓</span><button type="button" class="copy-btn" onclick="event.stopPropagation();copyFeeNumber(this,'01764324313','রকেট')">📋 কপি</button></div>
+        <div class="fee-method" id="feeMethod-উপায়" onclick="copyFeeNumber(this.querySelector('.copy-btn'),'01764324313','উপায়')"><span class="fee-method-label"><strong>উপায়</strong></span><img class="fee-logo" src="upay-logo.png" alt="উপায়"><span class="fee-number">01764324313</span><span class="fee-check">✓</span><button type="button" class="copy-btn" onclick="event.stopPropagation();copyFeeNumber(this,'01764324313','উপায়')">📋 কপি</button></div>
       </div>
       <div id="selectedMethodStatus" class="selected-method-status"></div>
       <p class="fee-note">উপরের যেকোনো একটি নম্বরে ২০ টাকা <strong>Send Money</strong> করে নিচে ট্রানজেকশন আইডি লিখুন।</p>
