@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>টেস্ট পেজ</title>
+<style>
+  body{font-family:sans-serif; padding:16px; background:#f5f2e8; color:#222;}
+  button{width:100%; padding:16px; font-size:16px; font-weight:bold; margin:8px 0; border-radius:8px; border:none; background:#1F3B2C; color:#fff;}
+  pre{white-space:pre-wrap; word-break:break-all; background:#fff; border:1px solid #ccc; border-radius:8px; padding:12px; font-size:13px; margin-top:8px;}
+  .label{font-weight:bold; margin-top:16px;}
+</style>
+</head>
+<body>
+
+<h2>Apps Script টেস্ট পেজ</h2>
+<p>এই পেজটা শুধু যাচাই করার জন্য — সরাসরি আসল উত্তর দেখাবে।</p>
+
+<div class="label">১) পাসওয়ার্ড দিন:</div>
+<input type="text" id="pw" placeholder="আপনার অ্যাডমিন পাসওয়ার্ড" style="width:100%; padding:12px; font-size:16px; box-sizing:border-box;">
+
+<button onclick="testGet()">২) GET টেস্ট (getStats)</button>
+<button onclick="testPostList()">৩) POST টেস্ট (action=list)</button>
+<button onclick="testPostNoAuth()">৪) POST টেস্ট (password ছাড়া, শুধু action=list)</button>
+
+<div class="label">ফলাফল:</div>
+<pre id="out">এখনো কিছু টেস্ট করা হয়নি।</pre>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTc7Kg6lsjmY8nGyqcI5AsZxwNZxliQQ78r6Lr_YrWE0I4GPQQ1JhW0ssT2t9yjy4/exec";
+const out = document.getElementById('out');
+
+function show(label, data){
+  out.textContent = label + '\n\n' + (typeof data === 'string' ? data : JSON.stringify(data, null, 2));
+}
+
+async function testGet(){
+  out.textContent = 'GET পাঠানো হচ্ছে...';
+  try{
+    const res = await fetch(SCRIPT_URL + '?action=getStats');
+    const text = await res.text();
+    show('GET রেসপন্স (status ' + res.status + '):', text);
+  }catch(err){
+    show('GET এরর:', String(err));
+  }
+}
+
+async function testPostList(){
+  const pw = document.getElementById('pw').value;
+  out.textContent = 'POST পাঠানো হচ্ছে...';
+  try{
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'list', password: pw })
+    });
+    const text = await res.text();
+    show('POST রেসপন্স (status ' + res.status + '):', text);
+  }catch(err){
+    show('POST এরর:', String(err));
+  }
+}
+
+async function testPostNoAuth(){
+  out.textContent = 'POST পাঠানো হচ্ছে (পাসওয়ার্ড ছাড়া)...';
+  try{
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'list', password: 'ইচ্ছাকৃত ভুল পাসওয়ার্ড' })
+    });
+    const text = await res.text();
+    show('POST রেসপন্স (status ' + res.status + '):', text);
+  }catch(err){
+    show('POST এরর:', String(err));
+  }
+}
+</script>
+</body>
+</html>
