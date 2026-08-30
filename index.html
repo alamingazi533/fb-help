@@ -602,6 +602,39 @@
     70%{ box-shadow:0 0 0 8px rgba(37,211,102,0); }
     100%{ box-shadow:0 0 0 0 rgba(37,211,102,0); }
   }
+  .cta-block{
+    max-width:520px;
+    margin:20px auto 0;
+    text-align:center;
+    padding:0 4px;
+  }
+  .cta-text{
+    font-size:14px;
+    color:var(--muted);
+    margin:0 0 10px;
+  }
+  .cta-fill-btn{
+    width:100%;
+    padding:17px;
+    border:none;
+    border-radius:12px;
+    background:var(--forest);
+    color:var(--paper);
+    font-family:inherit;
+    font-size:16.5px;
+    font-weight:700;
+    letter-spacing:.02em;
+    cursor:pointer;
+    box-shadow:0 10px 20px -8px rgba(24,119,242,0.55);
+    transition:background .15s, transform .1s, box-shadow .15s;
+    animation:submitPulse 2.4s ease-in-out infinite;
+  }
+  .cta-fill-btn:active{ transform:scale(0.98); }
+  .pre-form-wrap{
+    max-width:520px;
+    margin:0 auto;
+    padding:0 4px;
+  }
   .testi-card{
     background:var(--paper);
     border:1px solid var(--line);
