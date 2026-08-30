@@ -630,6 +630,19 @@
     animation:submitPulse 2.4s ease-in-out infinite;
   }
   .cta-fill-btn:active{ transform:scale(0.98); }
+  .close-form-btn{
+    display:block;
+    margin:0 0 16px auto;
+    padding:9px 16px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:var(--paper-dark);
+    color:var(--muted);
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+  }
   .pre-form-wrap{
     max-width:520px;
     margin:0 auto;
@@ -1135,6 +1148,7 @@
 </head>
 <body>
 
+<div id="landingTop">
 <header>
   <div class="top-action-bar">
     <button type="button" class="icon-btn" id="shareBtn">
@@ -1217,12 +1231,15 @@
     📝 আপনার তথ্য পূরণ করুন
   </button>
 </div>
+</div>
 
 <main id="mainFormSection" style="display:none;">
   <form id="regForm">
 
     <input type="text" id="hpField" name="website" autocomplete="off" tabindex="-1" aria-hidden="true"
       style="position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; opacity:0;">
+
+    <button type="button" class="close-form-btn" onclick="hideRegForm()">✕ বন্ধ করুন</button>
 
     <div class="draft-restore-note" id="draftBanner">
       <span>✓ আপনার আগের অসম্পূর্ণ তথ্য পুনরুদ্ধার করা হয়েছে।</span>
@@ -1376,7 +1393,7 @@
   <footer>আপনার তথ্য নিরাপদে সংরক্ষণ করা হবে</footer>
 </main>
 
-<div class="pre-form-wrap">
+<div class="pre-form-wrap" id="landingBottom">
   <div class="faq-card">
     <div class="section-label" style="margin-top:0;">সচরাচর জিজ্ঞাসিত প্রশ্ন</div>
 
@@ -2118,14 +2135,24 @@ function clearDraft(){
 
 function revealRegForm(shouldScroll){
   const section = document.getElementById('mainFormSection');
-  const btn = document.getElementById('showFormBtn');
-  const ctaText = document.querySelector('.cta-text');
+  const landingTop = document.getElementById('landingTop');
+  const landingBottom = document.getElementById('landingBottom');
   if(section){ section.style.display = 'block'; }
-  if(btn){ btn.textContent = '📝 ফর্মটি খোলা আছে'; }
-  if(ctaText){ ctaText.style.display = 'none'; }
-  if(shouldScroll !== false && section){
-    section.scrollIntoView({ behavior:'smooth', block:'start' });
+  if(landingTop){ landingTop.style.display = 'none'; }
+  if(landingBottom){ landingBottom.style.display = 'none'; }
+  if(shouldScroll !== false){
+    window.scrollTo({ top:0, behavior:'smooth' });
   }
+}
+
+function hideRegForm(){
+  const section = document.getElementById('mainFormSection');
+  const landingTop = document.getElementById('landingTop');
+  const landingBottom = document.getElementById('landingBottom');
+  if(section){ section.style.display = 'none'; }
+  if(landingTop){ landingTop.style.display = ''; }
+  if(landingBottom){ landingBottom.style.display = ''; }
+  window.scrollTo({ top:0, behavior:'smooth' });
 }
 
 function restoreDraft(){
