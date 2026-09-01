@@ -2565,6 +2565,9 @@ if('serviceWorker' in navigator){
      কীভাবে পাবেন তা চ্যাটের নিচের নির্দেশনায় দেওয়া আছে। -->
 <script type="text/javascript">
 var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+Tawk_API.onLoad = function(){
+  Tawk_API.maximize(); // পেজ লোড হলেই চ্যাট বক্স অটো খুলে যাবে
+};
 (function(){
 var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
 s1.async = true;
