@@ -418,6 +418,35 @@
     box-shadow:0 10px 24px -12px rgba(24,119,242,0.55);
   }
   .facebook-btn svg{width:20px; height:20px; flex-shrink:0;}
+  .chat-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+    max-width:520px;
+    margin:16px auto 0;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(135deg, #FF7A00 0%, #FF9A3D 100%);
+    color:#fff;
+    font-family:inherit;
+    font-size:16.5px;
+    font-weight:700;
+    text-decoration:none;
+    cursor:pointer;
+    box-shadow:0 12px 26px -12px rgba(255,122,0,0.6);
+  }
+  .chat-btn svg{width:23px; height:23px; flex-shrink:0;}
+  .chat-btn.pulse-attention{
+    animation:chatPulse 1.4s ease-out 3;
+  }
+  @keyframes chatPulse{
+    0%{ box-shadow:0 12px 26px -12px rgba(255,122,0,0.6), 0 0 0 0 rgba(255,122,0,0.55); }
+    70%{ box-shadow:0 12px 26px -12px rgba(255,122,0,0.6), 0 0 0 16px rgba(255,122,0,0); }
+    100%{ box-shadow:0 12px 26px -12px rgba(255,122,0,0.6), 0 0 0 0 rgba(255,122,0,0); }
+  }
   .status{
     margin-top:14px;
     padding:12px 14px;
@@ -1212,6 +1241,11 @@
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
   আমাদের Facebook পেজ দেখুন
 </a>
+
+<button type="button" class="chat-btn" id="liveChatBtn" onclick="openLiveChat()">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.94 2 10.8c0 2.66 1.36 5.03 3.5 6.63V22l3.86-2.12c.83.18 1.7.28 2.64.28 5.52 0 10-3.94 10-8.8S17.52 2 12 2Zm1 12h-2v-2h2v2Zm0-3.5h-2c0-3 3-2.75 3-4.5 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.25-3 2.5-3 4.5Z"/></svg>
+  লাইভ চ্যাট করুন
+</button>
 
 <section class="services-section" aria-label="আমাদের সেবাসমূহ">
   <h2>আমাদের সেবাসমূহ</h2>
@@ -2572,6 +2606,34 @@ Tawk_API.onLoad = function(){
     Tawk_API.maximize();
   }
 };
+// ============ মোবাইলে ১৫ সেকেন্ড পর চ্যাট বাটনে পালস অ্যানিমেশন (ফুলস্ক্রিন খুলবে না) ============
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    if (window.innerWidth <= 768) {
+      var chatBtn = document.getElementById('liveChatBtn');
+      if (chatBtn) chatBtn.classList.add('pulse-attention');
+    }
+  }, 15000);
+});
+
+// ============ WhatsApp/Facebook বাটনের নিচের "লাইভ চ্যাট করুন" বাটন ============
+function openLiveChat(){
+  if (window.Tawk_API && typeof Tawk_API.maximize === 'function') {
+    Tawk_API.maximize();
+  } else {
+    // widget script তখনও লোড হচ্ছে হয়তো, একটু পর আবার চেষ্টা করা হচ্ছে
+    var tries = 0;
+    var waitForTawk = setInterval(function(){
+      tries++;
+      if (window.Tawk_API && typeof Tawk_API.maximize === 'function') {
+        Tawk_API.maximize();
+        clearInterval(waitForTawk);
+      } else if (tries > 20) {
+        clearInterval(waitForTawk);
+      }
+    }, 300);
+  }
+}
 (function(){
 var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
 s1.async = true;
