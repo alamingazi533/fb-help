@@ -1,7 +1,4 @@
 User-agent: *
-Allow: /index.html
 Allow: /
-Disallow: /admin-6.html
-Disallow: /admin-manifest.json
 
-Sitemap: https://alamingazi533.github.io/registration-form/sitemap.xml
+Sitemap: https://alamingazi533.github.io/fb-help/sitemap.xml
