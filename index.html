@@ -2566,7 +2566,11 @@ if('serviceWorker' in navigator){
 <script type="text/javascript">
 var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
 Tawk_API.onLoad = function(){
-  Tawk_API.maximize(); // পেজ লোড হলেই চ্যাট বক্স অটো খুলে যাবে
+  // মোবাইলে ফুলস্ক্রিন হয়ে যায় বলে শুধু ডেস্কটপে অটো-ওপেন করা হচ্ছে;
+  // মোবাইলে শুধু বাবল বাটন থাকবে, ভিজিটর ট্যাপ করলে তখন খুলবে
+  if (window.innerWidth > 768) {
+    Tawk_API.maximize();
+  }
 };
 (function(){
 var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
