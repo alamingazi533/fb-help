@@ -451,6 +451,43 @@
     box-shadow:0 12px 26px -12px rgba(255,122,0,0.6);
   }
   .chat-btn svg{width:23px; height:23px; flex-shrink:0;}
+  .posts-section{
+    max-width:520px;
+    margin:26px auto 0;
+    padding:0 4px;
+  }
+  .posts-section h2{
+    font-size:18.5px;
+    margin:0 0 12px;
+  }
+  .post-card{
+    background:#fff;
+    border:1px solid #DADDE1;
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:12px;
+  }
+  .post-card .post-date{
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:4px;
+  }
+  .post-card .post-title{
+    font-size:15.5px;
+    font-weight:700;
+    margin:0 0 6px;
+  }
+  .post-card .post-content{
+    font-size:14px;
+    line-height:1.55;
+    white-space:pre-wrap;
+  }
+  .posts-empty{
+    font-size:13.5px;
+    color:var(--muted);
+    text-align:center;
+    padding:10px 0;
+  }
   .chat-btn.pulse-attention{
     animation:chatPulse 1.4s ease-out 3;
   }
@@ -1258,6 +1295,13 @@
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.94 2 10.8c0 2.66 1.36 5.03 3.5 6.63V22l3.86-2.12c.83.18 1.7.28 2.64.28 5.52 0 10-3.94 10-8.8S17.52 2 12 2Zm1 12h-2v-2h2v2Zm0-3.5h-2c0-3 3-2.75 3-4.5 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.25-3 2.5-3 4.5Z"/></svg>
   লাইভ চ্যাট করুন
 </button>
+
+<section class="posts-section" aria-label="সর্বশেষ আপডেট">
+  <h2>📢 সর্বশেষ আপডেট</h2>
+  <div id="postsContainer">
+    <p class="posts-empty">আপডেট লোড হচ্ছে...</p>
+  </div>
+</section>
 
 <section class="services-section" aria-label="আমাদের সেবাসমূহ">
   <h2>আমাদের সেবাসমূহ</h2>
@@ -2544,6 +2588,33 @@ function loadReviews(){
 }
 loadReviews();
 loadStats();
+
+// ============ সর্বশেষ আপডেট/পোস্ট লোড করা ============
+function loadPosts(){
+  const container = document.getElementById('postsContainer');
+  if(!container) return;
+  fetch(SCRIPT_URL + '?action=getPosts')
+    .then(r => r.json())
+    .then(data => {
+      if(!data.success || !data.posts || data.posts.length === 0){
+        container.innerHTML = '<p class="posts-empty">এখনো কোনো আপডেট নেই।</p>';
+        return;
+      }
+      container.innerHTML = data.posts.map(p => {
+        const safeTitle = String(p.title || '').replace(/</g,'&lt;');
+        const safeContent = String(p.content || '').replace(/</g,'&lt;');
+        return '<div class="post-card">' +
+          '<div class="post-date">' + (p.date || '') + '</div>' +
+          '<div class="post-title">' + safeTitle + '</div>' +
+          '<div class="post-content">' + safeContent + '</div>' +
+        '</div>';
+      }).join('');
+    })
+    .catch(()=>{
+      container.innerHTML = '<p class="posts-empty">আপডেট লোড করতে সমস্যা হয়েছে।</p>';
+    });
+}
+loadPosts();
 
 // ============ ভিজিট ট্র্যাক করা (নীরবে, গণনার জন্য মাত্র) ============
 fetch(SCRIPT_URL + '?action=trackVisit')
