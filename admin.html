@@ -304,6 +304,21 @@
       </div>
       <input type="text" id="newPostTitle" placeholder="পোস্টের শিরোনাম" style="width:100%; padding:10px; border-radius:8px; border:1.5px solid var(--line); font-family:inherit; font-size:14px; margin-bottom:8px;">
       <textarea id="newPostContent" placeholder="বিস্তারিত লিখুন..." style="width:100%; min-height:80px; padding:10px; border-radius:8px; border:1.5px solid var(--line); font-family:inherit; font-size:14px; resize:vertical; margin-bottom:8px;"></textarea>
+
+      <label style="display:block; font-size:12.5px; color:var(--muted); margin-bottom:4px;">ছবি (ঐচ্ছিক, সর্বোচ্চ ৫ এমবি)</label>
+      <input type="file" id="newPostImage" accept="image/*" style="width:100%; margin-bottom:4px; font-size:13px;">
+      <div id="newPostImagePreviewWrap" style="display:none; margin-bottom:8px;">
+        <img id="newPostImagePreview" style="max-width:100%; max-height:160px; border-radius:8px; display:block;">
+        <button type="button" onclick="clearNewPostImage()" style="margin-top:4px; padding:4px 10px; font-size:12px; border:1px solid var(--maroon); border-radius:6px; background:var(--card-bg); color:var(--maroon);">ছবি বাদ দিন</button>
+      </div>
+
+      <label style="display:block; font-size:12.5px; color:var(--muted); margin-bottom:4px;">ভিডিও (ঐচ্ছিক, সর্বোচ্চ ২৫ এমবি, ছোট ক্লিপ রাখুন)</label>
+      <input type="file" id="newPostVideo" accept="video/*" style="width:100%; margin-bottom:4px; font-size:13px;">
+      <div id="newPostVideoPreviewWrap" style="display:none; margin-bottom:8px;">
+        <video id="newPostVideoPreview" controls style="max-width:100%; max-height:180px; border-radius:8px; display:block;"></video>
+        <button type="button" onclick="clearNewPostVideo()" style="margin-top:4px; padding:4px 10px; font-size:12px; border:1px solid var(--maroon); border-radius:6px; background:var(--card-bg); color:var(--maroon);">ভিডিও বাদ দিন</button>
+      </div>
+
       <button id="addPostBtn" onclick="addPost()" style="width:100%; padding:11px; border:none; border-radius:9px; background:var(--forest); color:var(--paper); font-family:inherit; font-size:14.5px; font-weight:700; cursor:pointer;">পোস্ট করুন</button>
       <div id="postMsg" style="display:none; margin-top:10px; padding:9px 11px; border-radius:7px; font-size:13px;"></div>
       <hr class="card-divider" style="margin:16px 0 12px;">
@@ -614,20 +629,98 @@ function loadAdminPosts(){
       listEl.innerHTML = data.posts.map(p => {
         const safeTitle = String(p.title || '').replace(/</g,'&lt;');
         const safeContent = String(p.content || '').replace(/</g,'&lt;');
+        const safeId = String(p.id || '').replace(/</g,'&lt;');
+        const mediaHtml =
+          (p.imageUrl ? '<img src="' + p.imageUrl + '" style="max-width:100%; max-height:140px; border-radius:8px; margin:6px 0; display:block;">' : '') +
+          (p.videoUrl ? '<div style="font-size:12px; color:var(--forest); margin:4px 0;">🎬 ভিডিও যুক্ত আছে</div>' : '');
         return '<div style="border-bottom:1px solid var(--line); padding:10px 0;">' +
           '<div style="font-size:12px; color:var(--muted);">' + (p.date || '') + '</div>' +
           '<div style="font-size:14.5px; font-weight:700; margin:4px 0;">' + safeTitle + '</div>' +
           '<div style="font-size:13.5px; line-height:1.5; white-space:pre-wrap;">' + safeContent + '</div>' +
-          '<button onclick="deletePost(' + p.rowIndex + ')" style="margin-top:8px; padding:6px 12px; border:1px solid var(--maroon); border-radius:6px; background:var(--card-bg); color:var(--maroon); font-size:12.5px;">মুছুন</button>' +
+          mediaHtml +
+          '<div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">' +
+            '<button onclick="copyPostLink(\'' + safeId + '\')" style="padding:6px 12px; border:1px solid var(--forest); border-radius:6px; background:var(--card-bg); color:var(--forest); font-size:12.5px;">লিংক কপি করুন</button>' +
+            '<button onclick="deletePost(' + p.rowIndex + ')" style="padding:6px 12px; border:1px solid var(--maroon); border-radius:6px; background:var(--card-bg); color:var(--maroon); font-size:12.5px;">মুছুন</button>' +
+          '</div>' +
         '</div>';
       }).join('');
     })
     .catch(()=>{ listEl.textContent = 'সংযোগে সমস্যা হয়েছে।'; });
 }
 
+function copyPostLink(id){
+  const base = window.location.href.replace(/admin\.html.*$/, 'index.html');
+  const link = base + '?post=' + encodeURIComponent(id);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(link).then(()=>{
+      alert('লিংক কপি হয়েছে:\n' + link);
+    }).catch(()=>{
+      prompt('লিংকটি কপি করুন:', link);
+    });
+  } else {
+    prompt('লিংকটি কপি করুন:', link);
+  }
+}
+
+// ============ ছবি/ভিডিও ফাইল → base64 (পোস্ট আপলোডের জন্য) ============
+function fileToBase64(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function clearNewPostImage(){
+  document.getElementById('newPostImage').value = '';
+  document.getElementById('newPostImagePreviewWrap').style.display = 'none';
+}
+function clearNewPostVideo(){
+  document.getElementById('newPostVideo').value = '';
+  document.getElementById('newPostVideoPreviewWrap').style.display = 'none';
+}
+
+(function(){
+  const imgInput = document.getElementById('newPostImage');
+  if(imgInput){
+    imgInput.addEventListener('change', ()=>{
+      const file = imgInput.files[0];
+      if(!file) return;
+      if(file.size > 5 * 1024 * 1024){
+        alert('ছবির সাইজ ৫ এমবি এর কম হতে হবে।');
+        imgInput.value = '';
+        return;
+      }
+      fileToBase64(file).then(url=>{
+        document.getElementById('newPostImagePreview').src = url;
+        document.getElementById('newPostImagePreviewWrap').style.display = 'block';
+      });
+    });
+  }
+  const vidInput = document.getElementById('newPostVideo');
+  if(vidInput){
+    vidInput.addEventListener('change', ()=>{
+      const file = vidInput.files[0];
+      if(!file) return;
+      if(file.size > 25 * 1024 * 1024){
+        alert('ভিডিওর সাইজ ২৫ এমবি এর কম হতে হবে। ছোট ক্লিপ ব্যবহার করুন।');
+        vidInput.value = '';
+        return;
+      }
+      fileToBase64(file).then(url=>{
+        document.getElementById('newPostVideoPreview').src = url;
+        document.getElementById('newPostVideoPreviewWrap').style.display = 'block';
+      });
+    });
+  }
+})();
+
 function addPost(){
   const titleEl = document.getElementById('newPostTitle');
   const contentEl = document.getElementById('newPostContent');
+  const imgInput = document.getElementById('newPostImage');
+  const vidInput = document.getElementById('newPostVideo');
   const btn = document.getElementById('addPostBtn');
   const msgBox = document.getElementById('postMsg');
   const title = titleEl.value.trim();
@@ -648,7 +741,39 @@ function addPost(){
 
   btn.disabled = true;
   btn.textContent = 'পোস্ট হচ্ছে...';
-  fetch(SCRIPT_URL + '?action=addPost&password=' + encodeURIComponent(pw) + '&title=' + encodeURIComponent(title) + '&content=' + encodeURIComponent(content))
+
+  const payload = { action: 'addPost', password: pw, title: title, content: content };
+  const imageFile = imgInput && imgInput.files[0];
+  const videoFile = vidInput && vidInput.files[0];
+
+  Promise.resolve()
+    .then(()=>{
+      if(imageFile){
+        return fileToBase64(imageFile).then(dataUrl=>{
+          payload.imageBase64 = dataUrl;
+          payload.imageName = imageFile.name;
+          payload.imageType = imageFile.type || 'image/jpeg';
+        });
+      }
+    })
+    .then(()=>{
+      if(videoFile){
+        showPostMsg('ভিডিও প্রস্তুত হচ্ছে, একটু সময় লাগতে পারে...', true);
+        return fileToBase64(videoFile).then(dataUrl=>{
+          payload.videoBase64 = dataUrl;
+          payload.videoName = videoFile.name;
+          payload.videoType = videoFile.type || 'video/mp4';
+        });
+      }
+    })
+    .then(()=>{
+      showPostMsg('আপলোড হচ্ছে, অপেক্ষা করুন...', true);
+      return fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      });
+    })
     .then(r => r.json())
     .then(data => {
       btn.disabled = false;
@@ -657,9 +782,11 @@ function addPost(){
         showPostMsg('✓ পোস্ট যোগ হয়েছে।', true);
         titleEl.value = '';
         contentEl.value = '';
+        clearNewPostImage();
+        clearNewPostVideo();
         loadAdminPosts();
       } else {
-        showPostMsg('পোস্ট করতে সমস্যা হয়েছে।', false);
+        showPostMsg('পোস্ট করতে সমস্যা হয়েছে: ' + (data.error || ''), false);
       }
     })
     .catch(() => {

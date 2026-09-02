@@ -488,6 +488,133 @@
     text-align:center;
     padding:10px 0;
   }
+  .posts-section-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:12px;
+  }
+  .posts-section-head h2{ margin:0; }
+  .blog-viewall-link{
+    font-size:13px;
+    font-weight:600;
+    color:var(--forest);
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .blog-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+  .blog-card{
+    display:block;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 17px;
+    text-decoration:none;
+    color:inherit;
+    transition:box-shadow .15s ease, transform .15s ease;
+  }
+  [data-theme="dark"] .blog-card{ background:var(--paper-dark); }
+  .blog-card:hover{
+    box-shadow:0 8px 20px -10px rgba(24,119,242,0.35);
+    transform:translateY(-1px);
+  }
+  .blog-card .post-date{
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:5px;
+  }
+  .blog-card .post-title{
+    font-size:16px;
+    font-weight:700;
+    margin:0 0 6px;
+    color:var(--ink);
+  }
+  .blog-card .post-excerpt{
+    font-size:13.5px;
+    line-height:1.6;
+    color:var(--muted);
+    margin:0 0 8px;
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .blog-card .blog-readmore{
+    font-size:13px;
+    font-weight:700;
+    color:var(--forest);
+  }
+  .blog-archive-wrap{
+    max-width:520px;
+    margin:0 auto;
+    padding:18px 4px 40px;
+  }
+  .blog-archive-wrap .blog-back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--forest);
+    text-decoration:none;
+    margin-bottom:16px;
+  }
+  .blog-archive-wrap h1{
+    font-size:20px;
+    margin:0 0 16px;
+  }
+  .blog-detail{
+    max-width:520px;
+    margin:0 auto;
+    padding:18px 4px 40px;
+  }
+  .blog-detail .blog-back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--forest);
+    text-decoration:none;
+    margin-bottom:18px;
+  }
+  .blog-detail article{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:20px 18px;
+  }
+  [data-theme="dark"] .blog-detail article{ background:var(--paper-dark); }
+  .blog-detail .post-date{
+    font-size:12.5px;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+  .blog-detail h1{
+    font-size:21px;
+    line-height:1.35;
+    margin:0 0 14px;
+  }
+  .blog-detail .post-content{
+    font-size:15px;
+    line-height:1.75;
+    white-space:pre-wrap;
+  }
+  .blog-detail .blog-cta{
+    margin-top:22px;
+    text-align:center;
+  }
+  .blog-not-found{
+    text-align:center;
+    padding:30px 10px;
+    color:var(--muted);
+    font-size:14px;
+  }
   .chat-btn.pulse-attention{
     animation:chatPulse 1.4s ease-out 3;
   }
@@ -1297,8 +1424,11 @@
 </button>
 
 <section class="posts-section" aria-label="সর্বশেষ আপডেট">
-  <h2>📢 সর্বশেষ আপডেট</h2>
-  <div id="postsContainer">
+  <div class="posts-section-head">
+    <h2>📢 সর্বশেষ আপডেট</h2>
+    <a class="blog-viewall-link" href="?blog=all">সব পোস্ট দেখুন →</a>
+  </div>
+  <div id="postsContainer" class="blog-grid">
     <p class="posts-empty">আপডেট লোড হচ্ছে...</p>
   </div>
 </section>
@@ -1330,6 +1460,22 @@
   </button>
   <p class="cta-trust">✓ সম্পূর্ণ নিরাপদ &nbsp;·&nbsp; ✓ দ্রুত সাড়া &nbsp;·&nbsp; ✓ কোনো ঝামেলা নেই</p>
 </div>
+</div>
+
+<div id="blogView" style="display:none;">
+  <div id="blogArchiveWrap" class="blog-archive-wrap" style="display:none;">
+    <a class="blog-back-link" href="./">← হোমে ফিরুন</a>
+    <h1>📢 সব আপডেট / পোস্ট</h1>
+    <div id="blogArchiveGrid" class="blog-grid">
+      <p class="posts-empty">লোড হচ্ছে...</p>
+    </div>
+  </div>
+  <div id="blogDetailWrap" class="blog-detail" style="display:none;">
+    <a class="blog-back-link" href="./">← হোমে ফিরুন</a>
+    <div id="blogDetailContent">
+      <p class="posts-empty">লোড হচ্ছে...</p>
+    </div>
+  </div>
 </div>
 
 <main id="mainFormSection" style="display:none;">
@@ -2589,32 +2735,140 @@ function loadReviews(){
 loadReviews();
 loadStats();
 
-// ============ সর্বশেষ আপডেট/পোস্ট লোড করা ============
+// ============ ব্লগ/পোস্ট: লোড, কার্ড রেন্ডার ও রাউটিং (?post=ID / ?blog=all) ============
+let __allPosts = [];
+
+function blogEscape(s){
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function blogExcerpt(text, len){
+  const t = String(text || '').trim();
+  if(t.length <= len) return t;
+  return t.slice(0, len).trim() + '…';
+}
+
+function renderBlogCard(p){
+  const safeTitle = blogEscape(p.title);
+  const excerpt = blogEscape(blogExcerpt(p.content, 110));
+  const href = '?post=' + encodeURIComponent(p.id);
+  const thumbHtml = p.imageUrl
+    ? '<img src="' + p.imageUrl + '" alt="" loading="lazy" style="width:100%; max-height:170px; object-fit:cover; border-radius:8px; margin-bottom:10px;">'
+    : '';
+  const mediaTag = (!p.imageUrl && p.videoUrl)
+    ? '<span style="display:inline-block; font-size:11.5px; color:var(--forest); margin-bottom:6px;">🎬 ভিডিওসহ পোস্ট</span>'
+    : '';
+  return '<a class="blog-card" href="' + href + '">' +
+    thumbHtml +
+    '<div class="post-date">' + (p.date || '') + '</div>' +
+    mediaTag +
+    '<div class="post-title">' + safeTitle + '</div>' +
+    '<p class="post-excerpt">' + excerpt + '</p>' +
+    '<span class="blog-readmore">বিস্তারিত পড়ুন →</span>' +
+  '</a>';
+}
+
 function loadPosts(){
   const container = document.getElementById('postsContainer');
-  if(!container) return;
   fetch(SCRIPT_URL + '?action=getPosts')
     .then(r => r.json())
     .then(data => {
-      if(!data.success || !data.posts || data.posts.length === 0){
-        container.innerHTML = '<p class="posts-empty">এখনো কোনো আপডেট নেই।</p>';
-        return;
+      __allPosts = (data.success && data.posts) ? data.posts : [];
+      if(container){
+        if(__allPosts.length === 0){
+          container.innerHTML = '<p class="posts-empty">এখনো কোনো আপডেট নেই।</p>';
+        } else {
+          container.innerHTML = __allPosts.slice(0, 4).map(renderBlogCard).join('');
+        }
       }
-      container.innerHTML = data.posts.map(p => {
-        const safeTitle = String(p.title || '').replace(/</g,'&lt;');
-        const safeContent = String(p.content || '').replace(/</g,'&lt;');
-        return '<div class="post-card">' +
-          '<div class="post-date">' + (p.date || '') + '</div>' +
-          '<div class="post-title">' + safeTitle + '</div>' +
-          '<div class="post-content">' + safeContent + '</div>' +
-        '</div>';
-      }).join('');
+      initBlogRouter();
     })
     .catch(()=>{
-      container.innerHTML = '<p class="posts-empty">আপডেট লোড করতে সমস্যা হয়েছে।</p>';
+      if(container) container.innerHTML = '<p class="posts-empty">আপডেট লোড করতে সমস্যা হয়েছে।</p>';
+      initBlogRouter();
     });
 }
 loadPosts();
+
+// ============ URL অনুযায়ী ব্লগ আর্কাইভ/ডিটেইল ভিউ দেখানো ============
+function initBlogRouter(){
+  const params = new URLSearchParams(window.location.search);
+  const postId = params.get('post');
+  const blogAll = params.get('blog');
+
+  if(!postId && blogAll !== 'all') return; // স্বাভাবিক হোমপেজ, কিছু করার দরকার নেই
+
+  const landingTop = document.getElementById('landingTop');
+  const landingBottom = document.getElementById('landingBottom');
+  const mainFormSection = document.getElementById('mainFormSection');
+  const blogView = document.getElementById('blogView');
+  if(landingTop) landingTop.style.display = 'none';
+  if(landingBottom) landingBottom.style.display = 'none';
+  if(mainFormSection) mainFormSection.style.display = 'none';
+  if(blogView) blogView.style.display = '';
+  window.scrollTo({ top:0, behavior:'auto' });
+
+  if(postId){
+    showBlogDetail(postId);
+  } else {
+    showBlogArchive();
+  }
+}
+
+function showBlogArchive(){
+  const archiveWrap = document.getElementById('blogArchiveWrap');
+  const detailWrap = document.getElementById('blogDetailWrap');
+  const grid = document.getElementById('blogArchiveGrid');
+  if(detailWrap) detailWrap.style.display = 'none';
+  if(archiveWrap) archiveWrap.style.display = '';
+  if(!grid) return;
+  if(__allPosts.length === 0){
+    grid.innerHTML = '<p class="posts-empty">এখনো কোনো আপডেট নেই।</p>';
+    return;
+  }
+  grid.innerHTML = __allPosts.map(renderBlogCard).join('');
+}
+
+function showBlogDetail(postId){
+  const archiveWrap = document.getElementById('blogArchiveWrap');
+  const detailWrap = document.getElementById('blogDetailWrap');
+  const contentEl = document.getElementById('blogDetailContent');
+  if(archiveWrap) archiveWrap.style.display = 'none';
+  if(detailWrap) detailWrap.style.display = '';
+  if(!contentEl) return;
+
+  const post = __allPosts.find(p => String(p.id) === String(postId));
+  if(!post){
+    contentEl.innerHTML = '<p class="blog-not-found">এই পোস্টটি খুঁজে পাওয়া যায়নি। এটি হয়তো মুছে ফেলা হয়েছে।</p>';
+    return;
+  }
+
+  const safeTitle = blogEscape(post.title);
+  const safeContent = blogEscape(post.content);
+  const imageHtml = post.imageUrl
+    ? '<img src="' + post.imageUrl + '" alt="' + safeTitle + '" style="width:100%; border-radius:10px; margin-bottom:14px; display:block;">'
+    : '';
+  const videoHtml = post.videoUrl
+    ? '<div style="position:relative; width:100%; padding-top:56.25%; margin-bottom:14px; border-radius:10px; overflow:hidden; background:#000;">' +
+        '<iframe src="' + post.videoUrl + '" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allow="autoplay" allowfullscreen></iframe>' +
+      '</div>'
+    : '';
+  contentEl.innerHTML =
+    '<article>' +
+      '<div class="post-date">' + (post.date || '') + '</div>' +
+      '<h1>' + safeTitle + '</h1>' +
+      imageHtml +
+      videoHtml +
+      '<div class="post-content">' + safeContent + '</div>' +
+    '</article>' +
+    '<div class="blog-cta">' +
+      '<a class="whatsapp-btn" style="max-width:340px; margin:16px auto 0;" href="https://wa.me/8801764324313" target="_blank" rel="noopener">WhatsApp-এ যোগাযোগ করুন</a>' +
+    '</div>';
+
+  document.title = post.title + ' | ফেসবুক সমস্যা সমাধান — যশোর';
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if(metaDesc) metaDesc.setAttribute('content', blogExcerpt(post.content, 155));
+}
 
 // ============ ভিজিট ট্র্যাক করা (নীরবে, গণনার জন্য মাত্র) ============
 fetch(SCRIPT_URL + '?action=trackVisit')
