@@ -297,6 +297,19 @@
       <div id="reviewsList">লোড হচ্ছে...</div>
     </div>
 
+    <div style="background:var(--card-bg); border:1px solid var(--line); border-radius:12px; padding:14px; margin:14px 0;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div style="font-weight:700; color:var(--forest);">📢 আপডেট/পোস্ট ম্যানেজমেন্ট</div>
+        <button onclick="loadAdminPosts()" style="padding:6px 12px; font-size:12.5px; border:1px solid var(--forest); border-radius:6px; background:var(--card-bg); color:var(--forest);">রিফ্রেশ</button>
+      </div>
+      <input type="text" id="newPostTitle" placeholder="পোস্টের শিরোনাম" style="width:100%; padding:10px; border-radius:8px; border:1.5px solid var(--line); font-family:inherit; font-size:14px; margin-bottom:8px;">
+      <textarea id="newPostContent" placeholder="বিস্তারিত লিখুন..." style="width:100%; min-height:80px; padding:10px; border-radius:8px; border:1.5px solid var(--line); font-family:inherit; font-size:14px; resize:vertical; margin-bottom:8px;"></textarea>
+      <button id="addPostBtn" onclick="addPost()" style="width:100%; padding:11px; border:none; border-radius:9px; background:var(--forest); color:var(--paper); font-family:inherit; font-size:14.5px; font-weight:700; cursor:pointer;">পোস্ট করুন</button>
+      <div id="postMsg" style="display:none; margin-top:10px; padding:9px 11px; border-radius:7px; font-size:13px;"></div>
+      <hr class="card-divider" style="margin:16px 0 12px;">
+      <div id="postsList">লোড হচ্ছে...</div>
+    </div>
+
     <div class="toolbar" style="margin-top:0; flex-direction:column; align-items:stretch;">
       <button class="exportBtn" onclick="exportCsv()">CSV ডাউনলোড করুন</button>
       <div id="backupReminder" style="font-size:12px; color:var(--muted); margin-top:6px; text-align:center;"></div>
@@ -582,6 +595,95 @@ function reviewAction(row, status){
     .then(()=> loadAdminReviews());
 }
 
+// ============ আপডেট/পোস্ট ম্যানেজমেন্ট ============
+function loadAdminPosts(){
+  const listEl = document.getElementById('postsList');
+  listEl.textContent = 'লোড হচ্ছে...';
+  const pw = sessionStorage.getItem('adminPw') || '';
+  fetch(SCRIPT_URL + '?action=listPosts&password=' + encodeURIComponent(pw))
+    .then(r => r.json())
+    .then(data => {
+      if(!data.success){
+        listEl.textContent = 'পোস্ট লোড করতে সমস্যা হয়েছে।';
+        return;
+      }
+      if(!data.posts || data.posts.length === 0){
+        listEl.textContent = 'এখনো কোনো পোস্ট নেই।';
+        return;
+      }
+      listEl.innerHTML = data.posts.map(p => {
+        const safeTitle = String(p.title || '').replace(/</g,'&lt;');
+        const safeContent = String(p.content || '').replace(/</g,'&lt;');
+        return '<div style="border-bottom:1px solid var(--line); padding:10px 0;">' +
+          '<div style="font-size:12px; color:var(--muted);">' + (p.date || '') + '</div>' +
+          '<div style="font-size:14.5px; font-weight:700; margin:4px 0;">' + safeTitle + '</div>' +
+          '<div style="font-size:13.5px; line-height:1.5; white-space:pre-wrap;">' + safeContent + '</div>' +
+          '<button onclick="deletePost(' + p.rowIndex + ')" style="margin-top:8px; padding:6px 12px; border:1px solid var(--maroon); border-radius:6px; background:var(--card-bg); color:var(--maroon); font-size:12.5px;">মুছুন</button>' +
+        '</div>';
+      }).join('');
+    })
+    .catch(()=>{ listEl.textContent = 'সংযোগে সমস্যা হয়েছে।'; });
+}
+
+function addPost(){
+  const titleEl = document.getElementById('newPostTitle');
+  const contentEl = document.getElementById('newPostContent');
+  const btn = document.getElementById('addPostBtn');
+  const msgBox = document.getElementById('postMsg');
+  const title = titleEl.value.trim();
+  const content = contentEl.value.trim();
+  const pw = sessionStorage.getItem('adminPw') || '';
+
+  function showPostMsg(text, ok){
+    msgBox.style.display = 'block';
+    msgBox.style.background = ok ? 'var(--badge-done-bg)' : 'var(--badge-cancel-bg)';
+    msgBox.style.color = ok ? 'var(--ok)' : 'var(--maroon)';
+    msgBox.textContent = text;
+  }
+
+  if(!title || !content){
+    showPostMsg('শিরোনাম ও বিস্তারিত দুটোই লিখুন।', false);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'পোস্ট হচ্ছে...';
+  fetch(SCRIPT_URL + '?action=addPost&password=' + encodeURIComponent(pw) + '&title=' + encodeURIComponent(title) + '&content=' + encodeURIComponent(content))
+    .then(r => r.json())
+    .then(data => {
+      btn.disabled = false;
+      btn.textContent = 'পোস্ট করুন';
+      if(data.success){
+        showPostMsg('✓ পোস্ট যোগ হয়েছে।', true);
+        titleEl.value = '';
+        contentEl.value = '';
+        loadAdminPosts();
+      } else {
+        showPostMsg('পোস্ট করতে সমস্যা হয়েছে।', false);
+      }
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.textContent = 'পোস্ট করুন';
+      showPostMsg('সংযোগে সমস্যা হয়েছে।', false);
+    });
+}
+
+function deletePost(rowIndex){
+  if(!confirm('এই পোস্টটি মুছে ফেলতে চান?')) return;
+  const pw = sessionStorage.getItem('adminPw') || '';
+  fetch(SCRIPT_URL + '?action=deletePost&password=' + encodeURIComponent(pw) + '&row=' + encodeURIComponent(rowIndex))
+    .then(r => r.json())
+    .then(data => {
+      if(data.success){
+        loadAdminPosts();
+      } else {
+        alert('মুছতে সমস্যা হয়েছে।');
+      }
+    })
+    .catch(() => alert('সংযোগে সমস্যা হয়েছে।'));
+}
+
 // ============ ব্যাকআপ রিমাইন্ডার ============
 function loadVisitorCount(){
   const pw = sessionStorage.getItem('adminPw') || '';
@@ -665,6 +767,7 @@ function verifyAndEnter(){
         document.getElementById('lastUpdated').textContent = 'সবশেষ আপডেট: ' + new Date().toLocaleTimeString('bn-BD');
         startAutoRefresh();
         loadAdminReviews();
+        loadAdminPosts();
         updateBackupReminder();
         loadVisitorCount();
       } else {
