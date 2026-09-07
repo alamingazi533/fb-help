@@ -2974,10 +2974,15 @@ function showBlogDetail(postId){
         '<input type="text" id="commentNameInput" placeholder="আপনার নাম (ঐচ্ছিক)">' +
         '<textarea id="commentTextInput" placeholder="আপনার মতামত লিখুন..."></textarea>' +
         '<input type="text" id="commentHpField" name="website" autocomplete="off" tabindex="-1" style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;">' +
+        '<div class="captcha-box" style="margin-bottom:8px;">' +
+          '<span id="commentCaptchaQ"></span>' +
+          '<input type="text" id="commentCaptchaAns" inputmode="numeric" placeholder="উত্তর">' +
+        '</div>' +
         '<button type="button" id="commentSubmitBtn">কমেন্ট করুন</button>' +
         '<div id="commentMsg" class="comment-msg" style="display:none;"></div>' +
       '</div>' +
     '</div>';
+  newCommentCaptcha();
 
   const likeBtn = document.getElementById('postLikeBtn');
   if(likeBtn) likeBtn.addEventListener('click', ()=> likeCurrentPost(String(post.id)));
@@ -3048,7 +3053,21 @@ async function sharePost(postId, title){
   }
 }
 
-// ============ পোস্টের কমেন্ট দেখানো ও জমা দেওয়া (অনুমোদনের পর পাবলিকলি দেখা যায়) ============
+// ============ কমেন্ট ফর্মের ছোট ম্যাথ ক্যাপচা (বট ঠেকাতে) ============
+let commentCaptchaAnswer = 0;
+let commentCaptchaA = 0;
+let commentCaptchaB = 0;
+function newCommentCaptcha(){
+  commentCaptchaA = Math.floor(Math.random() * 8) + 1;
+  commentCaptchaB = Math.floor(Math.random() * 8) + 1;
+  commentCaptchaAnswer = commentCaptchaA + commentCaptchaB;
+  const qEl = document.getElementById('commentCaptchaQ');
+  const ansEl = document.getElementById('commentCaptchaAns');
+  if(qEl) qEl.textContent = commentCaptchaA + ' + ' + commentCaptchaB + ' =';
+  if(ansEl) ansEl.value = '';
+}
+
+// ============ পোস্টের কমেন্ট দেখানো ও জমা দেওয়া (এখন সাবমিট করলেই সাথে সাথে পাবলিক হয়) ============
 function loadPostComments(postId){
   const listEl = document.getElementById('commentsList');
   if(!listEl) return;
@@ -3077,6 +3096,7 @@ function submitPostComment(postId){
   const nameInput = document.getElementById('commentNameInput');
   const textInput = document.getElementById('commentTextInput');
   const hpInput = document.getElementById('commentHpField');
+  const captchaInput = document.getElementById('commentCaptchaAns');
   const btn = document.getElementById('commentSubmitBtn');
   const msgBox = document.getElementById('commentMsg');
   const text = textInput ? textInput.value.trim() : '';
@@ -3092,20 +3112,39 @@ function submitPostComment(postId){
     return;
   }
 
+  if(parseInt(captchaInput ? captchaInput.value.trim() : '', 10) !== commentCaptchaAnswer){
+    if(msgBox){
+      msgBox.style.display = 'block';
+      msgBox.style.color = 'var(--maroon)';
+      msgBox.textContent = 'যাচাই ঘরের উত্তরটি সঠিক নয়।';
+    }
+    newCommentCaptcha();
+    return;
+  }
+
+  const submittedCaptchaA = commentCaptchaA;
+  const submittedCaptchaB = commentCaptchaB;
+
   if(btn){ btn.disabled = true; btn.textContent = 'জমা হচ্ছে...'; }
   fetch(SCRIPT_URL, {
     method: 'POST',
     mode: 'no-cors',
     headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ action: 'addComment', postId: postId, name: name, comment: text, hp: hp })
+    body: JSON.stringify({
+      action: 'addComment', postId: postId, name: name, comment: text, hp: hp,
+      captchaA: submittedCaptchaA, captchaB: submittedCaptchaB,
+      captchaAns: submittedCaptchaA + submittedCaptchaB
+    })
   }).then(()=>{
     if(textInput) textInput.value = '';
     if(nameInput) nameInput.value = '';
+    newCommentCaptcha();
     if(msgBox){
       msgBox.style.display = 'block';
       msgBox.style.color = 'var(--ok)';
-      msgBox.textContent = '✓ ধন্যবাদ! আপনার কমেন্ট অনুমোদনের পর এখানে দেখানো হবে।';
+      msgBox.textContent = '✓ আপনার কমেন্ট পাবলিশ হয়েছে!';
     }
+    setTimeout(()=> loadPostComments(postId), 800);
   }).catch(()=>{
     if(msgBox){
       msgBox.style.display = 'block';
