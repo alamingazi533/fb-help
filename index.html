@@ -216,6 +216,46 @@
     cursor:pointer;
   }
   .icon-btn svg{width:15px; height:15px; flex-shrink:0;}
+  .site-nav{
+    position:sticky;
+    top:0;
+    z-index:50;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:11px 16px;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+    max-width:520px;
+    margin:0 auto;
+  }
+  [data-theme="dark"] .site-nav{ background:var(--paper-dark); }
+  .site-nav .site-brand{
+    font-family:'Noto Serif Bengali', serif;
+    font-weight:700;
+    font-size:15px;
+    color:var(--forest);
+    white-space:nowrap;
+    text-decoration:none;
+    flex-shrink:0;
+  }
+  .site-nav .site-nav-links{
+    display:flex;
+    gap:16px;
+    overflow-x:auto;
+    -ms-overflow-style:none;
+    scrollbar-width:none;
+  }
+  .site-nav .site-nav-links::-webkit-scrollbar{ display:none; }
+  .site-nav .site-nav-links a{
+    white-space:nowrap;
+    font-size:13px;
+    font-weight:600;
+    color:var(--muted);
+    text-decoration:none;
+    padding:4px 2px;
+  }
+  html{ scroll-behavior:smooth; }
   .eyebrow{
     letter-spacing:.14em;
     font-size:12.5px;
@@ -1453,8 +1493,19 @@
 </head>
 <body>
 
+<nav class="site-nav">
+  <a class="site-brand" href="#top">FB সমাধান</a>
+  <div class="site-nav-links">
+    <a href="#top">হোম</a>
+    <a href="#postsSection">আপডেট</a>
+    <a href="#servicesSection">সেবা</a>
+    <a href="#reviewsSection">রিভিউ</a>
+    <a href="#contactSection">যোগাযোগ</a>
+  </div>
+</nav>
+
 <div id="landingTop">
-<header>
+<header id="top">
   <div class="top-action-bar">
     <button type="button" class="icon-btn" id="shareBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>
@@ -1500,7 +1551,7 @@
   </div>
 </div>
 
-<a class="whatsapp-btn" href="https://wa.me/8801764324313?text=আসসালামু%20আলাইকুম%2C%20আমি%20ফেসবুক%20সমস্যা%20নিয়ে%20যোগাযোগ%20করতে%20চাই।" target="_blank" rel="noopener">
+<a class="whatsapp-btn" id="contactSection" href="https://wa.me/8801764324313?text=আসসালামু%20আলাইকুম%2C%20আমি%20ফেসবুক%20সমস্যা%20নিয়ে%20যোগাযোগ%20করতে%20চাই।" target="_blank" rel="noopener">
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.9-4.45 9.9-9.9C21.95 6.45 17.5 2 12.04 2Zm0 18.06h-.01a8.14 8.14 0 0 1-4.15-1.14l-.3-.18-3.11.82.83-3.03-.19-.31a8.15 8.15 0 0 1-1.25-4.31c0-4.5 3.66-8.16 8.19-8.16 2.19 0 4.24.85 5.79 2.4a8.13 8.13 0 0 1 2.4 5.78c0 4.5-3.67 8.13-8.2 8.13Zm4.48-6.1c-.24-.12-1.45-.72-1.68-.8-.22-.08-.39-.12-.55.12-.16.24-.63.8-.78.96-.14.16-.29.18-.53.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.35-1.67-.14-.24-.02-.37.11-.49.11-.11.24-.29.37-.43.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.42-.55-.42-.14 0-.31-.02-.47-.02-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.02 0 1.19.87 2.34 1 2.5.12.16 1.71 2.61 4.14 3.66.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.45-.59 1.65-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"/></svg>
   WhatsApp-এ যোগাযোগ করুন
 </a>
@@ -1515,7 +1566,7 @@
   লাইভ চ্যাট করুন
 </button>
 
-<section class="posts-section" aria-label="সর্বশেষ আপডেট">
+<section class="posts-section" id="postsSection" aria-label="সর্বশেষ আপডেট">
   <div class="posts-section-head">
     <h2>📢 সর্বশেষ আপডেট</h2>
     <a class="blog-viewall-link" href="?blog=all">সব পোস্ট দেখুন →</a>
@@ -1525,7 +1576,7 @@
   </div>
 </section>
 
-<section class="services-section" aria-label="আমাদের সেবাসমূহ">
+<section class="services-section" id="servicesSection" aria-label="আমাদের সেবাসমূহ">
   <h2>আমাদের সেবাসমূহ</h2>
   <p class="services-note">Facebook Help &amp; Meta Help — Account Hacked, Disabled, Suspended এবং Monetization সংক্রান্ত সমস্যা সমাধান</p>
   <ul class="services-list">
@@ -1779,7 +1830,7 @@
     </div>
   </div>
 
-  <div class="testi-card">
+  <div class="testi-card" id="reviewsSection">
     <div class="section-label" style="margin-top:0;">কাস্টমারদের মতামত</div>
     <div id="reviewsContainer">
       <p style="font-size:13.5px; color:var(--muted); text-align:center; padding:10px 0;">রিভিউ লোড হচ্ছে...</p>
