@@ -2973,6 +2973,7 @@ function showBlogDetail(postId){
       '<div class="comment-form">' +
         '<input type="text" id="commentNameInput" placeholder="আপনার নাম (ঐচ্ছিক)">' +
         '<textarea id="commentTextInput" placeholder="আপনার মতামত লিখুন..."></textarea>' +
+        '<input type="text" id="commentHpField" name="website" autocomplete="off" tabindex="-1" style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;">' +
         '<button type="button" id="commentSubmitBtn">কমেন্ট করুন</button>' +
         '<div id="commentMsg" class="comment-msg" style="display:none;"></div>' +
       '</div>' +
@@ -3075,10 +3076,12 @@ function loadPostComments(postId){
 function submitPostComment(postId){
   const nameInput = document.getElementById('commentNameInput');
   const textInput = document.getElementById('commentTextInput');
+  const hpInput = document.getElementById('commentHpField');
   const btn = document.getElementById('commentSubmitBtn');
   const msgBox = document.getElementById('commentMsg');
   const text = textInput ? textInput.value.trim() : '';
   const name = nameInput ? nameInput.value.trim() : '';
+  const hp = hpInput ? hpInput.value.trim() : '';
 
   if(!text){
     if(msgBox){
@@ -3094,7 +3097,7 @@ function submitPostComment(postId){
     method: 'POST',
     mode: 'no-cors',
     headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ action: 'addComment', postId: postId, name: name, comment: text })
+    body: JSON.stringify({ action: 'addComment', postId: postId, name: name, comment: text, hp: hp })
   }).then(()=>{
     if(textInput) textInput.value = '';
     if(nameInput) nameInput.value = '';
