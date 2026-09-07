@@ -549,6 +549,13 @@
     font-weight:700;
     color:var(--forest);
   }
+  .post-meta-row{
+    display:flex;
+    gap:14px;
+    font-size:12.5px;
+    color:var(--muted);
+    margin:0 0 8px;
+  }
   .blog-archive-wrap{
     max-width:520px;
     margin:0 auto;
@@ -608,6 +615,91 @@
   .blog-detail .blog-cta{
     margin-top:22px;
     text-align:center;
+  }
+  .blog-engage-row{
+    display:flex;
+    gap:10px;
+    margin-top:16px;
+  }
+  .blog-engage-row button{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:10px;
+    border-radius:9px;
+    border:1.5px solid var(--line);
+    background:var(--card-bg, #fff);
+    color:var(--ink);
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  [data-theme="dark"] .blog-engage-row button{ background:var(--paper-dark); }
+  .blog-engage-row button.liked{
+    border-color:var(--maroon);
+    color:var(--maroon);
+    background:var(--err-bg);
+  }
+  .blog-comments{
+    margin-top:24px;
+  }
+  .blog-comments h2{
+    font-size:16.5px;
+    margin:0 0 12px;
+  }
+  .comment-item{
+    background:var(--card-bg, #fff);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    margin-bottom:8px;
+  }
+  [data-theme="dark"] .comment-item{ background:var(--paper-dark); }
+  .comment-item .comment-name{
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:3px;
+  }
+  .comment-item .comment-text{
+    font-size:13.5px;
+    line-height:1.55;
+    white-space:pre-wrap;
+  }
+  .comment-item .comment-date{
+    font-size:11px;
+    color:var(--muted);
+    margin-top:4px;
+  }
+  .comment-form input, .comment-form textarea{
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:1.5px solid var(--line);
+    font-family:inherit;
+    font-size:14px;
+    margin-bottom:8px;
+    background:var(--card-bg, #fff);
+    color:var(--ink);
+  }
+  .comment-form textarea{ min-height:70px; resize:vertical; }
+  .comment-form button{
+    width:100%;
+    padding:11px;
+    border:none;
+    border-radius:9px;
+    background:var(--forest);
+    color:#fff;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .comment-msg{
+    font-size:12.5px;
+    margin-top:8px;
   }
   .blog-not-found{
     text-align:center;
@@ -2764,6 +2856,10 @@ function renderBlogCard(p){
     mediaTag +
     '<div class="post-title">' + safeTitle + '</div>' +
     '<p class="post-excerpt">' + excerpt + '</p>' +
+    '<div class="post-meta-row">' +
+      '<span>❤️ ' + (p.likes || 0) + '</span>' +
+      '<span>💬 ' + (p.commentCount || 0) + '</span>' +
+    '</div>' +
     '<span class="blog-readmore">বিস্তারিত পড়ুন →</span>' +
   '</a>';
 }
@@ -2853,6 +2949,9 @@ function showBlogDetail(postId){
         '<iframe src="' + post.videoUrl + '" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allow="autoplay" allowfullscreen></iframe>' +
       '</div>'
     : '';
+  const alreadyLiked = getLikedPostIds().includes(String(post.id));
+  const likeLabel = alreadyLiked ? '❤️ পছন্দ হয়েছে' : '🤍 পছন্দ';
+
   contentEl.innerHTML =
     '<article>' +
       '<div class="post-date">' + (post.date || '') + '</div>' +
@@ -2860,14 +2959,159 @@ function showBlogDetail(postId){
       imageHtml +
       videoHtml +
       '<div class="post-content">' + safeContent + '</div>' +
+      '<div class="blog-engage-row">' +
+        '<button type="button" id="postLikeBtn" class="' + (alreadyLiked ? 'liked' : '') + '"' + (alreadyLiked ? ' disabled' : '') + '>' + likeLabel + ' (<span id="postLikeCount">' + (post.likes || 0) + '</span>)</button>' +
+        '<button type="button" id="postShareBtn">🔗 শেয়ার করুন</button>' +
+      '</div>' +
     '</article>' +
     '<div class="blog-cta">' +
       '<a class="whatsapp-btn" style="max-width:340px; margin:16px auto 0;" href="https://wa.me/8801764324313" target="_blank" rel="noopener">WhatsApp-এ যোগাযোগ করুন</a>' +
+    '</div>' +
+    '<div class="blog-comments">' +
+      '<h2>💬 কমেন্ট (<span id="commentCountLabel">' + (post.commentCount || 0) + '</span>)</h2>' +
+      '<div id="commentsList"><p class="posts-empty">লোড হচ্ছে...</p></div>' +
+      '<div class="comment-form">' +
+        '<input type="text" id="commentNameInput" placeholder="আপনার নাম (ঐচ্ছিক)">' +
+        '<textarea id="commentTextInput" placeholder="আপনার মতামত লিখুন..."></textarea>' +
+        '<button type="button" id="commentSubmitBtn">কমেন্ট করুন</button>' +
+        '<div id="commentMsg" class="comment-msg" style="display:none;"></div>' +
+      '</div>' +
     '</div>';
+
+  const likeBtn = document.getElementById('postLikeBtn');
+  if(likeBtn) likeBtn.addEventListener('click', ()=> likeCurrentPost(String(post.id)));
+  const shareBtnEl = document.getElementById('postShareBtn');
+  if(shareBtnEl) shareBtnEl.addEventListener('click', ()=> sharePost(String(post.id), post.title));
+  const commentSubmitBtnEl = document.getElementById('commentSubmitBtn');
+  if(commentSubmitBtnEl) commentSubmitBtnEl.addEventListener('click', ()=> submitPostComment(String(post.id)));
+  loadPostComments(String(post.id));
 
   document.title = post.title + ' | ফেসবুক সমস্যা সমাধান — যশোর';
   const metaDesc = document.querySelector('meta[name="description"]');
   if(metaDesc) metaDesc.setAttribute('content', blogExcerpt(post.content, 155));
+}
+
+// ============ পোস্ট লাইক (localStorage দিয়ে একই ব্রাউজার থেকে একবারই) ============
+function getLikedPostIds(){
+  try{ return JSON.parse(localStorage.getItem('likedPostIds') || '[]'); }catch(e){ return []; }
+}
+function markPostLiked(postId){
+  const liked = getLikedPostIds();
+  if(!liked.includes(postId)){
+    liked.push(postId);
+    try{ localStorage.setItem('likedPostIds', JSON.stringify(liked)); }catch(e){}
+  }
+}
+function likeCurrentPost(postId){
+  if(getLikedPostIds().includes(postId)) return;
+  const btn = document.getElementById('postLikeBtn');
+  const countEl = document.getElementById('postLikeCount');
+  if(btn) btn.disabled = true;
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'likePost', postId: postId })
+  }).then(()=>{
+    markPostLiked(postId);
+    const post = __allPosts.find(p => String(p.id) === postId);
+    const newCount = (post ? (Number(post.likes) || 0) : 0) + 1;
+    if(post) post.likes = newCount;
+    if(countEl) countEl.textContent = newCount;
+    if(btn){
+      btn.classList.add('liked');
+      btn.innerHTML = '❤️ পছন্দ হয়েছে (<span id="postLikeCount">' + newCount + '</span>)';
+    }
+  }).catch(()=>{
+    if(btn) btn.disabled = false;
+  });
+}
+
+// ============ পোস্ট শেয়ার (Web Share API, নাহলে লিংক কপি) ============
+async function sharePost(postId, title){
+  const shareData = {
+    title: title || 'ফেসবুক সমস্যা সমাধান — আপডেট',
+    text: 'ফেসবুক সমস্যা সমাধান — এই আপডেটটি দেখুন:',
+    url: window.location.origin + window.location.pathname + '?post=' + encodeURIComponent(postId)
+  };
+  if(navigator.share){
+    try{ await navigator.share(shareData); }
+    catch(err){ /* ব্যবহারকারী শেয়ার বাতিল করলে কিছু করার দরকার নেই */ }
+  } else {
+    try{
+      await navigator.clipboard.writeText(shareData.url);
+      alert('লিংক কপি হয়েছে! এখন যেকোনো জায়গায় পেস্ট করে শেয়ার করতে পারবেন।');
+    }catch(err){
+      alert('শেয়ার করতে সমস্যা হয়েছে। লিংক: ' + shareData.url);
+    }
+  }
+}
+
+// ============ পোস্টের কমেন্ট দেখানো ও জমা দেওয়া (অনুমোদনের পর পাবলিকলি দেখা যায়) ============
+function loadPostComments(postId){
+  const listEl = document.getElementById('commentsList');
+  if(!listEl) return;
+  fetch(SCRIPT_URL + '?action=getComments&postId=' + encodeURIComponent(postId))
+    .then(r => r.json())
+    .then(data => {
+      const comments = (data.success && data.comments) ? data.comments : [];
+      if(comments.length === 0){
+        listEl.innerHTML = '<p class="posts-empty">এখনো কোনো কমেন্ট নেই। প্রথম কমেন্টটি আপনিই করুন।</p>';
+        return;
+      }
+      listEl.innerHTML = comments.map(c =>
+        '<div class="comment-item">' +
+          '<div class="comment-name">' + blogEscape(c.name || 'অজ্ঞাত') + '</div>' +
+          '<div class="comment-text">' + blogEscape(c.text) + '</div>' +
+          '<div class="comment-date">' + blogEscape(c.date || '') + '</div>' +
+        '</div>'
+      ).join('');
+    })
+    .catch(()=>{
+      listEl.innerHTML = '<p class="posts-empty">কমেন্ট লোড করতে সমস্যা হয়েছে।</p>';
+    });
+}
+
+function submitPostComment(postId){
+  const nameInput = document.getElementById('commentNameInput');
+  const textInput = document.getElementById('commentTextInput');
+  const btn = document.getElementById('commentSubmitBtn');
+  const msgBox = document.getElementById('commentMsg');
+  const text = textInput ? textInput.value.trim() : '';
+  const name = nameInput ? nameInput.value.trim() : '';
+
+  if(!text){
+    if(msgBox){
+      msgBox.style.display = 'block';
+      msgBox.style.color = 'var(--maroon)';
+      msgBox.textContent = 'কমেন্ট লিখুন।';
+    }
+    return;
+  }
+
+  if(btn){ btn.disabled = true; btn.textContent = 'জমা হচ্ছে...'; }
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'addComment', postId: postId, name: name, comment: text })
+  }).then(()=>{
+    if(textInput) textInput.value = '';
+    if(nameInput) nameInput.value = '';
+    if(msgBox){
+      msgBox.style.display = 'block';
+      msgBox.style.color = 'var(--ok)';
+      msgBox.textContent = '✓ ধন্যবাদ! আপনার কমেন্ট অনুমোদনের পর এখানে দেখানো হবে।';
+    }
+  }).catch(()=>{
+    if(msgBox){
+      msgBox.style.display = 'block';
+      msgBox.style.color = 'var(--maroon)';
+      msgBox.textContent = 'দুঃখিত, কমেন্ট জমা দিতে সমস্যা হয়েছে।';
+    }
+  }).finally(()=>{
+    if(btn){ btn.disabled = false; btn.textContent = 'কমেন্ট করুন'; }
+  });
 }
 
 // ============ ভিজিট ট্র্যাক করা (নীরবে, গণনার জন্য মাত্র) ============

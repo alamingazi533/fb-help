@@ -299,6 +299,14 @@
 
     <div style="background:var(--card-bg); border:1px solid var(--line); border-radius:12px; padding:14px; margin:14px 0;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div style="font-weight:700; color:var(--forest);">💬 পোস্ট কমেন্ট মডারেশন <span id="pendingCommentBadge"></span></div>
+        <button onclick="loadAdminComments()" style="padding:6px 12px; font-size:12.5px; border:1px solid var(--forest); border-radius:6px; background:var(--card-bg); color:var(--forest);">রিফ্রেশ</button>
+      </div>
+      <div id="commentsListAdmin">লোড হচ্ছে...</div>
+    </div>
+
+    <div style="background:var(--card-bg); border:1px solid var(--line); border-radius:12px; padding:14px; margin:14px 0;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <div style="font-weight:700; color:var(--forest);">📢 আপডেট/পোস্ট ম্যানেজমেন্ট</div>
         <button onclick="loadAdminPosts()" style="padding:6px 12px; font-size:12.5px; border:1px solid var(--forest); border-radius:6px; background:var(--card-bg); color:var(--forest);">রিফ্রেশ</button>
       </div>
@@ -610,6 +618,53 @@ function reviewAction(row, status){
     .then(()=> loadAdminReviews());
 }
 
+// ============ পোস্টের কমেন্ট মডারেশন ============
+function loadAdminComments(){
+  const listEl = document.getElementById('commentsListAdmin');
+  const badgeEl = document.getElementById('pendingCommentBadge');
+  listEl.textContent = 'লোড হচ্ছে...';
+  const pw = sessionStorage.getItem('adminPw') || '';
+  fetch(SCRIPT_URL + '?action=listComments&password=' + encodeURIComponent(pw))
+    .then(r => r.json())
+    .then(data => {
+      if(!data.success){
+        listEl.textContent = 'কমেন্ট লোড করতে সমস্যা হয়েছে।';
+        return;
+      }
+      const pendingCount = data.comments.filter(c => c.status === 'pending').length;
+      badgeEl.innerHTML = pendingCount > 0
+        ? '<span style="background:var(--maroon); color:#fff; font-size:11.5px; padding:2px 8px; border-radius:999px; margin-left:6px;">' + pendingCount + ' নতুন</span>'
+        : '';
+      if(data.comments.length === 0){
+        listEl.textContent = 'কোনো কমেন্ট নেই।';
+        return;
+      }
+      listEl.innerHTML = data.comments.map(c => {
+        const statusColor = c.status === 'approved' ? '#2C6B4F' : (c.status === 'rejected' ? '#7A2E2E' : '#B8863B');
+        const safeName = String(c.name).replace(/</g,'&lt;');
+        const safeText = String(c.text).replace(/</g,'&lt;');
+        return '<div style="border-bottom:1px solid var(--line); padding:10px 0;">' +
+          '<div style="font-size:13px; color:' + statusColor + '; font-weight:700;">' + c.status + '</div>' +
+          '<div style="font-size:13.5px; margin:6px 0;">' + safeText + '</div>' +
+          '<div style="font-size:12px; color:var(--muted); margin-bottom:8px;">— ' + safeName + ' • ' + c.date + '</div>' +
+          '<div style="display:flex; gap:6px;">' +
+            (c.status !== 'approved' ? '<button onclick="commentAction(' + c.rowIndex + ',\'approved\')" style="padding:6px 12px; border:none; border-radius:6px; background:var(--ok); color:#fff; font-size:12.5px;">অনুমোদন</button>' : '') +
+            (c.status !== 'rejected' ? '<button onclick="commentAction(' + c.rowIndex + ',\'rejected\')" style="padding:6px 12px; border:none; border-radius:6px; background:var(--maroon); color:#fff; font-size:12.5px;">বাতিল</button>' : '') +
+            '<button onclick="commentAction(' + c.rowIndex + ',\'delete\')" style="padding:6px 12px; border:1px solid var(--line); border-radius:6px; background:var(--card-bg); color:var(--ink); font-size:12.5px;">মুছুন</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    })
+    .catch(()=>{ listEl.textContent = 'সংযোগে সমস্যা হয়েছে।'; });
+}
+
+function commentAction(row, status){
+  const pw = sessionStorage.getItem('adminPw') || '';
+  fetch(SCRIPT_URL + '?action=commentAction&password=' + encodeURIComponent(pw) + '&row=' + row + '&status=' + status)
+    .then(r => r.json())
+    .then(()=> loadAdminComments());
+}
+
 // ============ আপডেট/পোস্ট ম্যানেজমেন্ট ============
 function loadAdminPosts(){
   const listEl = document.getElementById('postsList');
@@ -894,6 +949,7 @@ function verifyAndEnter(){
         document.getElementById('lastUpdated').textContent = 'সবশেষ আপডেট: ' + new Date().toLocaleTimeString('bn-BD');
         startAutoRefresh();
         loadAdminReviews();
+        loadAdminComments();
         loadAdminPosts();
         updateBackupReminder();
         loadVisitorCount();
