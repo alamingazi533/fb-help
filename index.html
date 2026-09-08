@@ -531,6 +531,69 @@
     text-align:center;
     padding:10px 0;
   }
+  .load-more-btn{
+    display:block;
+    width:100%;
+    margin-top:14px;
+    padding:12px;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    background:var(--paper);
+    color:var(--forest);
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  [data-theme="dark"] .load-more-btn{ background:var(--paper-dark); }
+  .load-more-btn:active{ transform:scale(0.98); }
+  .blog-search-box{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 14px;
+    margin-bottom:16px;
+  }
+  .blog-search-box input{
+    border:none;
+    outline:none;
+    background:transparent;
+    flex:1;
+    font-family:inherit;
+    font-size:14px;
+    color:var(--ink);
+  }
+  [data-theme="dark"] .blog-search-box{ background:var(--paper-dark); }
+  .blog-chip-bar{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:4px;
+    margin-bottom:16px;
+    scrollbar-width:none;
+  }
+  .blog-chip-bar::-webkit-scrollbar{ display:none; }
+  .blog-chip{
+    flex-shrink:0;
+    font-family:inherit;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink);
+    background:var(--paper-dark);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:7px 14px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .blog-chip.active{
+    background:var(--forest);
+    border-color:var(--forest);
+    color:#fff;
+  }
   .posts-section-head{
     display:flex;
     align-items:baseline;
@@ -594,6 +657,7 @@
     color:var(--muted);
     margin-bottom:5px;
   }
+  .post-readtime{ color:var(--muted); }
   .blog-card .post-title{
     font-family:'Noto Serif Bengali', serif;
     font-size:17px;
@@ -785,6 +849,35 @@
   .blog-comments{
     margin-top:24px;
   }
+  .blog-related{
+    margin-top:26px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+  }
+  .blog-related h3{
+    font-family:'Noto Serif Bengali', serif;
+    font-size:15.5px;
+    margin:0 0 12px;
+  }
+  .blog-related-item{
+    display:block;
+    text-decoration:none;
+    color:inherit;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .blog-related-item:last-child{ border-bottom:none; }
+  .blog-related-item .post-date{
+    font-size:11px;
+    color:var(--muted);
+    margin-bottom:3px;
+  }
+  .blog-related-item .rel-title{
+    font-size:14px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .blog-related-item:hover .rel-title{ color:var(--forest); }
   .blog-comments h2{
     font-size:16.5px;
     margin:0 0 12px;
@@ -1756,6 +1849,7 @@
   <div id="postsContainer" class="blog-grid">
     <p class="posts-empty">আপডেট লোড হচ্ছে...</p>
   </div>
+  <button type="button" class="load-more-btn" id="loadMorePostsBtn" style="display:none;" onclick="loadMorePosts()">আরও পোস্ট দেখুন ↓</button>
 </section>
 
 <a class="whatsapp-btn" id="contactSection" href="https://wa.me/8801764324313?text=আসসালামু%20আলাইকুম%2C%20আমি%20ফেসবুক%20সমস্যা%20নিয়ে%20যোগাযোগ%20করতে%20চাই।" target="_blank" rel="noopener">
@@ -1808,6 +1902,11 @@
     <a class="blog-back-link" href="./">← হোমে ফিরুন</a>
     <h1>📢 সব আপডেট / পোস্ট</h1>
     <p class="blog-archive-sub">ফেসবুক সংক্রান্ত সব সমাধান, টিপস ও সর্বশেষ খবর একসাথে</p>
+    <div class="blog-search-box">
+      <span>🔎</span>
+      <input type="text" id="blogSearchInput" placeholder="পোস্ট খুঁজুন..." oninput="handleBlogSearch(this.value)">
+    </div>
+    <div id="blogCategoryChips" class="blog-chip-bar"></div>
     <div id="blogArchiveGrid" class="blog-grid">
       <p class="posts-empty">লোড হচ্ছে...</p>
     </div>
@@ -3101,6 +3200,7 @@ loadStats();
 
 // ============ ব্লগ/পোস্ট: লোড, কার্ড রেন্ডার ও রাউটিং (?post=ID / ?blog=all) ============
 let __allPosts = [];
+let __homeShownCount = 4;
 
 function blogEscape(s){
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -3110,6 +3210,12 @@ function blogExcerpt(text, len){
   const t = String(text || '').trim();
   if(t.length <= len) return t;
   return t.slice(0, len).trim() + '…';
+}
+
+function readingTime(text){
+  const words = String(text || '').trim().split(/\s+/).filter(Boolean).length;
+  const mins = Math.max(1, Math.round(words / 200));
+  return mins + ' মিনিট পড়া';
 }
 
 function renderBlogCard(p, featured){
@@ -3122,9 +3228,9 @@ function renderBlogCard(p, featured){
   const mediaTag = (!p.imageUrl && p.videoUrl)
     ? '<span style="display:inline-block; font-size:11.5px; color:var(--forest); margin-bottom:6px;">🎬 ভিডিওসহ পোস্ট</span>'
     : '';
-  const eyebrow = '<span class="post-eyebrow">' + (featured ? '★ সর্বশেষ আপডেট' : 'আপডেট') + '</span>';
+  const eyebrow = '<span class="post-eyebrow">' + (featured ? '★ ' : '') + blogEscape(p.category || 'সাধারণ আপডেট') + '</span>';
   const body =
-    '<div class="post-date">' + (p.date || '') + '</div>' +
+    '<div class="post-date">' + (p.date || '') + ' <span class="post-readtime">· ' + readingTime(p.content) + '</span></div>' +
     eyebrow +
     mediaTag +
     '<div class="post-title">' + safeTitle + '</div>' +
@@ -3149,14 +3255,7 @@ function loadPosts(){
     .then(r => r.json())
     .then(data => {
       __allPosts = (data.success && data.posts) ? data.posts : [];
-      if(container){
-        if(__allPosts.length === 0){
-          container.innerHTML = '<p class="posts-empty">এখনো কোনো আপডেট নেই।</p>';
-        } else {
-          const shown = __allPosts.slice(0, 4);
-          container.innerHTML = shown.map((p, i) => renderBlogCard(p, i === 0)).join('');
-        }
-      }
+      renderHomePosts();
       initBlogRouter();
     })
     .catch(()=>{
@@ -3165,6 +3264,27 @@ function loadPosts(){
     });
 }
 loadPosts();
+
+function renderHomePosts(){
+  const container = document.getElementById('postsContainer');
+  const moreBtn = document.getElementById('loadMorePostsBtn');
+  if(!container) return;
+  if(__allPosts.length === 0){
+    container.innerHTML = '<p class="posts-empty">এখনো কোনো আপডেট নেই।</p>';
+    if(moreBtn) moreBtn.style.display = 'none';
+    return;
+  }
+  const shown = __allPosts.slice(0, __homeShownCount);
+  container.innerHTML = shown.map((p, i) => renderBlogCard(p, i === 0)).join('');
+  if(moreBtn){
+    moreBtn.style.display = __homeShownCount < __allPosts.length ? 'block' : 'none';
+  }
+}
+
+function loadMorePosts(){
+  __homeShownCount += 6;
+  renderHomePosts();
+}
 
 // ============ URL অনুযায়ী ব্লগ আর্কাইভ/ডিটেইল ভিউ দেখানো ============
 function initBlogRouter(){
@@ -3191,6 +3311,9 @@ function initBlogRouter(){
   }
 }
 
+let __archiveQuery = '';
+let __archiveCategory = 'all';
+
 function showBlogArchive(){
   const archiveWrap = document.getElementById('blogArchiveWrap');
   const detailWrap = document.getElementById('blogDetailWrap');
@@ -3198,11 +3321,73 @@ function showBlogArchive(){
   if(detailWrap) detailWrap.style.display = 'none';
   if(archiveWrap) archiveWrap.style.display = '';
   if(!grid) return;
+  __archiveQuery = '';
+  __archiveCategory = 'all';
+  const searchInput = document.getElementById('blogSearchInput');
+  if(searchInput) searchInput.value = '';
+  renderArchiveChips();
+  renderArchiveGrid();
+}
+
+function renderArchiveChips(){
+  const chipBar = document.getElementById('blogCategoryChips');
+  if(!chipBar) return;
+  const cats = Array.from(new Set(__allPosts.map(p => p.category || 'সাধারণ আপডেট')));
+  if(cats.length <= 1){
+    chipBar.innerHTML = '';
+    return;
+  }
+  const allChip = '<button type="button" class="blog-chip' + (__archiveCategory === 'all' ? ' active' : '') + '" onclick="handleBlogCategoryFilter(\'all\')">সব</button>';
+  const chips = cats.map(c =>
+    '<button type="button" class="blog-chip' + (__archiveCategory === c ? ' active' : '') + '" onclick="handleBlogCategoryFilter(\'' + blogEscape(c).replace(/'/g,"\\'") + '\')">' + blogEscape(c) + '</button>'
+  ).join('');
+  chipBar.innerHTML = allChip + chips;
+}
+
+function handleBlogCategoryFilter(cat){
+  __archiveCategory = cat;
+  renderArchiveChips();
+  renderArchiveGrid();
+}
+
+function renderArchiveGrid(){
+  const grid = document.getElementById('blogArchiveGrid');
+  if(!grid) return;
   if(__allPosts.length === 0){
     grid.innerHTML = '<p class="posts-empty">এখনো কোনো আপডেট নেই।</p>';
     return;
   }
-  grid.innerHTML = __allPosts.map((p, i) => renderBlogCard(p, i === 0)).join('');
+  const q = String(__archiveQuery || '').trim().toLowerCase();
+  let filtered = __allPosts;
+  if(__archiveCategory !== 'all'){
+    filtered = filtered.filter(p => (p.category || 'সাধারণ আপডেট') === __archiveCategory);
+  }
+  if(q){
+    filtered = filtered.filter(p => (String(p.title||'') + ' ' + String(p.content||'')).toLowerCase().includes(q));
+  }
+  if(filtered.length === 0){
+    grid.innerHTML = '<p class="posts-empty">এই বিষয়ে কোনো পোস্ট পাওয়া যায়নি।</p>';
+    return;
+  }
+  const showFeatured = !q && __archiveCategory === 'all';
+  grid.innerHTML = filtered.map((p, i) => renderBlogCard(p, showFeatured && i === 0)).join('');
+}
+
+function handleBlogSearch(value){
+  __archiveQuery = value;
+  renderArchiveGrid();
+}
+
+function renderRelatedPosts(currentPost){
+  const others = __allPosts.filter(p => String(p.id) !== String(currentPost.id)).slice(0, 3);
+  if(others.length === 0) return '';
+  const items = others.map(p =>
+    '<a class="blog-related-item" href="?post=' + encodeURIComponent(p.id) + '">' +
+      '<div class="post-date">' + (p.date || '') + '</div>' +
+      '<div class="rel-title">' + blogEscape(p.title) + '</div>' +
+    '</a>'
+  ).join('');
+  return '<div class="blog-related"><h3>📚 আরও পোস্ট পড়ুন</h3>' + items + '</div>';
 }
 
 function showBlogDetail(postId){
@@ -3234,13 +3419,13 @@ function showBlogDetail(postId){
 
   contentEl.innerHTML =
     '<article>' +
-      '<span class="post-eyebrow">আপডেট</span>' +
+      '<span class="post-eyebrow">' + blogEscape(post.category || 'সাধারণ আপডেট') + '</span>' +
       '<h1>' + safeTitle + '</h1>' +
       '<div class="byline">' +
         '<img src="profile.jpg" alt="মোঃ আলামিন ইসলাম">' +
         '<div>' +
           '<div class="byline-name">মোঃ আলামিন ইসলাম</div>' +
-          '<div class="byline-date">' + (post.date || '') + '</div>' +
+          '<div class="byline-date">' + (post.date || '') + ' · ' + readingTime(post.content) + '</div>' +
         '</div>' +
       '</div>' +
       imageHtml +
@@ -3254,6 +3439,7 @@ function showBlogDetail(postId){
     '<div class="blog-cta">' +
       '<a class="whatsapp-btn" style="max-width:340px; margin:16px auto 0;" href="https://wa.me/8801764324313" target="_blank" rel="noopener">WhatsApp-এ যোগাযোগ করুন</a>' +
     '</div>' +
+    renderRelatedPosts(post) +
     '<div class="blog-comments">' +
       '<h2>💬 কমেন্ট (<span id="commentCountLabel">' + (post.commentCount || 0) + '</span>)</h2>' +
       '<div id="commentsList"><p class="posts-empty">লোড হচ্ছে...</p></div>' +
