@@ -711,8 +711,9 @@ function loadAdminPosts(){
 }
 
 function copyPostLink(id){
-  const base = window.location.href.replace(/admin\.html.*$/, 'index.html');
-  const link = base + '?post=' + encodeURIComponent(id);
+  // Apps Script এর postSEO এন্ডপয়েন্ট দিয়ে লিংক দেওয়া হয় যাতে শেয়ার করলে
+  // ফেসবুক/হোয়াটসঅ্যাপে আসল টাইটেল-ছবি সহ প্রিভিউ দেখায়।
+  const link = SCRIPT_URL + '?action=postSEO&id=' + encodeURIComponent(id);
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(link).then(()=>{
       alert('লিংক কপি হয়েছে:\n' + link);

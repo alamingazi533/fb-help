@@ -3507,11 +3507,14 @@ function likeCurrentPost(postId){
 }
 
 // ============ পোস্ট শেয়ার (Web Share API, নাহলে লিংক কপি) ============
+// শেয়ার করার লিংকটা সরাসরি index.html?post=id না দিয়ে Apps Script-এর
+// postSEO এন্ডপয়েন্ট দিয়ে দেওয়া হয়, যাতে ফেসবুক/হোয়াটসঅ্যাপে শেয়ার করলে
+// পোস্টের আসল টাইটেল, বিবরণ ও ছবি সহ প্রিভিউ কার্ড দেখায়।
 async function sharePost(postId, title){
   const shareData = {
     title: title || 'ফেসবুক সমস্যা সমাধান — আপডেট',
     text: 'ফেসবুক সমস্যা সমাধান — এই আপডেটটি দেখুন:',
-    url: window.location.origin + window.location.pathname + '?post=' + encodeURIComponent(postId)
+    url: SCRIPT_URL + '?action=postSEO&id=' + encodeURIComponent(postId)
   };
   if(navigator.share){
     try{ await navigator.share(shareData); }
