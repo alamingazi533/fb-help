@@ -265,7 +265,6 @@
       <button onclick="manualRefresh()">রিফ্রেশ</button>
     </div>
     <div class="dashboard" id="dashboard"></div>
-    <div id="visitorCountBox" style="text-align:center; font-size:12.5px; color:var(--muted); margin:-6px 0 10px;"></div>
     <div class="filterRow" id="filterRow"></div>
     <div class="filterRow" id="dateFilterRow" style="margin-top:-6px;">
       <button class="chip active" data-days="0" onclick="setDateFilter(0, this)">সব সময়</button>
@@ -284,6 +283,18 @@
       </select>
       <button onclick="applyBulkStatus()" style="padding:8px 14px; border:none; border-radius:6px; background:var(--forest); color:#fff; font-size:13px; font-weight:700;">সবগুলোতে প্রয়োগ করুন</button>
       <button onclick="clearBulkSelection()" style="padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:var(--card-bg); font-size:13px;">বাতিল</button>
+    </div>
+
+    <div style="background:var(--card-bg); border:1px solid var(--line); border-radius:12px; padding:14px; margin:14px 0;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div style="font-weight:700; color:var(--forest);">📊 ভিজিটর অ্যানালিটিক্স <span id="liveNowBadge"></span></div>
+        <button onclick="loadVisitStats()" style="padding:6px 12px; font-size:12.5px; border:1px solid var(--forest); border-radius:6px; background:var(--card-bg); color:var(--forest);">রিফ্রেশ</button>
+      </div>
+      <div class="dashboard" id="visitDashboard" style="margin-bottom:12px;"></div>
+      <div id="deviceBreakdown" style="display:flex; gap:8px; margin-bottom:14px;"></div>
+      <div style="font-size:12.5px; font-weight:700; color:var(--forest); margin-bottom:8px;">সাম্প্রতিক ভিজিট</div>
+      <div id="recentVisitsList" style="max-height:260px; overflow-y:auto;">লোড হচ্ছে...</div>
+      <div style="font-size:11px; color:var(--muted); margin-top:8px; text-align:center;">প্রতি ২০ সেকেন্ডে অটো-আপডেট হয়</div>
     </div>
 
     <div style="background:var(--card-bg); border:1px solid var(--line); border-radius:12px; padding:14px; margin:14px 0;">
@@ -876,17 +887,55 @@ function deletePost(rowIndex){
     .catch(() => alert('সংযোগে সমস্যা হয়েছে।'));
 }
 
-// ============ ব্যাকআপ রিমাইন্ডার ============
-function loadVisitorCount(){
+// ============ ভিজিটর অ্যানালিটিক্স (সময়, ডিভাইস ব্রেকডাউন, লাইভ) ============
+let visitStatsTimer = null;
+
+function loadVisitStats(){
   const pw = sessionStorage.getItem('adminPw') || '';
-  fetch(SCRIPT_URL + '?action=getVisitorCount&password=' + encodeURIComponent(pw))
+  fetch(SCRIPT_URL + '?action=getVisitStats&password=' + encodeURIComponent(pw))
     .then(r => r.json())
     .then(data => {
-      if(data.success){
-        document.getElementById('visitorCountBox').textContent = '👁️ মোট ভিজিট: ' + data.count;
+      if(!data.success) return;
+
+      const dash = document.getElementById('visitDashboard');
+      dash.innerHTML =
+        '<div class="dash-item"><div class="num">' + data.total + '</div><div class="lbl">মোট ভিজিট</div></div>' +
+        '<div class="dash-item"><div class="num">' + data.today + '</div><div class="lbl">আজ</div></div>' +
+        '<div class="dash-item"><div class="num">' + data.liveNow + '</div><div class="lbl">এখন অনলাইন</div></div>';
+
+      const badgeEl = document.getElementById('liveNowBadge');
+      badgeEl.innerHTML = data.liveNow > 0
+        ? '<span style="background:var(--ok); color:#fff; font-size:11.5px; padding:2px 8px; border-radius:999px; margin-left:6px;">🟢 ' + data.liveNow + ' জন এখন আছে</span>'
+        : '';
+
+      const deviceEl = document.getElementById('deviceBreakdown');
+      deviceEl.innerHTML =
+        '<div class="dash-item" style="flex:1;"><div class="num">📱 ' + data.mobile + '</div><div class="lbl">মোবাইল</div></div>' +
+        '<div class="dash-item" style="flex:1;"><div class="num">💻 ' + data.desktop + '</div><div class="lbl">ডেস্কটপ</div></div>' +
+        '<div class="dash-item" style="flex:1;"><div class="num">📟 ' + data.tablet + '</div><div class="lbl">ট্যাবলেট</div></div>';
+
+      const listEl = document.getElementById('recentVisitsList');
+      if(!data.recent || data.recent.length === 0){
+        listEl.textContent = 'এখনো কোনো ভিজিট রেকর্ড নেই।';
+        return;
       }
+      const deviceIcon = { 'মোবাইল': '📱', 'ট্যাবলেট': '📟', 'ডেস্কটপ': '💻' };
+      listEl.innerHTML = data.recent.map(v =>
+        '<div style="display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line); font-size:13px;">' +
+          '<span>' + (deviceIcon[v.device] || '❔') + ' ' + v.device + '</span>' +
+          '<span style="color:var(--muted);">' + v.time + '</span>' +
+        '</div>'
+      ).join('');
     })
     .catch(()=>{});
+}
+
+function startVisitStatsAutoRefresh(){
+  if(visitStatsTimer) return;
+  visitStatsTimer = setInterval(loadVisitStats, 20000);
+}
+function stopVisitStatsAutoRefresh(){
+  if(visitStatsTimer){ clearInterval(visitStatsTimer); visitStatsTimer = null; }
 }
 
 function exportReviewsCsv(){
@@ -962,7 +1011,8 @@ function verifyAndEnter(){
         loadAdminComments();
         loadAdminPosts();
         updateBackupReminder();
-        loadVisitorCount();
+        loadVisitStats();
+        startVisitStatsAutoRefresh();
       } else {
         sessionStorage.removeItem('adminPw');
         document.getElementById('loginErr').textContent = data.error && data.error !== 'wrong password'
@@ -980,6 +1030,7 @@ function verifyAndEnter(){
 function logout(){
   sessionStorage.removeItem('adminPw');
   stopAutoRefresh();
+  stopVisitStatsAutoRefresh();
   document.getElementById('panel').style.display = 'none';
   document.getElementById('loginBox').style.display = 'block';
   document.getElementById('pwInput').value = '';

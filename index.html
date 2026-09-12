@@ -3444,8 +3444,14 @@ function submitPostComment(postId){
   });
 }
 
-// ============ ভিজিট ট্র্যাক করা (নীরবে, গণনার জন্য মাত্র) ============
-fetch(SCRIPT_URL + '?action=trackVisit')
+// ============ ভিজিট ট্র্যাক করা (নীরবে, সময় ও ডিভাইস টাইপসহ) ============
+function detectDeviceType(){
+  const ua = navigator.userAgent || '';
+  if(/iPad|Tablet|Nexus 7|Nexus 10|KFAPWI/i.test(ua)) return 'ট্যাবলেট';
+  if(/Mobi|Android|iPhone|iPod|Windows Phone|BlackBerry/i.test(ua)) return 'মোবাইল';
+  return 'ডেস্কটপ';
+}
+fetch(SCRIPT_URL + '?action=trackVisit&device=' + encodeURIComponent(detectDeviceType()))
   .then(()=> loadStats())
   .catch(()=>{});
 
