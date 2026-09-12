@@ -3444,16 +3444,35 @@ function submitPostComment(postId){
   });
 }
 
-// ============ ভিজিট ট্র্যাক করা (নীরবে, সময় ও ডিভাইস টাইপসহ) ============
+// ============ ভিজিট ট্র্যাক করা (নীরবে, সময়, ডিভাইস ও আনুমানিক লোকেশনসহ) ============
 function detectDeviceType(){
   const ua = navigator.userAgent || '';
   if(/iPad|Tablet|Nexus 7|Nexus 10|KFAPWI/i.test(ua)) return 'ট্যাবলেট';
   if(/Mobi|Android|iPhone|iPod|Windows Phone|BlackBerry/i.test(ua)) return 'মোবাইল';
   return 'ডেস্কটপ';
 }
-fetch(SCRIPT_URL + '?action=trackVisit&device=' + encodeURIComponent(detectDeviceType()))
-  .then(()=> loadStats())
-  .catch(()=>{});
+function trackVisitWithLocation(){
+  const device = detectDeviceType();
+  // IP ঠিকানা থেকে আনুমানিক শহর/দেশ বের করা হয় (একটা ফ্রি, নিবন্ধনবিহীন সার্ভিস দিয়ে)।
+  // এটা ব্যর্থ হলেও ভিজিট গণনা যাতে থেমে না যায়, তাই সবসময় ৩ সেকেন্ডের মধ্যে ফলাফল না
+  // পেলে লোকেশন ছাড়াই ট্র্যাক করে ফেলা হয়।
+  const timeout = new Promise(resolve => setTimeout(()=> resolve(null), 3000));
+  const geoLookup = fetch('https://get.geojs.io/v1/ip/geo.json')
+    .then(r => r.json())
+    .then(d => {
+      const city = (d && d.city) ? d.city : '';
+      const country = (d && d.country) ? d.country : '';
+      return city && country ? (city + ', ' + country) : (country || '');
+    })
+    .catch(()=> null);
+
+  Promise.race([geoLookup, timeout]).then(location => {
+    let url = SCRIPT_URL + '?action=trackVisit&device=' + encodeURIComponent(device);
+    if(location) url += '&location=' + encodeURIComponent(location);
+    fetch(url).then(()=> loadStats()).catch(()=>{});
+  });
+}
+trackVisitWithLocation();
 
 const reviewSubmitBtn = document.getElementById('reviewSubmitBtn');
 if(reviewSubmitBtn){

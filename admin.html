@@ -292,6 +292,10 @@
       </div>
       <div class="dashboard" id="visitDashboard" style="margin-bottom:12px;"></div>
       <div id="deviceBreakdown" style="display:flex; gap:8px; margin-bottom:14px;"></div>
+      <div id="topLocationsBlock" style="margin-bottom:14px; display:none;">
+        <div style="font-size:12.5px; font-weight:700; color:var(--forest); margin-bottom:8px;">শীর্ষ লোকেশন</div>
+        <div id="topLocationsList"></div>
+      </div>
       <div style="font-size:12.5px; font-weight:700; color:var(--forest); margin-bottom:8px;">সাম্প্রতিক ভিজিট</div>
       <div id="recentVisitsList" style="max-height:260px; overflow-y:auto;">লোড হচ্ছে...</div>
       <div style="font-size:11px; color:var(--muted); margin-top:8px; text-align:center;">প্রতি ২০ সেকেন্ডে অটো-আপডেট হয়</div>
@@ -914,6 +918,27 @@ function loadVisitStats(){
         '<div class="dash-item" style="flex:1;"><div class="num">💻 ' + data.desktop + '</div><div class="lbl">ডেস্কটপ</div></div>' +
         '<div class="dash-item" style="flex:1;"><div class="num">📟 ' + data.tablet + '</div><div class="lbl">ট্যাবলেট</div></div>';
 
+      const topLocBlock = document.getElementById('topLocationsBlock');
+      const topLocList = document.getElementById('topLocationsList');
+      if(data.topLocations && data.topLocations.length > 0){
+        topLocBlock.style.display = 'block';
+        const maxCount = data.topLocations[0].count;
+        topLocList.innerHTML = data.topLocations.map(loc => {
+          const pct = Math.round((loc.count / maxCount) * 100);
+          const safeLoc = String(loc.location).replace(/</g,'&lt;');
+          return '<div style="margin-bottom:7px;">' +
+            '<div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:3px;">' +
+              '<span>📍 ' + safeLoc + '</span><span style="color:var(--muted);">' + loc.count + '</span>' +
+            '</div>' +
+            '<div style="background:var(--paper-dark); border-radius:5px; height:6px; overflow:hidden;">' +
+              '<div style="background:var(--forest); height:100%; width:' + pct + '%;"></div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      } else {
+        topLocBlock.style.display = 'none';
+      }
+
       const listEl = document.getElementById('recentVisitsList');
       if(!data.recent || data.recent.length === 0){
         listEl.textContent = 'এখনো কোনো ভিজিট রেকর্ড নেই।';
@@ -921,9 +946,9 @@ function loadVisitStats(){
       }
       const deviceIcon = { 'মোবাইল': '📱', 'ট্যাবলেট': '📟', 'ডেস্কটপ': '💻' };
       listEl.innerHTML = data.recent.map(v =>
-        '<div style="display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line); font-size:13px;">' +
-          '<span>' + (deviceIcon[v.device] || '❔') + ' ' + v.device + '</span>' +
-          '<span style="color:var(--muted);">' + v.time + '</span>' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid var(--line); font-size:13px; gap:8px;">' +
+          '<span>' + (deviceIcon[v.device] || '❔') + ' ' + v.device + (v.location ? ' • 📍 ' + String(v.location).replace(/</g,'&lt;') : '') + '</span>' +
+          '<span style="color:var(--muted); white-space:nowrap;">' + v.time + '</span>' +
         '</div>'
       ).join('');
     })
