@@ -1,3 +1,4 @@
+importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDKWorker.js');
 const CACHE_NAME = 'fb-somadhan-cache-v4';
 const URLS_TO_CACHE = [
   './',
