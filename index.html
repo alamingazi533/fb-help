@@ -218,6 +218,66 @@
     cursor:pointer;
   }
   .icon-btn svg{width:15px; height:15px; flex-shrink:0;}
+  .share-wrap{ position:relative; }
+  .share-btn-new{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    border:none;
+    color:#2A1F08;
+    font-family:inherit;
+    font-size:12.5px;
+    font-weight:700;
+    padding:7px 14px;
+    border-radius:999px;
+    cursor:pointer;
+    box-shadow:0 6px 14px -6px rgba(184,134,59,0.6);
+  }
+  .share-btn-new svg{ width:15px; height:15px; flex-shrink:0; }
+  .share-panel{
+    display:none;
+    position:absolute;
+    top:calc(100% + 10px);
+    right:0;
+    z-index:80;
+    background:var(--card-bg, #fff);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px;
+    box-shadow:0 18px 40px -16px rgba(0,0,0,0.35);
+    width:250px;
+  }
+  .share-panel.show{ display:block; }
+  .share-panel-title{
+    font-size:12px; font-weight:700; color:var(--muted);
+    margin-bottom:10px; text-align:center;
+  }
+  .share-icon-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:10px;
+  }
+  .share-icon{
+    display:flex; flex-direction:column; align-items:center; gap:5px;
+    text-decoration:none; background:none; border:none; cursor:pointer;
+    font-family:inherit; color:var(--ink); padding:0;
+  }
+  .share-icon .si-circle{
+    width:42px; height:42px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff;
+  }
+  .share-icon .si-circle svg{ width:20px; height:20px; }
+  .share-icon .si-label{ font-size:10.5px; color:var(--muted); }
+  .share-icon[data-platform="whatsapp"] .si-circle{ background:#25D366; }
+  .share-icon[data-platform="facebook"] .si-circle{ background:#1877F2; }
+  .share-icon[data-platform="messenger"] .si-circle{ background:linear-gradient(135deg,#00C6FF,#0078FF); }
+  .share-icon[data-platform="telegram"] .si-circle{ background:#26A5E4; }
+  .share-icon[data-platform="twitter"] .si-circle{ background:#111; }
+  .share-icon[data-platform="email"] .si-circle{ background:#6B6752; }
+  .share-icon[data-platform="copy"] .si-circle{ background:var(--forest); }
+  .share-icon.copied .si-label{ color:var(--ok); font-weight:700; }
   .site-nav{
     position:sticky;
     top:0;
@@ -1690,20 +1750,58 @@
 <nav class="site-nav">
   <a class="site-brand" href="#top">FB সমাধান</a>
   <div class="site-nav-links">
-    <a href="#top">হোম</a>
-    <a href="?blog=all">ব্লগ</a>
-    <a href="#servicesSection">সেবা</a>
-    <a href="#reviewsSection">রিভিউ</a>
-    <a href="#contactSection">যোগাযোগ</a>
+    <a href="#top" data-i18n="nav.home">হোম</a>
+    <a href="?blog=all" data-i18n="nav.blog">ব্লগ</a>
+    <a href="#servicesSection" data-i18n="nav.services">সেবা</a>
+    <a href="#reviewsSection" data-i18n="nav.reviews">রিভিউ</a>
+    <a href="#contactSection" data-i18n="nav.contact">যোগাযোগ</a>
   </div>
 </nav>
 
 <div id="landingTop">
 <header id="top">
   <div class="top-action-bar">
-    <button type="button" class="icon-btn" id="shareBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>
-      শেয়ার
+    <div class="share-wrap">
+      <button type="button" class="share-btn-new" id="shareBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>
+        <span data-i18n="header.share">শেয়ার</span>
+      </button>
+      <div class="share-panel" id="sharePanel">
+        <div class="share-panel-title" data-i18n="header.shareVia">যেভাবে শেয়ার করতে চান</div>
+        <div class="share-icon-grid">
+          <a class="share-icon" data-platform="whatsapp" target="_blank" rel="noopener">
+            <span class="si-circle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.9-4.45 9.9-9.9C21.95 6.45 17.5 2 12.04 2Zm0 18.06h-.01a8.14 8.14 0 0 1-4.15-1.14l-.3-.18-3.11.82.83-3.03-.19-.31a8.15 8.15 0 0 1-1.25-4.31c0-4.5 3.66-8.16 8.19-8.16 2.19 0 4.24.85 5.79 2.4a8.13 8.13 0 0 1 2.4 5.78c0 4.5-3.67 8.13-8.2 8.13Z"/></svg></span>
+            <span class="si-label">WhatsApp</span>
+          </a>
+          <a class="share-icon" data-platform="facebook" target="_blank" rel="noopener">
+            <span class="si-circle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg></span>
+            <span class="si-label">Facebook</span>
+          </a>
+          <a class="share-icon" data-platform="messenger" target="_blank" rel="noopener">
+            <span class="si-circle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.14 2 11.5c0 2.9 1.3 5.5 3.4 7.28V22l3.1-1.7c.78.22 1.6.34 2.5.34 5.5 0 10-4.14 10-9.5S17.5 2 12 2Zm1.02 12.8-2.55-2.73-4.98 2.73 5.48-5.8 2.6 2.73 4.93-2.73-5.48 5.8Z"/></svg></span>
+            <span class="si-label">Messenger</span>
+          </a>
+          <a class="share-icon" data-platform="telegram" target="_blank" rel="noopener">
+            <span class="si-circle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 3.5 2.7 10.9c-1.2.5-1.2 1.2-.2 1.5l4.8 1.5 1.8 5.6c.2.6.4.8.9.8.4 0 .6-.2.9-.5l2.2-2.1 4.6 3.4c.8.5 1.4.2 1.6-.8l3-14c.3-1.2-.4-1.7-1.8-1.8ZM8.5 14.4l9.2-7.2c.4-.3.8-.1.5.3l-8 7.3-.3 3.3-1.4-3.7Z"/></svg></span>
+            <span class="si-label">Telegram</span>
+          </a>
+          <a class="share-icon" data-platform="twitter" target="_blank" rel="noopener">
+            <span class="si-circle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 3h3l-7.5 8.6L21.8 21h-6.8l-5.3-6.9L3.6 21H.6l8-9.2L2.2 3h7l4.8 6.3Zm-1.2 16h1.7L7.8 4.9H6l10.3 14.1Z"/></svg></span>
+            <span class="si-label">X</span>
+          </a>
+          <button type="button" class="share-icon" data-platform="email">
+            <span class="si-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 6-10 7L2 6"></path></svg></span>
+            <span class="si-label" data-i18n="header.email">ইমেইল</span>
+          </button>
+          <button type="button" class="share-icon" data-platform="copy">
+            <span class="si-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></span>
+            <span class="si-label" data-i18n="header.copyLink">লিংক কপি</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="icon-btn" id="langToggleBtn">
+      🌐 <span id="langToggleLabel">EN</span>
     </button>
     <button type="button" class="icon-btn" id="themeToggleBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -1711,92 +1809,92 @@
     </button>
   </div>
   <img class="profile-pic" src="profile.jpg" alt="মোঃ আলামিন ইসলাম">
-  <div class="eyebrow">ফেসবুক সমস্যা সমাধান সেবা</div>
-  <p class="tagline">আপনার স্বপ্নই হোক আপনার ভবিষ্যৎ</p>
-  <h1>ফেসবুক আইডি ও পেজ হ্যাক, ডিজেবল, মনিটাইজেশন সমস্যা সমাধান</h1>
-  <p>মোঃ আলামিন ইসলাম &nbsp;•&nbsp; গোপসেনা, কেশবপুর, যশোর</p>
-  <p style="margin-top:10px; font-size:13.5px; color:#E8C784; max-width:420px; margin-left:auto; margin-right:auto;">
+  <div class="eyebrow" data-i18n="hero.eyebrow">ফেসবুক সমস্যা সমাধান সেবা</div>
+  <p class="tagline" data-i18n="hero.tagline">আপনার স্বপ্নই হোক আপনার ভবিষ্যৎ</p>
+  <h1 data-i18n="hero.h1">ফেসবুক আইডি ও পেজ হ্যাক, ডিজেবল, মনিটাইজেশন সমস্যা সমাধান</h1>
+  <p><span data-i18n="hero.byline">মোঃ আলামিন ইসলাম &nbsp;•&nbsp; গোপসেনা, কেশবপুর, যশোর</span></p>
+  <p style="margin-top:10px; font-size:13.5px; color:#E8C784; max-width:420px; margin-left:auto; margin-right:auto;" data-i18n="hero.desc">
     যাদের ফেসবুক আইডি/পেজ হ্যাক হয়েছে, অ্যাকাউন্ট নিষ্ক্রিয় (ডিজেবল) হয়ে গেছে, মনিটাইজেশন বন্ধ হয়ে গেছে বা অন্য যেকোনো ফেসবুক সংক্রান্ত সমস্যা আছে — নিচের ফর্মটি পূরণ করুন, আমি দেখে যোগাযোগ করব।
   </p>
-  <div class="trust-badge">✓ সরাসরি যোগাযোগ &nbsp;•&nbsp; ✓ নিরাপদ তথ্য &nbsp;•&nbsp; ✓ দ্রুত সাড়া</div>
-  <div class="online-badge"><span class="online-dot"></span> এখন অনলাইন আছি</div>
+  <div class="trust-badge" data-i18n="hero.trustBadge">✓ সরাসরি যোগাযোগ &nbsp;•&nbsp; ✓ নিরাপদ তথ্য &nbsp;•&nbsp; ✓ দ্রুত সাড়া</div>
+  <div class="online-badge"><span class="online-dot"></span> <span data-i18n="hero.online">এখন অনলাইন আছি</span></div>
   <div class="big-visit-count">
     <span class="bvc-num" id="bigVisitNum">—</span>
-    <span class="bvc-label">মোট ভিজিট</span>
+    <span class="bvc-label" data-i18n="hero.totalVisit">মোট ভিজিট</span>
   </div>
 </header>
 
 <div class="stats-bar">
   <div class="stat-item">
     <span class="stat-num" id="solvedStatNum">—</span>
-    <span class="stat-label">সমাধান হয়েছে</span>
+    <span class="stat-label" data-i18n="stats.solved">সমাধান হয়েছে</span>
   </div>
   <div class="stat-item">
     <span class="stat-num" id="totalAppStatNum">—</span>
-    <span class="stat-label">মোট আবেদন</span>
+    <span class="stat-label" data-i18n="stats.totalApp">মোট আবেদন</span>
   </div>
   <div class="stat-item">
     <span class="stat-num" id="ongoingStatNum">—</span>
-    <span class="stat-label">কাজ চলছে</span>
+    <span class="stat-label" data-i18n="stats.ongoing">কাজ চলছে</span>
   </div>
   <div class="stat-item">
     <span class="stat-num" id="ratingStatNum">৪.৮★</span>
-    <span class="stat-label" id="ratingStatLabel">কাস্টমার রেটিং</span>
+    <span class="stat-label" id="ratingStatLabel" data-i18n="stats.rating">কাস্টমার রেটিং</span>
   </div>
 </div>
 
 <section class="posts-section" id="postsSection" aria-label="সর্বশেষ আপডেট">
   <div class="posts-section-head">
-    <h2>📢 ব্লগ ও সর্বশেষ আপডেট</h2>
-    <a class="blog-viewall-link" href="?blog=all">সব পোস্ট দেখুন →</a>
+    <h2>📢 <span data-i18n="posts.heading">ব্লগ ও সর্বশেষ আপডেট</span></h2>
+    <a class="blog-viewall-link" href="?blog=all" data-i18n="posts.viewAll">সব পোস্ট দেখুন →</a>
   </div>
-  <p class="posts-section-sub">ফেসবুক আইডি/পেজ সমস্যা, রিকভারি ও মনিটাইজেশন নিয়ে নিয়মিত লেখা ও আপডেট</p>
+  <p class="posts-section-sub" data-i18n="posts.sub">ফেসবুক আইডি/পেজ সমস্যা, রিকভারি ও মনিটাইজেশন নিয়ে নিয়মিত লেখা ও আপডেট</p>
   <div id="postsContainer" class="blog-grid">
-    <p class="posts-empty">আপডেট লোড হচ্ছে...</p>
+    <p class="posts-empty" data-i18n="posts.loading">আপডেট লোড হচ্ছে...</p>
   </div>
 </section>
 
 <a class="whatsapp-btn" id="contactSection" href="https://wa.me/8801764324313?text=আসসালামু%20আলাইকুম%2C%20আমি%20ফেসবুক%20সমস্যা%20নিয়ে%20যোগাযোগ%20করতে%20চাই।" target="_blank" rel="noopener">
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.9-4.45 9.9-9.9C21.95 6.45 17.5 2 12.04 2Zm0 18.06h-.01a8.14 8.14 0 0 1-4.15-1.14l-.3-.18-3.11.82.83-3.03-.19-.31a8.15 8.15 0 0 1-1.25-4.31c0-4.5 3.66-8.16 8.19-8.16 2.19 0 4.24.85 5.79 2.4a8.13 8.13 0 0 1 2.4 5.78c0 4.5-3.67 8.13-8.2 8.13Zm4.48-6.1c-.24-.12-1.45-.72-1.68-.8-.22-.08-.39-.12-.55.12-.16.24-.63.8-.78.96-.14.16-.29.18-.53.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.35-1.67-.14-.24-.02-.37.11-.49.11-.11.24-.29.37-.43.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.42-.55-.42-.14 0-.31-.02-.47-.02-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.02 0 1.19.87 2.34 1 2.5.12.16 1.71 2.61 4.14 3.66.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.45-.59 1.65-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"/></svg>
-  WhatsApp-এ যোগাযোগ করুন
+  <span data-i18n="btn.whatsapp">WhatsApp-এ যোগাযোগ করুন</span>
 </a>
 
 <a class="facebook-btn" href="https://www.facebook.com/AlaminIslamAi13" target="_blank" rel="noopener">
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
-  আমাদের Facebook পেজ দেখুন
+  <span data-i18n="btn.facebook">আমাদের Facebook পেজ দেখুন</span>
 </a>
 
 <button type="button" class="chat-btn" id="liveChatBtn" onclick="openLiveChat()">
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.94 2 10.8c0 2.66 1.36 5.03 3.5 6.63V22l3.86-2.12c.83.18 1.7.28 2.64.28 5.52 0 10-3.94 10-8.8S17.52 2 12 2Zm1 12h-2v-2h2v2Zm0-3.5h-2c0-3 3-2.75 3-4.5 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.25-3 2.5-3 4.5Z"/></svg>
-  লাইভ চ্যাট করুন
+  <span data-i18n="btn.liveChat">লাইভ চ্যাট করুন</span>
 </button>
 
 <section class="services-section" id="servicesSection" aria-label="আমাদের সেবাসমূহ">
-  <h2>আমাদের সেবাসমূহ</h2>
-  <p class="services-note">Facebook Help &amp; Meta Help — Account Hacked, Disabled, Suspended এবং Monetization সংক্রান্ত সমস্যা সমাধান</p>
+  <h2 data-i18n="services.heading">আমাদের সেবাসমূহ</h2>
+  <p class="services-note" data-i18n="services.note">Facebook Help &amp; Meta Help — Account Hacked, Disabled, Suspended এবং Monetization সংক্রান্ত সমস্যা সমাধান</p>
   <ul class="services-list">
-    <li>ফেসবুক আইডি ও পেজ ফুল সেটআপ করা হয়</li>
-    <li>আইডি রিভিউ করা হয়</li>
-    <li>পে-আউট অ্যাকাউন্ট তৈরি করা হয়</li>
-    <li>পে-আউট এর ভুল নাম সংশোধন করা হয়</li>
-    <li>টিন (TIN) সার্টিফিকেট খোলা হয়</li>
-    <li>ব্যাংক অ্যাকাউন্ট সেটআপ করা হয়</li>
-    <li>সাসপেন্ড হয়ে যাওয়া আইডি সমাধান করা হয়</li>
-    <li>হ্যাক হয়ে যাওয়া পেজ/অ্যাকাউন্ট রিকভারি করা হয়</li>
-    <li>নিষ্ক্রিয় (ডিজেবল) হয়ে যাওয়া আইডি বা পেজ ফেরত আনা হয়</li>
-    <li>বন্ধ হয়ে যাওয়া মনিটাইজেশন সমাধান করা হয় (ইন-স্ট্রিম এড সমস্যাসহ)</li>
-    <li>কমিউনিটি স্ট্যান্ডার্ড ভায়োলেশন ও কপিরাইট স্ট্রাইক সমাধান করা হয়</li>
-    <li>বিজনেস ম্যানেজার ও এড অ্যাকাউন্ট ডিজেবল সমাধান করা হয়</li>
-    <li>ফেসবুক/মেটা সংক্রান্ত যেকোনো ইস্যু সমাধান করা হয়</li>
+    <li data-i18n="services.li1">ফেসবুক আইডি ও পেজ ফুল সেটআপ করা হয়</li>
+    <li data-i18n="services.li2">আইডি রিভিউ করা হয়</li>
+    <li data-i18n="services.li3">পে-আউট অ্যাকাউন্ট তৈরি করা হয়</li>
+    <li data-i18n="services.li4">পে-আউট এর ভুল নাম সংশোধন করা হয়</li>
+    <li data-i18n="services.li5">টিন (TIN) সার্টিফিকেট খোলা হয়</li>
+    <li data-i18n="services.li6">ব্যাংক অ্যাকাউন্ট সেটআপ করা হয়</li>
+    <li data-i18n="services.li7">সাসপেন্ড হয়ে যাওয়া আইডি সমাধান করা হয়</li>
+    <li data-i18n="services.li8">হ্যাক হয়ে যাওয়া পেজ/অ্যাকাউন্ট রিকভারি করা হয়</li>
+    <li data-i18n="services.li9">নিষ্ক্রিয় (ডিজেবল) হয়ে যাওয়া আইডি বা পেজ ফেরত আনা হয়</li>
+    <li data-i18n="services.li10">বন্ধ হয়ে যাওয়া মনিটাইজেশন সমাধান করা হয় (ইন-স্ট্রিম এড সমস্যাসহ)</li>
+    <li data-i18n="services.li11">কমিউনিটি স্ট্যান্ডার্ড ভায়োলেশন ও কপিরাইট স্ট্রাইক সমাধান করা হয়</li>
+    <li data-i18n="services.li12">বিজনেস ম্যানেজার ও এড অ্যাকাউন্ট ডিজেবল সমাধান করা হয়</li>
+    <li data-i18n="services.li13">ফেসবুক/মেটা সংক্রান্ত যেকোনো ইস্যু সমাধান করা হয়</li>
   </ul>
 </section>
 
 <div class="cta-block">
-  <p class="cta-text">নিচের বাটনে ক্লিক করে মাত্র ৩ ধাপে আবেদন করুন</p>
+  <p class="cta-text" data-i18n="cta.text">নিচের বাটনে ক্লিক করে মাত্র ৩ ধাপে আবেদন করুন</p>
   <button type="button" class="cta-fill-btn" id="showFormBtn" onclick="revealRegForm()">
-    📝 আপনার তথ্য পূরণ করুন
+    📝 <span data-i18n="cta.btn">আপনার তথ্য পূরণ করুন</span>
   </button>
-  <p class="cta-trust">✓ সম্পূর্ণ নিরাপদ &nbsp;·&nbsp; ✓ দ্রুত সাড়া &nbsp;·&nbsp; ✓ কোনো ঝামেলা নেই</p>
+  <p class="cta-trust" data-i18n="cta.trust">✓ সম্পূর্ণ নিরাপদ &nbsp;·&nbsp; ✓ দ্রুত সাড়া &nbsp;·&nbsp; ✓ কোনো ঝামেলা নেই</p>
 </div>
 </div>
 
@@ -1985,45 +2083,45 @@
 
 <div class="pre-form-wrap" id="landingBottom">
   <div class="faq-card">
-    <div class="section-label" style="margin-top:0;">সচরাচর জিজ্ঞাসিত প্রশ্ন</div>
+    <div class="section-label" style="margin-top:0;" data-i18n="faq.heading">সচরাচর জিজ্ঞাসিত প্রশ্ন</div>
 
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span>আবেদন করার কতদিনের মধ্যে যোগাযোগ করা হয়?</span>
+        <span data-i18n="faq.q1">আবেদন করার কতদিনের মধ্যে যোগাযোগ করা হয়?</span>
         <span class="arrow">▾</span>
       </div>
-      <div class="faq-a">আবেদন পাওয়ার পর যাচাই করে যত দ্রুত সম্ভব হোয়াটসঅ্যাপ বা মোবাইলে যোগাযোগ করা হয়। সাধারণত ২৪ ঘণ্টার মধ্যেই সাড়া দেওয়া হয়।</div>
+      <div class="faq-a" data-i18n="faq.a1">আবেদন পাওয়ার পর যাচাই করে যত দ্রুত সম্ভব হোয়াটসঅ্যাপ বা মোবাইলে যোগাযোগ করা হয়। সাধারণত ২৪ ঘণ্টার মধ্যেই সাড়া দেওয়া হয়।</div>
     </div>
 
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span>আবেদন ফি কি ফেরতযোগ্য?</span>
+        <span data-i18n="faq.q2">আবেদন ফি কি ফেরতযোগ্য?</span>
         <span class="arrow">▾</span>
       </div>
-      <div class="faq-a">আবেদন ফি শুধু আবেদন যাচাইয়ের জন্য নেওয়া হয়, তাই এটি ফেরতযোগ্য নয়। সেবা সংক্রান্ত চার্জ আলাদাভাবে আলোচনা করে নির্ধারণ করা হয়।</div>
+      <div class="faq-a" data-i18n="faq.a2">আবেদন ফি শুধু আবেদন যাচাইয়ের জন্য নেওয়া হয়, তাই এটি ফেরতযোগ্য নয়। সেবা সংক্রান্ত চার্জ আলাদাভাবে আলোচনা করে নির্ধারণ করা হয়।</div>
     </div>
 
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span>কোন ধরনের সমস্যা সমাধান করা হয়?</span>
+        <span data-i18n="faq.q3">কোন ধরনের সমস্যা সমাধান করা হয়?</span>
         <span class="arrow">▾</span>
       </div>
-      <div class="faq-a">আইডি বা পেজ ফুল সেট-আপ করা হয়, আইডি রিভিউ করা হয়, পে আউট একাউন্ট করা হয়, পে আউট এর ভুল নাম ঠিক করা হয়, যে কোনো ইস্যু ঠিক করা হয়, টিন সাটিফিকেট খোলা হয়, ব্যাংক একাউন্ট সেট-আপ করা। আইডি সাচপেন্ড হলে ঠিক করা। পেজ/অ্যাকাউন্ট হ্যাক হলে রিকভারি করা হয়, নিষ্ক্রিয় হয়ে যাওয়া আইডি বা পেজ ফেরত আনা হয়, মনিটাইজেশন বন্ধ হয়ে যাওয়া এবং এই সংক্রান্ত অন্যান্য সমস্যা নিয়ে কাজ করা হয়।</div>
+      <div class="faq-a" data-i18n="faq.a3">আইডি বা পেজ ফুল সেট-আপ করা হয়, আইডি রিভিউ করা হয়, পে আউট একাউন্ট করা হয়, পে আউট এর ভুল নাম ঠিক করা হয়, যে কোনো ইস্যু ঠিক করা হয়, টিন সাটিফিকেট খোলা হয়, ব্যাংক একাউন্ট সেট-আপ করা। আইডি সাচপেন্ড হলে ঠিক করা। পেজ/অ্যাকাউন্ট হ্যাক হলে রিকভারি করা হয়, নিষ্ক্রিয় হয়ে যাওয়া আইডি বা পেজ ফেরত আনা হয়, মনিটাইজেশন বন্ধ হয়ে যাওয়া এবং এই সংক্রান্ত অন্যান্য সমস্যা নিয়ে কাজ করা হয়।</div>
     </div>
 
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span>সেবার জন্য মোট খরচ কত হবে?</span>
+        <span data-i18n="faq.q4">সেবার জন্য মোট খরচ কত হবে?</span>
         <span class="arrow">▾</span>
       </div>
-      <div class="faq-a">সমস্যার ধরন অনুযায়ী খরচ ভিন্ন হয়। আবেদন যাচাইয়ের পর সরাসরি আলোচনা করে খরচ জানিয়ে দেওয়া হয় — কোনো কাজ ফ্রি করা হয় না।</div>
+      <div class="faq-a" data-i18n="faq.a4">সমস্যার ধরন অনুযায়ী খরচ ভিন্ন হয়। আবেদন যাচাইয়ের পর সরাসরি আলোচনা করে খরচ জানিয়ে দেওয়া হয় — কোনো কাজ ফ্রি করা হয় না।</div>
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span>গোপনীয়তা নীতি</span>
+        <span data-i18n="faq.q5">গোপনীয়তা নীতি</span>
         <span class="arrow">▾</span>
       </div>
-      <div class="faq-a privacy-text">
+      <div class="faq-a privacy-text" data-i18n="faq.a5">
         আপনার দেওয়া নাম, মোবাইল নম্বর, ইমেইল, জন্ম তারিখ, ঠিকানা, ছবি ও ফেসবুক প্রোফাইল লিংক শুধুমাত্র আপনার আবেদন যাচাই ও যোগাযোগের কাজে ব্যবহার করা হয়। এই তথ্য আমাদের নিজস্ব Google Sheet ও Google Drive-এ সংরক্ষিত থাকে এবং তৃতীয় কোনো পক্ষের সাথে শেয়ার বা বিক্রি করা হয় না।<br><br>
         পেমেন্ট স্ক্রিনশট ও ট্রানজেকশন আইডি শুধু ফি পরিশোধ যাচাইয়ের জন্য রাখা হয়।<br><br>
         নোটিফিকেশন বা লোকেশন পারমিশন সম্পূর্ণ ঐচ্ছিক — অনুমতি না দিলেও ফর্ম পূরণ ও রেজিস্ট্রেশন করা যাবে।<br><br>
@@ -2033,24 +2131,24 @@
   </div>
 
   <div class="testi-card" id="reviewsSection">
-    <div class="section-label" style="margin-top:0;">কাস্টমারদের মতামত</div>
+    <div class="section-label" style="margin-top:0;" data-i18n="reviews.heading">কাস্টমারদের মতামত</div>
     <div id="reviewsContainer">
       <p style="font-size:13.5px; color:var(--muted); text-align:center; padding:10px 0;">রিভিউ লোড হচ্ছে...</p>
     </div>
   </div>
 
   <div class="testi-card">
-    <div class="section-label" style="margin-top:0;">আপনার অভিজ্ঞতা জানান</div>
+    <div class="section-label" style="margin-top:0;" data-i18n="reviewForm.heading">আপনার অভিজ্ঞতা জানান</div>
     <div id="reviewFormBox">
-      <label>রেটিং দিন <span class="req">*</span></label>
+      <label><span data-i18n="reviewForm.rating">রেটিং দিন</span> <span class="req">*</span></label>
       <div id="starPicker" role="group" aria-label="রেটিং, ১ থেকে ৫ তারা নির্বাচন করুন" style="font-size:28px; letter-spacing:4px; margin:6px 0 14px; cursor:pointer;">
         <span data-val="1">☆</span><span data-val="2">☆</span><span data-val="3">☆</span><span data-val="4">☆</span><span data-val="5">☆</span>
       </div>
-      <label for="reviewName">আপনার নাম (ঐচ্ছিক)</label>
+      <label for="reviewName" data-i18n="reviewForm.name">আপনার নাম (ঐচ্ছিক)</label>
       <input type="text" id="reviewName" placeholder="যেমনঃ মোঃ করিম">
-      <label for="reviewText">আপনার মতামত <span class="req">*</span></label>
+      <label for="reviewText"><span data-i18n="reviewForm.text">আপনার মতামত</span> <span class="req">*</span></label>
       <textarea id="reviewText" placeholder="আপনার অভিজ্ঞতা লিখুন..."></textarea>
-      <button type="button" id="reviewSubmitBtn" style="width:100%; margin-top:14px; padding:13px; border:none; border-radius:9px; background:var(--forest); color:var(--paper); font-family:inherit; font-size:15px; font-weight:700; cursor:pointer;">রিভিউ জমা দিন</button>
+      <button type="button" id="reviewSubmitBtn" style="width:100%; margin-top:14px; padding:13px; border:none; border-radius:9px; background:var(--forest); color:var(--paper); font-family:inherit; font-size:15px; font-weight:700; cursor:pointer;" data-i18n="reviewForm.submit">রিভিউ জমা দিন</button>
       <div id="reviewMsg" style="display:none; margin-top:12px; padding:11px 13px; border-radius:8px; font-size:13.5px;"></div>
     </div>
   </div>
@@ -2059,16 +2157,16 @@
 
 <footer class="site-footer">
   <div class="site-footer-inner">
-    <p class="site-footer-brand">FB সমাধান</p>
-    <p class="site-footer-tag">ফেসবুক আইডি ও পেজ সংক্রান্ত সমস্যা সমাধানে বিশ্বস্ত সেবা — কেশবপুর, যশোর</p>
+    <p class="site-footer-brand" data-i18n="footer.brand">FB সমাধান</p>
+    <p class="site-footer-tag" data-i18n="footer.tag">ফেসবুক আইডি ও পেজ সংক্রান্ত সমস্যা সমাধানে বিশ্বস্ত সেবা — কেশবপুর, যশোর</p>
     <div class="site-footer-links">
-      <a href="#top">হোম</a>
-      <a href="?blog=all">ব্লগ</a>
-      <a href="#servicesSection">সেবা</a>
-      <a href="#reviewsSection">রিভিউ</a>
-      <a href="#contactSection">যোগাযোগ</a>
+      <a href="#top" data-i18n="nav.home">হোম</a>
+      <a href="?blog=all" data-i18n="nav.blog">ব্লগ</a>
+      <a href="#servicesSection" data-i18n="nav.services">সেবা</a>
+      <a href="#reviewsSection" data-i18n="nav.reviews">রিভিউ</a>
+      <a href="#contactSection" data-i18n="nav.contact">যোগাযোগ</a>
     </div>
-    <p class="site-footer-copy">© <span id="footerYear"></span> মোঃ আলামিন ইসলাম। সর্বস্বত্ব সংরক্ষিত।</p>
+    <p class="site-footer-copy">© <span id="footerYear"></span> <span data-i18n="footer.copy">মোঃ আলামিন ইসলাম। সর্বস্বত্ব সংরক্ষিত।</span></p>
   </div>
 </footer>
 
@@ -2197,12 +2295,13 @@ function markFeeMethodSelected(method){
 
 
 function applyTheme(theme){
+  const isEn = document.documentElement.lang === 'en';
   if(theme === 'dark'){
     document.documentElement.setAttribute('data-theme', 'dark');
-    document.getElementById('themeToggleLabel').textContent = 'লাইট মোড';
+    document.getElementById('themeToggleLabel').textContent = isEn ? 'Light Mode' : 'লাইট মোড';
   } else {
     document.documentElement.removeAttribute('data-theme');
-    document.getElementById('themeToggleLabel').textContent = 'ডার্ক মোড';
+    document.getElementById('themeToggleLabel').textContent = isEn ? 'Dark Mode' : 'ডার্ক মোড';
   }
   localStorage.setItem('theme', theme);
 }
@@ -2212,23 +2311,164 @@ document.getElementById('themeToggleBtn').addEventListener('click', ()=>{
   applyTheme(isDark ? 'light' : 'dark');
 });
 
-// ============ শেয়ার বাটন ============
-document.getElementById('shareBtn').addEventListener('click', async ()=>{
-  const shareData = {
-    title: 'ফেসবুক সমস্যা সমাধান — রেজিস্ট্রেশন',
-    text: 'ফেসবুক পেজ/অ্যাকাউন্ট হ্যাক, নিষ্ক্রিয় বা মনিটাইজেশন সমস্যায় রেজিস্ট্রেশন করুন:',
-    url: window.location.href
-  };
-  if(navigator.share){
-    try{ await navigator.share(shareData); }
-    catch(err){ /* ব্যবহারকারী শেয়ার বাতিল করলে কিছু করার দরকার নেই */ }
-  } else {
-    try{
-      await navigator.clipboard.writeText(shareData.url);
-      alert('লিংক কপি হয়েছে! এখন যেকোনো জায়গায় পেস্ট করে শেয়ার করতে পারবেন।');
-    }catch(err){
-      alert('শেয়ার করতে সমস্যা হয়েছে। লিংক: ' + shareData.url);
+// ============ ভাষা পরিবর্তন (বাংলা ⇄ English) ============
+// পেজ লোড হওয়ার সাথে সাথে প্রতিটা data-i18n এলিমেন্টের মূল বাংলা টেক্সট
+// সংরক্ষণ করে রাখা হয়, যাতে ইংরেজি থেকে আবার বাংলায় ফেরার সময় নতুন করে
+// লিখতে না হয় — শুধু ইংরেজি অনুবাদগুলো নিচে দেওয়া থাকলেই চলবে।
+const I18N_ORIGINAL_BN = {};
+document.querySelectorAll('[data-i18n]').forEach(el=>{
+  const key = el.getAttribute('data-i18n');
+  if(!(key in I18N_ORIGINAL_BN)) I18N_ORIGINAL_BN[key] = el.innerHTML;
+});
+
+const I18N_EN = {
+  'header.share': 'Share',
+  'header.shareVia': 'Share via',
+  'header.email': 'Email',
+  'header.copyLink': 'Copy link',
+  'nav.home': 'Home',
+  'nav.blog': 'Blog',
+  'nav.services': 'Services',
+  'nav.reviews': 'Reviews',
+  'nav.contact': 'Contact',
+  'hero.eyebrow': 'Facebook Problem-Solving Service',
+  'hero.tagline': 'Let your dream become your future',
+  'hero.h1': 'Facebook ID &amp; Page Hack, Disable, Monetization Problem Solutions',
+  'hero.byline': 'Md Alamin Islam &nbsp;•&nbsp; Gopsena, Keshabpur, Jessore',
+  'hero.desc': 'If your Facebook ID/Page has been hacked, your account has been disabled, monetization has stopped, or you have any other Facebook-related problem — fill out the form below and I will review it and contact you.',
+  'hero.trustBadge': '✓ Direct contact &nbsp;•&nbsp; ✓ Safe information &nbsp;•&nbsp; ✓ Quick response',
+  'hero.online': 'Online now',
+  'hero.totalVisit': 'Total Visits',
+  'stats.solved': 'Solved',
+  'stats.totalApp': 'Total Applications',
+  'stats.ongoing': 'In Progress',
+  'stats.rating': 'Customer Rating',
+  'posts.heading': 'Blog &amp; Latest Updates',
+  'posts.viewAll': 'View all posts →',
+  'posts.sub': 'Regular writing and updates on Facebook ID/Page issues, recovery, and monetization',
+  'posts.loading': 'Loading updates...',
+  'btn.whatsapp': 'Contact on WhatsApp',
+  'btn.facebook': 'Visit our Facebook Page',
+  'btn.liveChat': 'Start Live Chat',
+  'services.heading': 'Our Services',
+  'services.note': 'Facebook Help &amp; Meta Help — solving Account Hacked, Disabled, Suspended, and Monetization issues',
+  'services.li1': 'Full Facebook ID and Page setup',
+  'services.li2': 'ID review',
+  'services.li3': 'Payout account creation',
+  'services.li4': 'Payout name correction',
+  'services.li5': 'TIN certificate opening',
+  'services.li6': 'Bank account setup',
+  'services.li7': 'Suspended ID recovery',
+  'services.li8': 'Hacked page/account recovery',
+  'services.li9': 'Disabled ID or page recovery',
+  'services.li10': 'Stopped monetization solutions (including in-stream ad issues)',
+  'services.li11': 'Community standard violation and copyright strike solutions',
+  'services.li12': 'Business Manager and ad account disabled solutions',
+  'services.li13': 'Any other Facebook/Meta related issue',
+  'cta.text': 'Click the button below to apply in just 3 steps',
+  'cta.btn': 'Fill in your information',
+  'cta.trust': '✓ Completely safe &nbsp;·&nbsp; ✓ Quick response &nbsp;·&nbsp; ✓ No hassle',
+  'faq.heading': 'Frequently Asked Questions',
+  'faq.q1': 'How soon will I be contacted after applying?',
+  'faq.a1': 'After receiving your application, we verify it and contact you as soon as possible via WhatsApp or phone. We usually respond within 24 hours.',
+  'faq.q2': 'Is the application fee refundable?',
+  'faq.a2': 'The application fee is only for verifying the application, so it is non-refundable. Service charges are determined separately through discussion.',
+  'faq.q3': 'What kind of problems do you solve?',
+  'faq.a3': 'We do full ID/page setup, ID review, payout account creation, payout name correction, fixing any issue, opening TIN certificates, bank account setup, fixing suspended IDs, recovering hacked pages/accounts, restoring disabled IDs or pages, fixing stopped monetization, and other related problems.',
+  'faq.q4': 'How much will the service cost in total?',
+  'faq.a4': 'The cost varies depending on the type of problem. After verifying your application, the cost is discussed directly with you — no work is done for free.',
+  'faq.q5': 'Privacy Policy',
+  'faq.a5': 'The name, mobile number, email, date of birth, address, photo, and Facebook profile link you provide are used only to verify your application and to contact you. This information is stored in our own Google Sheet and Google Drive and is not shared or sold to any third party.<br><br>Payment screenshots and transaction IDs are kept only to verify fee payment.<br><br>Notification or location permissions are entirely optional — you can fill out the form and register even without granting permission.<br><br>If you want your information deleted or have any related questions, please contact the WhatsApp number above.',
+  'reviews.heading': "Customer Reviews",
+  'reviewForm.heading': 'Share Your Experience',
+  'reviewForm.rating': 'Give a rating',
+  'reviewForm.name': 'Your name (optional)',
+  'reviewForm.text': 'Your feedback',
+  'reviewForm.submit': 'Submit Review',
+  'footer.brand': 'FB Somadhan',
+  'footer.tag': 'A trusted service for solving Facebook ID and Page related problems — Keshabpur, Jessore',
+  'footer.copy': 'Md Alamin Islam. All rights reserved.'
+};
+
+function applyLanguage(lang){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(lang === 'en' && I18N_EN[key] !== undefined){
+      el.innerHTML = I18N_EN[key];
+    } else {
+      el.innerHTML = I18N_ORIGINAL_BN[key];
     }
+  });
+  document.documentElement.lang = lang;
+  document.getElementById('langToggleLabel').textContent = lang === 'en' ? 'বাং' : 'EN';
+  localStorage.setItem('siteLang', lang);
+  // থিম বাটনের লেবেলও ভাষা অনুযায়ী ঠিক করা দরকার (dark/light state অনুযায়ী)
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  applyTheme(isDark ? 'dark' : 'light');
+}
+
+document.getElementById('langToggleBtn').addEventListener('click', ()=>{
+  const current = document.documentElement.lang === 'en' ? 'en' : 'bn';
+  applyLanguage(current === 'en' ? 'bn' : 'en');
+});
+
+(function initLanguage(){
+  const saved = localStorage.getItem('siteLang');
+  if(saved === 'en') applyLanguage('en');
+})();
+
+// ============ শেয়ার বাটন — কাস্টম প্যানেলে বিভিন্ন প্লাটফর্মের আইকন ============
+const shareData = {
+  title: 'ফেসবুক সমস্যা সমাধান — রেজিস্ট্রেশন',
+  text: 'ফেসবুক পেজ/অ্যাকাউন্ট হ্যাক, নিষ্ক্রিয় বা মনিটাইজেশন সমস্যায় রেজিস্ট্রেশন করুন:',
+  get url(){ return window.location.href; }
+};
+
+const sharePanel = document.getElementById('sharePanel');
+document.getElementById('shareBtn').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  sharePanel.classList.toggle('show');
+});
+document.addEventListener('click', (e)=>{
+  if(sharePanel.classList.contains('show') && !e.target.closest('.share-wrap')){
+    sharePanel.classList.remove('show');
+  }
+});
+
+function buildShareLink(platform){
+  const url = encodeURIComponent(shareData.url);
+  const text = encodeURIComponent(shareData.text);
+  switch(platform){
+    case 'whatsapp': return 'https://wa.me/?text=' + text + '%20' + url;
+    case 'facebook': return 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+    case 'messenger': return 'fb-messenger://share/?link=' + url;
+    case 'telegram': return 'https://t.me/share/url?url=' + url + '&text=' + text;
+    case 'twitter': return 'https://twitter.com/intent/tweet?url=' + url + '&text=' + text;
+    default: return '';
+  }
+}
+
+document.querySelectorAll('.share-icon').forEach(el=>{
+  const platform = el.getAttribute('data-platform');
+  if(['whatsapp','facebook','messenger','telegram','twitter'].includes(platform)){
+    el.href = buildShareLink(platform);
+  } else if(platform === 'email'){
+    el.addEventListener('click', ()=>{
+      window.location.href = 'mailto:?subject=' + encodeURIComponent(shareData.title) + '&body=' + encodeURIComponent(shareData.text + ' ' + shareData.url);
+    });
+  } else if(platform === 'copy'){
+    el.addEventListener('click', async ()=>{
+      const labelEl = el.querySelector('.si-label');
+      const original = labelEl.textContent;
+      try{
+        await navigator.clipboard.writeText(shareData.url);
+        labelEl.textContent = (document.documentElement.lang === 'en') ? 'Copied!' : 'কপি হয়েছে!';
+        el.classList.add('copied');
+      }catch(err){
+        alert(shareData.url);
+      }
+      setTimeout(()=>{ labelEl.textContent = original; el.classList.remove('copied'); }, 1800);
+    });
   }
 });
 
@@ -3033,10 +3273,12 @@ function loadStats(){
       const solved = data.solvedCount || 0;
       const totalApp = data.totalApplications || 0;
       const ongoing = Math.max(totalApp - solved, 0);
-      if(solvedEl) solvedEl.textContent = toBengaliNumber(solved);
-      if(totalAppEl) totalAppEl.textContent = toBengaliNumber(totalApp);
-      if(ongoingEl) ongoingEl.textContent = toBengaliNumber(ongoing);
-      if(bigVisitEl) bigVisitEl.textContent = toBengaliNumber(data.visitorCount || 0);
+      const isEn = document.documentElement.lang === 'en';
+      const fmt = n => isEn ? String(n) : toBengaliNumber(n);
+      if(solvedEl) solvedEl.textContent = fmt(solved);
+      if(totalAppEl) totalAppEl.textContent = fmt(totalApp);
+      if(ongoingEl) ongoingEl.textContent = fmt(ongoing);
+      if(bigVisitEl) bigVisitEl.textContent = fmt(data.visitorCount || 0);
     })
     .catch(()=>{
       // ব্যর্থ হলে চুপচাপ থাকা, ড্যাশ দেখানো থাকবে
@@ -3066,13 +3308,16 @@ function loadReviews(){
     .then(data => {
       const ratingNumEl = document.getElementById('ratingStatNum');
       const ratingLabelEl = document.getElementById('ratingStatLabel');
+      const isEn = document.documentElement.lang === 'en';
       if(data.success && data.totalCount > 0){
-        ratingNumEl.textContent = toBengaliNumber(data.avgRating) + '★';
-        ratingLabelEl.textContent = 'কাস্টমার রেটিং (' + toBengaliNumber(data.totalCount) + ' রিভিউ)';
+        ratingNumEl.textContent = (isEn ? data.avgRating : toBengaliNumber(data.avgRating)) + '★';
+        ratingLabelEl.textContent = isEn
+          ? ('Customer Rating (' + data.totalCount + ' reviews)')
+          : ('কাস্টমার রেটিং (' + toBengaliNumber(data.totalCount) + ' রিভিউ)');
         updateRatingSchema(data.avgRating, data.totalCount);
       } else {
         ratingNumEl.textContent = '—';
-        ratingLabelEl.textContent = 'এখনো রেটিং নেই';
+        ratingLabelEl.textContent = isEn ? 'No rating yet' : 'এখনো রেটিং নেই';
       }
 
       if(!data.success || !data.reviews || data.reviews.length === 0){
