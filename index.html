@@ -3607,7 +3607,7 @@ function showBlogDetail(postId){
   const safeTitle = blogEscape(post.title);
   const safeContent = blogEscape(post.content);
   const imageHtml = post.imageUrl
-    ? '<img src="' + post.imageUrl + '" alt="' + safeTitle + '" style="width:100%; border-radius:10px; margin-bottom:14px; display:block;">'
+    ? '<img src="' + post.imageUrl + '" alt="' + safeTitle + '" loading="lazy" style="width:100%; border-radius:10px; margin-bottom:14px; display:block;">'
     : '';
   const videoHtml = post.videoUrl
     ? '<div style="position:relative; width:100%; padding-top:56.25%; margin-bottom:14px; border-radius:10px; overflow:hidden; background:#000;">' +
