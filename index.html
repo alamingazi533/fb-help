@@ -793,6 +793,24 @@
     color:var(--muted);
     margin:10px 0 20px;
   }
+  .blog-search-wrap{ margin:0 0 18px; }
+  .blog-search-input{
+    width:100%; box-sizing:border-box; padding:12px 14px;
+    border:1.5px solid var(--line); border-radius:10px;
+    background:var(--card-bg); color:var(--ink);
+    font-size:14px; font-family:inherit;
+  }
+  .blog-search-input:focus{ outline:none; border-color:var(--forest); }
+  .blog-related-wrap{ margin:28px 0 0; padding-top:18px; border-top:1px solid var(--line); }
+  .blog-related-wrap h3{
+    font-family:'Noto Serif Bengali', serif; font-size:17px; margin:0 0 12px; color:var(--forest);
+  }
+  .blog-related-grid{ display:grid; grid-template-columns:1fr; gap:10px; }
+  .blog-related-item{
+    display:block; padding:10px 12px; border:1px solid var(--line); border-radius:8px;
+    text-decoration:none; color:var(--ink); font-size:13.5px; background:var(--card-bg);
+  }
+  .blog-related-item:hover{ border-color:var(--forest); }
   .blog-detail{
     max-width:560px;
     margin:0 auto;
@@ -1276,6 +1294,21 @@
     margin-top:9px;
   }
   .faq-item.open .faq-a.privacy-text{ max-height:900px; }
+  .whatsapp-float{
+    position:fixed;
+    right:18px;
+    bottom:78px;
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:#25D366;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 3px 10px rgba(0,0,0,.25);
+    z-index:999;
+    text-decoration:none;
+  }
   .back-to-top{
     position:fixed;
     right:18px;
@@ -1459,6 +1492,32 @@
     font-size:13.5px;
     margin-top:6px;
   }
+  .cr-steps{
+    display:flex;
+    align-items:center;
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+  }
+  .cr-step{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    flex:0 0 auto;
+    min-width:64px;
+  }
+  .cr-step-dot{
+    width:16px; height:16px; border-radius:50%;
+    background:var(--paper); border:2px solid var(--line);
+  }
+  .cr-step.done .cr-step-dot{ background:var(--forest); border-color:var(--forest); }
+  .cr-step.active .cr-step-dot{ background:var(--paper); border-color:var(--forest); box-shadow:0 0 0 3px rgba(31,59,44,.15); }
+  .cr-step-label{ font-size:11.5px; color:var(--muted); text-align:center; }
+  .cr-step.active .cr-step-label{ color:var(--forest); font-weight:700; }
+  .cr-step.done .cr-step-label{ color:var(--forest); }
+  .cr-step-line{ flex:1 1 auto; height:2px; background:var(--line); margin:0 2px 18px; }
+  .cr-steps-cancelled{ color:var(--maroon); font-size:13px; }
   footer{
     text-align:center;
     font-size:12px;
@@ -1922,6 +1981,9 @@
     <a class="blog-back-link" href="./">← হোমে ফিরুন</a>
     <h1>সব আপডেট / পোস্ট</h1>
     <p class="blog-archive-sub">ফেসবুক সংক্রান্ত সব সমাধান, টিপস ও সর্বশেষ খবর একসাথে</p>
+    <div class="blog-search-wrap">
+      <input type="text" id="blogSearchInput" class="blog-search-input" placeholder="🔍 পোস্ট খুঁজুন (শিরোনাম বা বিষয় লিখুন)...">
+    </div>
     <div id="blogArchiveGrid" class="blog-grid">
       <p class="posts-empty">লোড হচ্ছে...</p>
     </div>
@@ -2183,6 +2245,9 @@
   </div>
 </footer>
 
+<a href="https://wa.me/8801764324313?text=%E0%A6%86%E0%A6%B8%E0%A6%B8%E0%A6%BE%E0%A6%B2%E0%A6%BE%E0%A6%AE%E0%A7%81%20%E0%A6%86%E0%A6%B2%E0%A6%BE%E0%A6%87%E0%A6%95%E0%A7%81%E0%A6%AE%2C%20%E0%A6%86%E0%A6%AE%E0%A6%BF%20%E0%A6%B8%E0%A6%BE%E0%A6%B9%E0%A6%BE%E0%A6%AF%E0%A7%8D%E0%A6%AF%20%E0%A6%9A%E0%A6%BE%E0%A6%87%E0%A5%A4" target="_blank" rel="noopener" class="whatsapp-float" id="whatsappFloatBtn" aria-label="হোয়াটসঅ্যাপে যোগাযোগ করুন">
+  <svg viewBox="0 0 32 32" width="28" height="28" fill="#fff"><path d="M16.001 3C9.373 3 4 8.373 4 15.001c0 2.386.7 4.61 1.912 6.482L4 29l7.687-1.878A11.94 11.94 0 0 0 16.001 27C22.629 27 28 21.629 28 15.001 28 8.373 22.629 3 16.001 3zm7.016 17.219c-.3.844-1.49 1.556-2.457 1.762-.654.14-1.508.25-4.386-.941-3.68-1.526-6.049-5.263-6.234-5.508-.183-.245-1.494-1.988-1.494-3.793s.947-2.694 1.283-3.063c.336-.369.734-.462.978-.462.244 0 .489.002.702.014.226.011.529-.086.826.629.3.72.998 2.472 1.086 2.652.09.18.152.393.03.638-.121.245-.183.395-.365.61-.183.216-.383.482-.548.647-.183.183-.373.381-.16.746.213.365.947 1.562 2.033 2.53 1.397 1.246 2.575 1.633 2.94 1.816.365.183.578.153.79-.093.213-.245.917-1.07 1.163-1.437.244-.365.489-.303.822-.183.335.121 2.13 1.005 2.495 1.188.365.183.61.274.7.427.09.153.09.884-.21 1.727z"/></svg>
+</a>
 <button type="button" class="back-to-top" id="backToTopBtn" aria-label="উপরে ফিরুন">↑</button>
 
 <div id="receipt">
@@ -2503,6 +2568,25 @@ function notifyApplicationSuccess(appId){
   }
 }
 
+// আবেদন নম্বরের সাথে এই ব্রাউজারের push subscription যুক্ত করা হয়,
+// যাতে পরে অ্যাডমিন স্ট্যাটাস আপডেট করলে ঠিক এই মানুষটার কাছেই নোটিফিকেশন যায়।
+function linkOneSignalToApplication(appId){
+  if(typeof OneSignalDeferred === 'undefined' || !appId) return;
+  OneSignalDeferred.push(async function(OneSignal){
+    try{ await OneSignal.login(String(appId)); }catch(err){ /* ব্যর্থ হলেও ফর্ম সাবমিট প্রভাবিত হবে না */ }
+  });
+}
+
+// WhatsApp বাটনে আবেদন নম্বরসহ একটা রেডি মেসেজ বসিয়ে দেওয়া হয়, যাতে ইউজারকে টাইপ করতে না হয়।
+function personalizeWhatsappButton(appId){
+  const msg = 'আসসালামু আলাইকুম, আমার আবেদন নম্বর: ' + appId + '। এই বিষয়ে যোগাযোগ করতে চাই।';
+  const href = 'https://wa.me/8801764324313?text=' + encodeURIComponent(msg);
+  const waBtn = document.getElementById('contactSection');
+  if(waBtn && appId) waBtn.href = href;
+  const waFloat = document.getElementById('whatsappFloatBtn');
+  if(waFloat && appId) waFloat.href = href;
+}
+
 // বিভাগ ও জেলার তালিকা সরাসরি কোডে রাখা হয়েছে, তাই ইন্টারনেট/CDN এর উপর নির্ভর না করে
 // সাথে সাথে লোড হবে এবং কখনো ফাঁকা থাকবে না।
 const DIVISIONS = [
@@ -2760,6 +2844,27 @@ downloadBtn.addEventListener('click', async ()=>{
 const checkBtn = document.getElementById('checkBtn');
 const checkResult = document.getElementById('checkResult');
 
+// ============ আবেদনের অবস্থা ধাপে ধাপে (ভিজ্যুয়াল) দেখানো ============
+function renderStatusSteps(status){
+  if(status === 'বাতিল'){
+    return '<div class="cr-steps cr-steps-cancelled"><p>❌ এই আবেদনটি বাতিল করা হয়েছে। বিস্তারিত জানতে যোগাযোগ করুন।</p></div>';
+  }
+  const steps = [
+    { key: 'অপেক্ষমান', label: 'অপেক্ষমান' },
+    { key: 'কাজ চলছে', label: 'কাজ চলছে' },
+    { key: 'সম্পন্ন', label: 'সম্পন্ন' }
+  ];
+  const currentIndex = steps.findIndex(s => s.key === status);
+  const activeIndex = currentIndex === -1 ? 0 : currentIndex;
+  const stepsHtml = steps.map((s, i) => {
+    let cls = 'cr-step';
+    if(i < activeIndex) cls += ' done';
+    else if(i === activeIndex) cls += ' active';
+    return '<div class="' + cls + '"><span class="cr-step-dot"></span><span class="cr-step-label">' + s.label + '</span></div>';
+  }).join('<div class="cr-step-line"></div>');
+  return '<div class="cr-steps">' + stepsHtml + '</div>';
+}
+
 checkBtn.addEventListener('click', async ()=>{
   const id = document.getElementById('checkId').value.trim();
   if(!id){
@@ -2780,6 +2885,7 @@ checkBtn.addEventListener('click', async ()=>{
         'নাম: <strong>' + data.name + '</strong><br>' +
         'আবেদনের তারিখ: ' + data.date + '<br>' +
         'বর্তমান অবস্থা: <span class="cr-status-badge">' + data.status + '</span>' +
+        renderStatusSteps(data.status) +
         '</div>';
     }else{
       checkResult.innerHTML = '<div class="cr-box cr-notfound">এই নম্বরে কোনো আবেদন পাওয়া যায়নি। নম্বরটি আবার যাচাই করুন।</div>';
@@ -3226,6 +3332,8 @@ form.addEventListener('submit', async (e)=>{
     // সাবমিট সফল হওয়ার পর সংখ্যাগুলো আপডেট করা (নতুন আবেদন যোগ হয়েছে)
     loadStats();
     notifyApplicationSuccess(appId);
+    linkOneSignalToApplication(appId);
+    personalizeWhatsappButton(appId);
     clearDraft();
   }catch(err){
     console.error(err);
@@ -3450,15 +3558,36 @@ function initBlogRouter(){
 function showBlogArchive(){
   const archiveWrap = document.getElementById('blogArchiveWrap');
   const detailWrap = document.getElementById('blogDetailWrap');
-  const grid = document.getElementById('blogArchiveGrid');
+  const searchInput = document.getElementById('blogSearchInput');
   if(detailWrap) detailWrap.style.display = 'none';
   if(archiveWrap) archiveWrap.style.display = '';
+  if(searchInput && !searchInput.dataset.bound){
+    searchInput.dataset.bound = '1';
+    searchInput.addEventListener('input', ()=> renderBlogArchiveGrid(searchInput.value));
+  }
+  renderBlogArchiveGrid(searchInput ? searchInput.value : '');
+}
+
+function renderBlogArchiveGrid(query){
+  const grid = document.getElementById('blogArchiveGrid');
   if(!grid) return;
+  const q = String(query || '').trim().toLowerCase();
+  const list = q
+    ? __allPosts.filter(p =>
+        String(p.title).toLowerCase().includes(q) ||
+        String(p.content).toLowerCase().includes(q) ||
+        String(p.category || '').toLowerCase().includes(q)
+      )
+    : __allPosts;
   if(__allPosts.length === 0){
     grid.innerHTML = '<p class="posts-empty">এখনো কোনো আপডেট নেই।</p>';
     return;
   }
-  grid.innerHTML = __allPosts.map((p, i) => renderBlogCard(p, i === 0)).join('');
+  if(list.length === 0){
+    grid.innerHTML = '<p class="posts-empty">এই বিষয়ে কোনো পোস্ট পাওয়া যায়নি।</p>';
+    return;
+  }
+  grid.innerHTML = list.map((p, i) => renderBlogCard(p, q ? false : i === 0)).join('');
 }
 
 function showBlogDetail(postId){
@@ -3528,6 +3657,7 @@ function showBlogDetail(postId){
     '<div class="blog-more-link-wrap">' +
       '<a class="blog-viewall-link" href="?blog=all">← আরও পোস্ট দেখুন</a>' +
     '</div>';
+  renderRelatedPosts(post);
   newCommentCaptcha();
 
   const likeBtn = document.getElementById('postLikeBtn');
@@ -3541,6 +3671,26 @@ function showBlogDetail(postId){
   document.title = post.title + ' | ফেসবুক সমস্যা সমাধান — যশোর';
   const metaDesc = document.querySelector('meta[name="description"]');
   if(metaDesc) metaDesc.setAttribute('content', blogExcerpt(post.content, 155));
+}
+
+// ============ একই ক্যাটাগরির রিলেটেড পোস্ট দেখানো ============
+function renderRelatedPosts(post){
+  const contentEl = document.getElementById('blogDetailContent');
+  const moreLinkWrap = contentEl ? contentEl.querySelector('.blog-more-link-wrap') : null;
+  if(!contentEl || !moreLinkWrap) return;
+  const related = __allPosts
+    .filter(p => String(p.id) !== String(post.id) && (p.category || 'সাধারণ আপডেট') === (post.category || 'সাধারণ আপডেট'))
+    .slice(0, 4);
+  if(related.length === 0) return;
+  const itemsHtml = related.map(p =>
+    '<a class="blog-related-item" href="?post=' + encodeURIComponent(p.id) + '">' + blogEscape(p.title) + '</a>'
+  ).join('');
+  const html =
+    '<div class="blog-related-wrap">' +
+      '<h3>একই বিষয়ে আরও পোস্ট</h3>' +
+      '<div class="blog-related-grid">' + itemsHtml + '</div>' +
+    '</div>';
+  moreLinkWrap.insertAdjacentHTML('beforebegin', html);
 }
 
 // ============ পোস্ট লাইক (localStorage দিয়ে একই ব্রাউজার থেকে একবারই) ============

@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /admin.html
 
 Sitemap: https://alamingazi533.github.io/fb-help/sitemap.xml
