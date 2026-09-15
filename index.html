@@ -3382,25 +3382,27 @@ function formatResponseDuration(minutes){
   return toBengaliNumber(roundedDays) + ' দিন';
 }
 
+function renderStats(data){
+  if(!data) return;
+  const solvedEl = document.getElementById('solvedStatNum');
+  const totalAppEl = document.getElementById('totalAppStatNum');
+  const ongoingEl = document.getElementById('ongoingStatNum');
+  const bigVisitEl = document.getElementById('bigVisitNum');
+  const solved = data.solvedCount || 0;
+  const totalApp = data.totalApplications || 0;
+  const ongoing = Math.max(totalApp - solved, 0);
+  const isEn = document.documentElement.lang === 'en';
+  const fmt = n => isEn ? String(n) : toBengaliNumber(n);
+  if(solvedEl) solvedEl.textContent = fmt(solved);
+  if(totalAppEl) totalAppEl.textContent = fmt(totalApp);
+  if(ongoingEl) ongoingEl.textContent = fmt(ongoing);
+  if(bigVisitEl) bigVisitEl.textContent = fmt(data.visitorCount || 0);
+}
+
 function loadStats(){
   fetch(SCRIPT_URL + '?action=getStats')
     .then(r => r.json())
-    .then(data => {
-      if(!data.success) return;
-      const solvedEl = document.getElementById('solvedStatNum');
-      const totalAppEl = document.getElementById('totalAppStatNum');
-      const ongoingEl = document.getElementById('ongoingStatNum');
-      const bigVisitEl = document.getElementById('bigVisitNum');
-      const solved = data.solvedCount || 0;
-      const totalApp = data.totalApplications || 0;
-      const ongoing = Math.max(totalApp - solved, 0);
-      const isEn = document.documentElement.lang === 'en';
-      const fmt = n => isEn ? String(n) : toBengaliNumber(n);
-      if(solvedEl) solvedEl.textContent = fmt(solved);
-      if(totalAppEl) totalAppEl.textContent = fmt(totalApp);
-      if(ongoingEl) ongoingEl.textContent = fmt(ongoing);
-      if(bigVisitEl) bigVisitEl.textContent = fmt(data.visitorCount || 0);
-    })
+    .then(data => { if(data.success) renderStats(data); })
     .catch(()=>{
       // ব্যর্থ হলে চুপচাপ থাকা, ড্যাশ দেখানো থাকবে
     });
@@ -3422,46 +3424,70 @@ function updateRatingSchema(avgRating, totalCount){
   }catch(e){}
 }
 
-function loadReviews(){
+function renderReviews(data){
   const container = document.getElementById('reviewsContainer');
+  const ratingNumEl = document.getElementById('ratingStatNum');
+  const ratingLabelEl = document.getElementById('ratingStatLabel');
+  const isEn = document.documentElement.lang === 'en';
+  if(data.totalCount > 0){
+    ratingNumEl.textContent = (isEn ? data.avgRating : toBengaliNumber(data.avgRating)) + '★';
+    ratingLabelEl.textContent = isEn
+      ? ('Customer Rating (' + data.totalCount + ' reviews)')
+      : ('কাস্টমার রেটিং (' + toBengaliNumber(data.totalCount) + ' রিভিউ)');
+    updateRatingSchema(data.avgRating, data.totalCount);
+  } else {
+    ratingNumEl.textContent = '—';
+    ratingLabelEl.textContent = isEn ? 'No rating yet' : 'এখনো রেটিং নেই';
+  }
+
+  if(!data.reviews || data.reviews.length === 0){
+    container.innerHTML = '<p style="font-size:13.5px; color:var(--muted); text-align:center; padding:10px 0;">এখনো কোনো রিভিউ নেই — প্রথম রিভিউ দিন!</p>';
+    return;
+  }
+  container.innerHTML = data.reviews.map(rev => {
+    const stars = '★'.repeat(rev.rating) + '☆'.repeat(5 - rev.rating);
+    const safeName = String(rev.name).replace(/</g,'&lt;');
+    const safeText = String(rev.text).replace(/</g,'&lt;');
+    return '<div class="testi-item">' +
+      '<div class="testi-stars">' + stars + '</div>' +
+      '<p class="testi-text">' + safeText + '</p>' +
+      '<div class="testi-name">— ' + safeName + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function loadReviews(){
   fetch(SCRIPT_URL + '?action=getReviews')
     .then(r => r.json())
     .then(data => {
-      const ratingNumEl = document.getElementById('ratingStatNum');
-      const ratingLabelEl = document.getElementById('ratingStatLabel');
-      const isEn = document.documentElement.lang === 'en';
-      if(data.success && data.totalCount > 0){
-        ratingNumEl.textContent = (isEn ? data.avgRating : toBengaliNumber(data.avgRating)) + '★';
-        ratingLabelEl.textContent = isEn
-          ? ('Customer Rating (' + data.totalCount + ' reviews)')
-          : ('কাস্টমার রেটিং (' + toBengaliNumber(data.totalCount) + ' রিভিউ)');
-        updateRatingSchema(data.avgRating, data.totalCount);
-      } else {
-        ratingNumEl.textContent = '—';
-        ratingLabelEl.textContent = isEn ? 'No rating yet' : 'এখনো রেটিং নেই';
-      }
-
-      if(!data.success || !data.reviews || data.reviews.length === 0){
-        container.innerHTML = '<p style="font-size:13.5px; color:var(--muted); text-align:center; padding:10px 0;">এখনো কোনো রিভিউ নেই — প্রথম রিভিউ দিন!</p>';
-        return;
-      }
-      container.innerHTML = data.reviews.map(rev => {
-        const stars = '★'.repeat(rev.rating) + '☆'.repeat(5 - rev.rating);
-        const safeName = String(rev.name).replace(/</g,'&lt;');
-        const safeText = String(rev.text).replace(/</g,'&lt;');
-        return '<div class="testi-item">' +
-          '<div class="testi-stars">' + stars + '</div>' +
-          '<p class="testi-text">' + safeText + '</p>' +
-          '<div class="testi-name">— ' + safeName + '</div>' +
-        '</div>';
-      }).join('');
+      if(data.success) renderReviews(data);
+      else renderReviews({totalCount:0, reviews:[]});
     })
     .catch(()=>{
-      container.innerHTML = '<p style="font-size:13.5px; color:var(--muted); text-align:center; padding:10px 0;">রিভিউ লোড করতে সমস্যা হয়েছে।</p>';
+      document.getElementById('reviewsContainer').innerHTML = '<p style="font-size:13.5px; color:var(--muted); text-align:center; padding:10px 0;">রিভিউ লোড করতে সমস্যা হয়েছে।</p>';
     });
 }
-loadReviews();
-loadStats();
+
+// ============ হোমপেজে stats+reviews একসাথে একটা মাত্র রিকোয়েস্টে আনা (আগে ২টা আলাদা কল লাগতো, এখন ১টা — দ্রুত লোড হবে) ============
+function loadHomeData(){
+  fetch(SCRIPT_URL + '?action=getHomeData')
+    .then(r => r.json())
+    .then(data => {
+      if(data.success){
+        renderStats(data.stats);
+        renderReviews(data.reviews);
+      } else {
+        loadStats();
+        loadReviews();
+      }
+    })
+    .catch(()=>{
+      // combined কল ব্যর্থ হলে পুরনো পদ্ধতিতে আলাদা আলাদা চেষ্টা
+      loadStats();
+      loadReviews();
+    });
+}
+loadHomeData();
 
 // ============ ব্লগ/পোস্ট: লোড, কার্ড রেন্ডার ও রাউটিং (?post=ID / ?blog=all) ============
 let __allPosts = [];
