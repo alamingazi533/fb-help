@@ -1,4 +1,9 @@
-importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDKWorker.js');
+try {
+  importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDKWorker.js');
+} catch (e) {
+  // OneSignal লোড ব্যর্থ হলেও সাইটের মূল অফলাইন-ক্যাশিং যেন থেমে না যায়
+}
+
 const CACHE_NAME = 'fb-somadhan-cache-v4';
 const URLS_TO_CACHE = [
   './',
