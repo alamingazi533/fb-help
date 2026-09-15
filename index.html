@@ -3958,13 +3958,8 @@ if(reviewSubmitBtn){
       reviewSubmitBtn.textContent = 'রিভিউ জমা দিন';
     }
   });
-}// ============ Service Worker রেজিস্ট্রেশন (অফলাইন সাপোর্ট) ============
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('sw.js')
-      .catch(err => console.log('Service worker registration failed:', err));
-  });
-}
+}// ============ Service Worker রেজিস্ট্রেশন এখন OneSignal.init()-এর serviceWorkerPath দিয়েই হয় (উপরে দেখুন) —
+// এখানে আলাদা করে আবার register() ডাকা হলে একই ফাইল দুইবার রেজিস্টার/যাচাই হতো, যা বাড়তি দেরির একটা কারণ ছিল।
 </script>
 
 <!-- ============ Tawk.to লাইভ চ্যাট উইজেট ============
