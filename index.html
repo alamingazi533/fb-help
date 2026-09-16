@@ -927,17 +927,7 @@
     margin:0 auto;
     padding:22px 4px 40px;
   }
-  .blog-recent-widget{
-    max-width:560px;
-    margin:20px auto 0;
-    padding:16px 16px 4px;
-    border:1.5px solid var(--line);
-    border-radius:12px;
-    background:var(--card-bg);
-  }
-  .blog-recent-widget h3{
-    font-family:'Noto Serif Bengali', serif; font-size:16px; margin:0 0 4px; color:var(--forest);
-  }
+  .blog-recent-widget h3{ margin:0 0 12px; }
   .blog-cat-section{
     margin:0 0 26px;
   }
@@ -967,6 +957,93 @@
     flex:0 0 auto;
     width:230px;
   }
+
+  /* ============ শিক্ষাবার্তার মতো ফুল নিউজ-পোর্টাল লেআউট (মেইন + সাইডবার) ============ */
+  .blog-layout{ display:block; }
+  .blog-main{ min-width:0; }
+  .blog-sidebar{ margin-top:8px; }
+  @media (min-width:900px){
+    .blog-layout{
+      display:grid; grid-template-columns:2.05fr 1fr; gap:30px;
+      align-items:start; max-width:1140px; margin:0 auto; padding:0 18px;
+    }
+    .blog-sidebar{ margin-top:0; position:sticky; top:14px; }
+    .blog-archive-wrap, .blog-detail{ max-width:none; margin:0; padding-left:4px; padding-right:4px; }
+    .blog-recent-widget, .blog-subscribe-box{ max-width:none; margin:0 0 18px; }
+  }
+  .blog-widget{
+    border:1.5px solid var(--line); border-radius:12px; background:var(--card-bg);
+    padding:16px; margin-bottom:18px;
+  }
+  .blog-widget h3{
+    font-family:'Noto Serif Bengali', serif; font-size:16px; margin:0 0 12px; color:var(--forest);
+    padding-bottom:9px; border-bottom:2px solid var(--line);
+  }
+  .blog-fb-widget a{
+    display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink);
+    font-weight:700; font-size:13.5px; padding:11px; border:1px solid var(--line); border-radius:9px;
+  }
+  .blog-fb-widget a:hover{ border-color:var(--forest); }
+  .blog-fb-widget svg{ flex:0 0 auto; width:26px; height:26px; fill:#1877F2; }
+  .blog-ticker-wrap{ margin:0 0 20px; }
+  .blog-ticker-title{
+    font-family:'Noto Serif Bengali', serif; font-size:16.5px; font-weight:700; color:var(--forest);
+    margin:0 0 10px; padding-bottom:8px; border-bottom:2px solid var(--forest);
+  }
+  .blog-ticker-list{ list-style:none; margin:0; padding:0; }
+  .blog-ticker-list li{ padding:9px 2px; border-bottom:1px dashed var(--line); font-size:13.5px; line-height:1.5; }
+  .blog-ticker-list li:last-child{ border-bottom:none; }
+  .blog-ticker-list a{ color:var(--ink); text-decoration:none; }
+  .blog-ticker-list a:hover{ color:var(--forest); }
+  .blog-ticker-list .num{ color:var(--maroon); font-weight:700; margin-right:6px; }
+  .blog-photo-grid{
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin:0 0 28px;
+  }
+  .blog-photo-card{ display:block; text-decoration:none; color:inherit; }
+  .blog-photo-card img{ width:100%; height:100px; object-fit:cover; border-radius:8px; margin-bottom:6px; display:block; }
+  .blog-photo-card .post-title{
+    font-size:12px; font-weight:700; line-height:1.4; color:var(--ink);
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  @media (min-width:620px){
+    .blog-photo-grid{ grid-template-columns:repeat(5, 1fr); }
+    .blog-photo-card img{ height:78px; }
+  }
+  .blog-cat-block{ margin:0 0 32px; }
+  .blog-cat-block-head{
+    display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+    border-bottom:2px solid var(--forest); padding-bottom:9px; margin-bottom:14px;
+  }
+  .blog-cat-block-head h2{ font-family:'Noto Serif Bengali', serif; font-size:18px; margin:0; color:var(--forest); }
+  .blog-cat-block-body{ display:flex; gap:18px; flex-wrap:wrap; }
+  .blog-cat-main-post{ flex:1 1 100%; display:block; text-decoration:none; color:inherit; min-width:0; }
+  .blog-cat-main-post img{ width:100%; height:170px; object-fit:cover; border-radius:10px; margin-bottom:10px; display:block; }
+  .blog-cat-main-post .post-date{ font-size:11.5px; color:var(--muted); margin-bottom:5px; }
+  .blog-cat-main-post .post-title{
+    font-family:'Noto Serif Bengali', serif; font-size:17px; font-weight:700; line-height:1.42; margin:0 0 7px; color:var(--ink);
+  }
+  .blog-cat-main-post .post-excerpt{ font-size:13.5px; line-height:1.6; color:var(--muted); margin:0 0 8px; }
+  .blog-cat-main-post .blog-readmore{ font-size:13px; font-weight:700; color:var(--forest); }
+  .blog-cat-side-list{ flex:1 1 100%; list-style:none; margin:0; padding:0; min-width:0; }
+  .blog-cat-side-list li{ padding:10px 0; border-bottom:1px solid var(--line); display:flex; gap:9px; align-items:flex-start; }
+  .blog-cat-side-list li:last-child{ border-bottom:none; }
+  .blog-cat-side-list li img{ width:56px; height:44px; object-fit:cover; border-radius:6px; flex:0 0 auto; }
+  .blog-cat-side-list li a{ color:var(--ink); text-decoration:none; font-size:13.5px; font-weight:600; line-height:1.5; }
+  .blog-cat-side-list li a:hover{ color:var(--forest); }
+  @media (min-width:640px){
+    .blog-cat-main-post{ flex:1 1 44%; }
+    .blog-cat-side-list{ flex:1 1 50%; }
+  }
+  .blog-calendar-cap{ text-align:center; font-size:13.5px; font-weight:700; margin:0 0 10px; color:var(--forest); }
+  .blog-calendar{ width:100%; border-collapse:collapse; font-size:11.5px; text-align:center; }
+  .blog-calendar th{ padding:5px 2px; color:var(--muted); font-weight:700; }
+  .blog-calendar td{ padding:7px 2px; border-radius:6px; color:var(--ink); }
+  .blog-calendar td.has-post{ background:var(--forest); color:var(--paper); font-weight:700; }
+  .blog-footer{
+    max-width:1140px; margin:34px auto 0; padding:22px 16px 30px;
+    border-top:2px solid var(--line); text-align:center; font-size:12px; color:var(--muted); line-height:2;
+  }
+  .blog-footer strong{ color:var(--ink); }
   .blog-archive-wrap .blog-back-link{
     display:inline-flex;
     align-items:center;
@@ -1007,13 +1084,7 @@
     text-decoration:none; color:var(--ink); font-size:13.5px; background:var(--card-bg);
   }
   .blog-related-item:hover{ border-color:var(--forest); }
-  .blog-subscribe-box{
-    max-width:560px; margin:24px auto 0; padding:18px 16px;
-    border:1.5px solid var(--line); border-radius:12px; background:var(--card-bg);
-  }
-  .blog-subscribe-box h3{
-    font-family:'Noto Serif Bengali', serif; font-size:16px; margin:0 0 6px; color:var(--forest);
-  }
+  .blog-subscribe-box h3{ margin:0 0 6px; padding-bottom:0; border-bottom:none; }
   .blog-subscribe-box p{ font-size:13px; color:var(--muted); margin:0 0 12px; line-height:1.6; }
   .blog-subscribe-box label{ display:block; font-size:12px; color:var(--muted); margin-bottom:5px; }
   .blog-subscribe-row{ display:flex; gap:8px; flex-wrap:wrap; }
@@ -2198,40 +2269,76 @@
   </div>
   <div id="blogCatNav" class="blog-cat-nav"></div>
 
-  <div id="blogArchiveWrap" class="blog-archive-wrap" style="display:none;">
-    <a class="blog-back-link" href="./">← হোমে ফিরুন</a>
-    <h1 id="blogArchiveTitle">সব আপডেট / পোস্ট</h1>
-    <p class="blog-archive-sub" id="blogArchiveSub">ফেসবুক সংক্রান্ত সব সমাধান, টিপস ও সর্বশেষ খবর একসাথে</p>
-    <div class="blog-search-wrap">
-      <input type="text" id="blogSearchInput" class="blog-search-input" placeholder="🔍 পোস্ট খুঁজুন (শিরোনাম বা বিষয় লিখুন)...">
+  <div class="blog-layout">
+    <div class="blog-main">
+      <div id="blogArchiveWrap" class="blog-archive-wrap" style="display:none;">
+        <a class="blog-back-link" href="./">← হোমে ফিরুন</a>
+        <h1 id="blogArchiveTitle">সব আপডেট / পোস্ট</h1>
+        <p class="blog-archive-sub" id="blogArchiveSub">ফেসবুক সংক্রান্ত সব সমাধান, টিপস ও সর্বশেষ খবর একসাথে</p>
+        <div class="blog-search-wrap">
+          <input type="text" id="blogSearchInput" class="blog-search-input" placeholder="🔍 পোস্ট খুঁজুন (শিরোনাম বা বিষয় লিখুন)...">
+        </div>
+        <div id="blogTickerWrap" class="blog-ticker-wrap" style="display:none;">
+          <div class="blog-ticker-title">📢 এইমাত্র পাওয়া</div>
+          <ul id="blogTickerList" class="blog-ticker-list"></ul>
+        </div>
+        <div id="blogPhotoGrid" class="blog-photo-grid"></div>
+        <div id="blogArchiveGrid" class="blog-grid">
+          <p class="posts-empty">লোড হচ্ছে...</p>
+        </div>
+        <div id="blogCatSections"></div>
+      </div>
+
+      <div id="blogDetailWrap" class="blog-detail" style="display:none;">
+        <a class="blog-back-link" href="./">← হোমে ফিরুন</a>
+        <div id="blogDetailContent">
+          <p class="posts-empty">লোড হচ্ছে...</p>
+        </div>
+      </div>
     </div>
-    <div id="blogArchiveGrid" class="blog-grid">
-      <p class="posts-empty">লোড হচ্ছে...</p>
-    </div>
-    <div id="blogCatSections"></div>
+
+    <aside class="blog-sidebar">
+      <div class="blog-widget blog-fb-widget">
+        <h3>ফেসবুক পেজ</h3>
+        <a href="https://www.facebook.com/AlaminIslamAi13" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
+          <span>FB সমাধান — আমাদের পেজ দেখুন</span>
+        </a>
+      </div>
+
+      <div id="blogRecentWidget" class="blog-widget blog-recent-widget" style="display:none;">
+        <h3>🕒 সাম্প্রতিক পোস্ট</h3>
+        <div id="blogRecentList" class="blog-list-compact"></div>
+      </div>
+
+      <div class="blog-widget blog-subscribe-box">
+        <h3>আমাদের ব্লগ সাবস্ক্রাইব করুন</h3>
+        <p>এই ব্লগে যোগ দিতে আপনার ইমেইল ঠিকানা লিখুন। নতুন পোস্ট আসলে আপনাকে ইমেইল করে জানানো হবে।</p>
+        <label for="blogSubscribeEmail">ইমেইল ঠিকানা</label>
+        <div class="blog-subscribe-row">
+          <input type="email" id="blogSubscribeEmail" placeholder="ইমেইল ঠিকানা">
+          <button type="button" id="blogSubscribeBtn" onclick="submitBlogSubscribe()">সাবস্ক্রাইব</button>
+        </div>
+        <div class="blog-subscribe-count">Join <span id="blogSubscriberCount">0</span> other subscribers</div>
+        <div class="blog-subscribe-msg" id="blogSubscribeMsg"></div>
+      </div>
+
+      <div class="blog-widget">
+        <div id="blogCalendarCap" class="blog-calendar-cap"></div>
+        <table class="blog-calendar">
+          <thead><tr id="blogCalendarHead"></tr></thead>
+          <tbody id="blogCalendarBody"></tbody>
+        </table>
+      </div>
+    </aside>
   </div>
 
-  <div id="blogRecentWidget" class="blog-recent-widget" style="display:none;">
-    <h3>🕒 সাম্প্রতিক পোস্ট</h3>
-    <div id="blogRecentList" class="blog-list-compact"></div>
-  </div>
-  <div id="blogDetailWrap" class="blog-detail" style="display:none;">
-    <a class="blog-back-link" href="./">← হোমে ফিরুন</a>
-    <div id="blogDetailContent">
-      <p class="posts-empty">লোড হচ্ছে...</p>
-    </div>
-  </div>
-
-  <div class="blog-subscribe-box">
-    <h3>আমাদের ব্লগ সাবস্ক্রাইব করুন</h3>
-    <p>এই ব্লগে যোগ দিতে আপনার ইমেইল ঠিকানা লিখুন। নতুন পোস্ট আসলে আপনাকে ইমেইল করে জানানো হবে।</p>
-    <label for="blogSubscribeEmail">ইমেইল ঠিকানা</label>
-    <div class="blog-subscribe-row">
-      <input type="email" id="blogSubscribeEmail" placeholder="ইমেইল ঠিকানা">
-      <button type="button" id="blogSubscribeBtn" onclick="submitBlogSubscribe()">সাবস্ক্রাইব</button>
-    </div>
-    <div class="blog-subscribe-count">Join <span id="blogSubscriberCount">0</span> other subscribers</div>
-    <div class="blog-subscribe-msg" id="blogSubscribeMsg"></div>
+  <div class="blog-footer">
+    © সর্বস্বত্ব সংরক্ষিত — FB সমাধান<br>
+    এই ওয়েবসাইটের কোনো লেখা, ভিডিও বা ছবি অনুমতি ছাড়া কোথাও প্রকাশ করা সম্পূর্ণ বেআইনি।<br><br>
+    সম্পাদক: <strong>মোঃ আলামিন ইসলাম</strong><br>
+    যোগাযোগ: গোপসেনা, কেশবপুর, যশোর<br>
+    WhatsApp: +8801764324313 &nbsp;·&nbsp; ইমেইল: alamingazi533@gmail.com
   </div>
 </div>
 
@@ -2240,6 +2347,7 @@
 
     <input type="text" id="hpField" name="website" autocomplete="off" tabindex="-1" aria-hidden="true"
       style="position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; opacity:0;">
+
 
     <button type="button" class="close-form-btn" onclick="hideRegForm()">✕ বন্ধ করুন</button>
 
@@ -3774,21 +3882,105 @@ function renderRecentWidget(){
   list.innerHTML = __allPosts.slice(0, 6).map(renderBlogListItem).join('');
 }
 
-// ============ "সব" ভিউতে প্রতিটা ক্যাটাগরির নিজস্ব সেকশন (শিরোনাম + সব দেখুন লিংক + কার্ড সারি) ============
+// ============ "এইমাত্র পাওয়া" — শুধু লেখার তালিকা (ছবি ছাড়া), শিক্ষাবার্তার টিকারের ধাঁচে ============
+function renderTickerList(){
+  const wrap = document.getElementById('blogTickerWrap');
+  const list = document.getElementById('blogTickerList');
+  if(!wrap || !list) return;
+  if(__allPosts.length === 0){ wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  list.innerHTML = __allPosts.slice(0, 8).map((p, i) =>
+    '<li><span class="num">' + (i + 1) + '.</span><a href="?post=' + encodeURIComponent(p.id) + '">' + blogEscape(p.title) + '</a></li>'
+  ).join('');
+}
+
+// ============ শিক্ষাবার্তার হোমপেজের মতো ৫টা ছবিসহ কার্ডের সারি ============
+function renderPhotoGrid(){
+  const wrap = document.getElementById('blogPhotoGrid');
+  if(!wrap) return;
+  const withImages = __allPosts.filter(p => p.imageUrl).slice(0, 5);
+  if(withImages.length === 0){ wrap.innerHTML = ''; return; }
+  wrap.innerHTML = withImages.map(p =>
+    '<a class="blog-photo-card" href="?post=' + encodeURIComponent(p.id) + '">' +
+      '<img src="' + p.imageUrl + '" alt="" loading="lazy">' +
+      '<div class="post-title">' + blogEscape(p.title) + '</div>' +
+    '</a>'
+  ).join('');
+}
+
+// ============ ডানপাশে সাইডবারের ক্যালেন্ডার উইজেট — যেসব দিনে পোস্ট আছে সেগুলো হাইলাইট করা ============
+function renderCalendarWidget(){
+  const cap = document.getElementById('blogCalendarCap');
+  const head = document.getElementById('blogCalendarHead');
+  const body = document.getElementById('blogCalendarBody');
+  if(!cap || !head || !body) return;
+
+  const monthNames = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+  const dayNames = ['র','সো','ম','বু','বৃ','শু','শ'];
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  cap.textContent = monthNames[month] + ' ' + year;
+  head.innerHTML = dayNames.map(d => '<th>' + d + '</th>').join('');
+
+  const postDaysSet = new Set();
+  __allPosts.forEach(p => {
+    const d = new Date(p.date);
+    if(!isNaN(d) && d.getFullYear() === year && d.getMonth() === month){
+      postDaysSet.add(d.getDate());
+    }
+  });
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  let html = '<tr>';
+  for(let i = 0; i < firstDay; i++) html += '<td></td>';
+  let col = firstDay;
+  for(let day = 1; day <= daysInMonth; day++){
+    const cls = postDaysSet.has(day) ? ' class="has-post"' : '';
+    html += '<td' + cls + '>' + day + '</td>';
+    col++;
+    if(col === 7 && day !== daysInMonth){ html += '</tr><tr>'; col = 0; }
+  }
+  html += '</tr>';
+  body.innerHTML = html;
+}
+
+// ============ "সব" ভিউতে প্রতিটা ক্যাটাগরির নিজস্ব সেকশন — ১টা বড় ফিচার্ড পোস্ট + পাশে ছোট তালিকা ============
 function renderCategorySections(){
   const wrap = document.getElementById('blogCatSections');
   if(!wrap) return;
   let html = '';
   BLOG_CATEGORIES.forEach(cat => {
-    const posts = __allPosts.filter(p => (p.category || 'সাধারণ আপডেট') === cat).slice(0, 6);
+    const posts = __allPosts.filter(p => (p.category || 'সাধারণ আপডেট') === cat).slice(0, 5);
     if(posts.length === 0) return;
+    const mainPost = posts[0];
+    const sideList = posts.slice(1);
+    const mainImg = mainPost.imageUrl ? '<img src="' + mainPost.imageUrl + '" alt="" loading="lazy">' : '';
+    const mainExcerpt = blogEscape(blogExcerpt(mainPost.content, 110));
     html +=
-      '<div class="blog-cat-section">' +
-        '<div class="blog-cat-section-head">' +
+      '<div class="blog-cat-block">' +
+        '<div class="blog-cat-block-head">' +
           '<h2>' + cat + '</h2>' +
           '<a class="blog-viewall-link" href="?blog=' + encodeURIComponent(cat) + '">সব দেখুন →</a>' +
         '</div>' +
-        '<div class="blog-cat-scroll-row">' + posts.map(p => renderBlogCard(p, false, false)).join('') + '</div>' +
+        '<div class="blog-cat-block-body">' +
+          '<a class="blog-cat-main-post" href="?post=' + encodeURIComponent(mainPost.id) + '">' +
+            mainImg +
+            '<div class="post-date">' + cleanPostDate(mainPost.date) + '</div>' +
+            '<div class="post-title">' + blogEscape(mainPost.title) + '</div>' +
+            '<p class="post-excerpt">' + mainExcerpt + '</p>' +
+            '<span class="blog-readmore">বিস্তারিত পড়ুন →</span>' +
+          '</a>' +
+          (sideList.length > 0
+            ? '<ul class="blog-cat-side-list">' + sideList.map(p =>
+                '<li>' +
+                  (p.imageUrl ? '<img src="' + p.imageUrl + '" alt="" loading="lazy">' : '') +
+                  '<a href="?post=' + encodeURIComponent(p.id) + '">' + blogEscape(p.title) + '</a>' +
+                '</li>'
+              ).join('') + '</ul>'
+            : '') +
+        '</div>' +
       '</div>';
   });
   wrap.innerHTML = html;
@@ -3842,6 +4034,7 @@ function loadPosts(){
         }
       }
       renderRecentWidget();
+      renderCalendarWidget();
       initBlogRouter();
     })
     .catch(()=>{
@@ -3907,6 +4100,8 @@ let __currentBlogCat = 'all';
 function renderBlogArchiveGrid(query, cat){
   const grid = document.getElementById('blogArchiveGrid');
   const catSectionsWrap = document.getElementById('blogCatSections');
+  const tickerWrap = document.getElementById('blogTickerWrap');
+  const photoGrid = document.getElementById('blogPhotoGrid');
   if(!grid) return;
   const q = String(query || '').trim().toLowerCase();
   const isCategory = cat && cat !== 'all';
@@ -3914,12 +4109,16 @@ function renderBlogArchiveGrid(query, cat){
   if(__allPosts.length === 0){
     grid.innerHTML = '<p class="posts-empty">এখনো কোনো আপডেট নেই।</p>';
     if(catSectionsWrap) catSectionsWrap.innerHTML = '';
+    if(tickerWrap) tickerWrap.style.display = 'none';
+    if(photoGrid) photoGrid.innerHTML = '';
     return;
   }
 
   // ============ নির্দিষ্ট ক্যাটাগরি নির্বাচিত হলে: শুধু সেই ক্যাটাগরির পোস্ট গ্রিড আকারে ============
   if(isCategory){
     if(catSectionsWrap) catSectionsWrap.innerHTML = '';
+    if(tickerWrap) tickerWrap.style.display = 'none';
+    if(photoGrid) photoGrid.innerHTML = '';
     let list = __allPosts.filter(p => (p.category || 'সাধারণ আপডেট') === cat);
     if(q){
       list = list.filter(p =>
@@ -3936,6 +4135,8 @@ function renderBlogArchiveGrid(query, cat){
   // ============ "সব" ভিউতে সার্চ করা হলে: সব ক্যাটাগরির মধ্যে ফ্ল্যাট তালিকা ============
   if(q){
     if(catSectionsWrap) catSectionsWrap.innerHTML = '';
+    if(tickerWrap) tickerWrap.style.display = 'none';
+    if(photoGrid) photoGrid.innerHTML = '';
     const list = __allPosts.filter(p =>
       String(p.title).toLowerCase().includes(q) ||
       String(p.content).toLowerCase().includes(q) ||
@@ -3947,20 +4148,10 @@ function renderBlogArchiveGrid(query, cat){
     return;
   }
 
-  // ============ "সব" ভিউ, সার্চ নেই: এইমাত্র পাওয়া (ফিচার্ড হিরো + থাম্বনেইল) + প্রতি ক্যাটাগরির আলাদা সেকশন ============
-  const featuredList = __allPosts.slice(0, 7);
-  const heroPost = featuredList[0] || null;
-  const sideItems = featuredList.slice(1);
-
-  let html = '';
-  if(heroPost){
-    html += '<div class="blog-cat-section-head" style="border:none; padding:0; margin:0 0 10px;"><h2>📌 এইমাত্র পাওয়া</h2></div>';
-    html += '<div class="blog-feature-row">' +
-      renderFeatureHero(heroPost) +
-      (sideItems.length > 0 ? '<div class="blog-feature-side">' + sideItems.map(renderThumbItem).join('') + '</div>' : '') +
-    '</div>';
-  }
-  grid.innerHTML = html;
+  // ============ "সব" ভিউ, সার্চ নেই: এইমাত্র পাওয়া (টেক্সট তালিকা) + ছবির সারি + প্রতি ক্যাটাগরির আলাদা সেকশন ============
+  grid.innerHTML = '';
+  renderTickerList();
+  renderPhotoGrid();
   renderCategorySections();
 }
 
