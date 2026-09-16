@@ -891,10 +891,81 @@
     opacity:0.9;
     margin:9px 0 0;
   }
+  .blog-cat-nav{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding:12px 14px;
+    background:var(--card-bg);
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    z-index:20;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .blog-cat-nav::-webkit-scrollbar{ display:none; }
+  .blog-cat-pill{
+    flex:0 0 auto;
+    padding:7px 14px;
+    border-radius:999px;
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    font-size:12.5px;
+    font-weight:700;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .blog-cat-pill.active{
+    background:var(--forest);
+    border-color:var(--forest);
+    color:var(--paper);
+  }
   .blog-archive-wrap{
     max-width:560px;
     margin:0 auto;
     padding:22px 4px 40px;
+  }
+  .blog-recent-widget{
+    max-width:560px;
+    margin:20px auto 0;
+    padding:16px 16px 4px;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    background:var(--card-bg);
+  }
+  .blog-recent-widget h3{
+    font-family:'Noto Serif Bengali', serif; font-size:16px; margin:0 0 4px; color:var(--forest);
+  }
+  .blog-cat-section{
+    margin:0 0 26px;
+  }
+  .blog-cat-section-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:10px;
+    margin:0 0 12px;
+    padding-bottom:8px;
+    border-bottom:2px solid var(--line);
+  }
+  .blog-cat-section-head h2{
+    font-family:'Noto Serif Bengali', serif;
+    font-size:18px;
+    margin:0;
+    color:var(--forest);
+  }
+  .blog-cat-scroll-row{
+    display:flex;
+    gap:12px;
+    overflow-x:auto;
+    padding-bottom:4px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .blog-cat-scroll-row .blog-card{
+    flex:0 0 auto;
+    width:230px;
   }
   .blog-archive-wrap .blog-back-link{
     display:inline-flex;
@@ -2125,16 +2196,24 @@
       <p class="blog-masthead-desc">ফেসবুক আইডি/পেজ সমস্যা, রিকভারি ও মনিটাইজেশন নিয়ে নিয়মিত লেখা ও আপডেট</p>
     </div>
   </div>
+  <div id="blogCatNav" class="blog-cat-nav"></div>
+
   <div id="blogArchiveWrap" class="blog-archive-wrap" style="display:none;">
     <a class="blog-back-link" href="./">← হোমে ফিরুন</a>
-    <h1>সব আপডেট / পোস্ট</h1>
-    <p class="blog-archive-sub">ফেসবুক সংক্রান্ত সব সমাধান, টিপস ও সর্বশেষ খবর একসাথে</p>
+    <h1 id="blogArchiveTitle">সব আপডেট / পোস্ট</h1>
+    <p class="blog-archive-sub" id="blogArchiveSub">ফেসবুক সংক্রান্ত সব সমাধান, টিপস ও সর্বশেষ খবর একসাথে</p>
     <div class="blog-search-wrap">
       <input type="text" id="blogSearchInput" class="blog-search-input" placeholder="🔍 পোস্ট খুঁজুন (শিরোনাম বা বিষয় লিখুন)...">
     </div>
     <div id="blogArchiveGrid" class="blog-grid">
       <p class="posts-empty">লোড হচ্ছে...</p>
     </div>
+    <div id="blogCatSections"></div>
+  </div>
+
+  <div id="blogRecentWidget" class="blog-recent-widget" style="display:none;">
+    <h3>🕒 সাম্প্রতিক পোস্ট</h3>
+    <div id="blogRecentList" class="blog-list-compact"></div>
   </div>
   <div id="blogDetailWrap" class="blog-detail" style="display:none;">
     <a class="blog-back-link" href="./">← হোমে ফিরুন</a>
@@ -3673,6 +3752,48 @@ function blogExcerpt(text, len){
   return t.slice(0, len).trim() + '…';
 }
 
+const BLOG_CATEGORIES = ['রিকভারি','মনিটাইজেশন','টিপস','সতর্কতা','সাধারণ আপডেট'];
+
+function renderCategoryNav(activeCat){
+  const nav = document.getElementById('blogCatNav');
+  if(!nav) return;
+  const isAll = !activeCat || activeCat === 'all';
+  let html = '<a class="blog-cat-pill' + (isAll ? ' active' : '') + '" href="?blog=all">সব</a>';
+  html += BLOG_CATEGORIES.map(cat =>
+    '<a class="blog-cat-pill' + (activeCat === cat ? ' active' : '') + '" href="?blog=' + encodeURIComponent(cat) + '">' + cat + '</a>'
+  ).join('');
+  nav.innerHTML = html;
+}
+
+function renderRecentWidget(){
+  const wrap = document.getElementById('blogRecentWidget');
+  const list = document.getElementById('blogRecentList');
+  if(!wrap || !list) return;
+  if(__allPosts.length === 0){ wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  list.innerHTML = __allPosts.slice(0, 6).map(renderBlogListItem).join('');
+}
+
+// ============ "সব" ভিউতে প্রতিটা ক্যাটাগরির নিজস্ব সেকশন (শিরোনাম + সব দেখুন লিংক + কার্ড সারি) ============
+function renderCategorySections(){
+  const wrap = document.getElementById('blogCatSections');
+  if(!wrap) return;
+  let html = '';
+  BLOG_CATEGORIES.forEach(cat => {
+    const posts = __allPosts.filter(p => (p.category || 'সাধারণ আপডেট') === cat).slice(0, 6);
+    if(posts.length === 0) return;
+    html +=
+      '<div class="blog-cat-section">' +
+        '<div class="blog-cat-section-head">' +
+          '<h2>' + cat + '</h2>' +
+          '<a class="blog-viewall-link" href="?blog=' + encodeURIComponent(cat) + '">সব দেখুন →</a>' +
+        '</div>' +
+        '<div class="blog-cat-scroll-row">' + posts.map(p => renderBlogCard(p, false, false)).join('') + '</div>' +
+      '</div>';
+  });
+  wrap.innerHTML = html;
+}
+
 function renderBlogCard(p, featured, small){
   const safeTitle = blogEscape(p.title);
   const excerpt = blogEscape(blogExcerpt(p.content, featured ? 150 : (small ? 60 : 110)));
@@ -3720,6 +3841,7 @@ function loadPosts(){
           container.innerHTML = shown.map((p, i) => renderBlogCard(p, i === 0)).join('');
         }
       }
+      renderRecentWidget();
       initBlogRouter();
     })
     .catch(()=>{
@@ -3733,9 +3855,9 @@ loadPosts();
 function initBlogRouter(){
   const params = new URLSearchParams(window.location.search);
   const postId = params.get('post');
-  const blogAll = params.get('blog');
+  const blogParam = params.get('blog');
 
-  if(!postId && blogAll !== 'all') return; // স্বাভাবিক হোমপেজ, কিছু করার দরকার নেই
+  if(!postId && !blogParam) return; // স্বাভাবিক হোমপেজ, কিছু করার দরকার নেই
 
   const landingTop = document.getElementById('landingTop');
   const landingBottom = document.getElementById('landingBottom');
@@ -3748,66 +3870,98 @@ function initBlogRouter(){
   window.scrollTo({ top:0, behavior:'auto' });
 
   if(postId){
+    renderCategoryNav(null);
     showBlogDetail(postId);
   } else {
-    showBlogArchive();
+    showBlogArchive(blogParam);
   }
 }
 
-function showBlogArchive(){
+function showBlogArchive(cat){
   const archiveWrap = document.getElementById('blogArchiveWrap');
   const detailWrap = document.getElementById('blogDetailWrap');
   const searchInput = document.getElementById('blogSearchInput');
+  const titleEl = document.getElementById('blogArchiveTitle');
+  const subEl = document.getElementById('blogArchiveSub');
   if(detailWrap) detailWrap.style.display = 'none';
   if(archiveWrap) archiveWrap.style.display = '';
-  if(searchInput && !searchInput.dataset.bound){
-    searchInput.dataset.bound = '1';
-    searchInput.addEventListener('input', ()=> renderBlogArchiveGrid(searchInput.value));
+  const isCategory = cat && cat !== 'all';
+  renderCategoryNav(isCategory ? cat : 'all');
+  if(titleEl) titleEl.textContent = isCategory ? cat : 'সব আপডেট / পোস্ট';
+  if(subEl) subEl.textContent = isCategory
+    ? ('"' + cat + '" বিভাগের সব পোস্ট একসাথে')
+    : 'ফেসবুক সংক্রান্ত সব সমাধান, টিপস ও সর্বশেষ খবর একসাথে';
+  if(searchInput){
+    searchInput.value = '';
+    if(!searchInput.dataset.bound){
+      searchInput.dataset.bound = '1';
+      searchInput.addEventListener('input', ()=> renderBlogArchiveGrid(searchInput.value, __currentBlogCat));
+    }
   }
-  renderBlogArchiveGrid(searchInput ? searchInput.value : '');
+  __currentBlogCat = isCategory ? cat : 'all';
+  renderBlogArchiveGrid('', __currentBlogCat);
+  renderRecentWidget();
 }
+let __currentBlogCat = 'all';
 
-function renderBlogArchiveGrid(query){
+function renderBlogArchiveGrid(query, cat){
   const grid = document.getElementById('blogArchiveGrid');
+  const catSectionsWrap = document.getElementById('blogCatSections');
   if(!grid) return;
   const q = String(query || '').trim().toLowerCase();
-  const list = q
-    ? __allPosts.filter(p =>
-        String(p.title).toLowerCase().includes(q) ||
-        String(p.content).toLowerCase().includes(q) ||
-        String(p.category || '').toLowerCase().includes(q)
-      )
-    : __allPosts;
+  const isCategory = cat && cat !== 'all';
+
   if(__allPosts.length === 0){
     grid.innerHTML = '<p class="posts-empty">এখনো কোনো আপডেট নেই।</p>';
+    if(catSectionsWrap) catSectionsWrap.innerHTML = '';
     return;
   }
-  if(list.length === 0){
-    grid.innerHTML = '<p class="posts-empty">এই বিষয়ে কোনো পোস্ট পাওয়া যায়নি।</p>';
+
+  // ============ নির্দিষ্ট ক্যাটাগরি নির্বাচিত হলে: শুধু সেই ক্যাটাগরির পোস্ট গ্রিড আকারে ============
+  if(isCategory){
+    if(catSectionsWrap) catSectionsWrap.innerHTML = '';
+    let list = __allPosts.filter(p => (p.category || 'সাধারণ আপডেট') === cat);
+    if(q){
+      list = list.filter(p =>
+        String(p.title).toLowerCase().includes(q) ||
+        String(p.content).toLowerCase().includes(q)
+      );
+    }
+    grid.innerHTML = list.length === 0
+      ? '<p class="posts-empty">এই বিভাগে কোনো পোস্ট পাওয়া যায়নি।</p>'
+      : list.map(p => renderBlogCard(p, false, false)).join('');
     return;
   }
-  // প্রথম পোস্ট: বাঁয়ে বড় ফিচার্ড কার্ড (ছবি, টাইটেল, বিস্তারিত, লাল বাটনসহ)
-  // পরের ৬টা: ডানে ছোট থাম্বনেইল তালিকা (ছবি, সময়, টাইটেলসহ) — মোট ৭টাতে ছবি/সময়/টাইটেল দেখাবে
-  // এরপরের সব পোস্ট: শুধু টাইটেল ও সময়সহ ছোট তালিকা
-  const featuredList = list.slice(0, 7);
-  const restList = list.slice(7);
-  const showHero = !q && featuredList.length > 0;
-  const heroPost = showHero ? featuredList[0] : null;
-  const sideItems = showHero ? featuredList.slice(1) : featuredList;
+
+  // ============ "সব" ভিউতে সার্চ করা হলে: সব ক্যাটাগরির মধ্যে ফ্ল্যাট তালিকা ============
+  if(q){
+    if(catSectionsWrap) catSectionsWrap.innerHTML = '';
+    const list = __allPosts.filter(p =>
+      String(p.title).toLowerCase().includes(q) ||
+      String(p.content).toLowerCase().includes(q) ||
+      String(p.category || '').toLowerCase().includes(q)
+    );
+    grid.innerHTML = list.length === 0
+      ? '<p class="posts-empty">এই বিষয়ে কোনো পোস্ট পাওয়া যায়নি।</p>'
+      : list.map(p => renderBlogCard(p, false, false)).join('');
+    return;
+  }
+
+  // ============ "সব" ভিউ, সার্চ নেই: এইমাত্র পাওয়া (ফিচার্ড হিরো + থাম্বনেইল) + প্রতি ক্যাটাগরির আলাদা সেকশন ============
+  const featuredList = __allPosts.slice(0, 7);
+  const heroPost = featuredList[0] || null;
+  const sideItems = featuredList.slice(1);
 
   let html = '';
   if(heroPost){
+    html += '<div class="blog-cat-section-head" style="border:none; padding:0; margin:0 0 10px;"><h2>📌 এইমাত্র পাওয়া</h2></div>';
     html += '<div class="blog-feature-row">' +
       renderFeatureHero(heroPost) +
       (sideItems.length > 0 ? '<div class="blog-feature-side">' + sideItems.map(renderThumbItem).join('') + '</div>' : '') +
     '</div>';
-  } else if(sideItems.length > 0){
-    html += sideItems.map(p => renderBlogCard(p, false, false)).join('');
-  }
-  if(restList.length > 0){
-    html += '<div class="blog-list-compact">' + restList.map(renderBlogListItem).join('') + '</div>';
   }
   grid.innerHTML = html;
+  renderCategorySections();
 }
 
 function renderFeatureHero(p){
@@ -3918,6 +4072,7 @@ function showBlogDetail(postId){
       '<a class="blog-viewall-link" href="?blog=all">← আরও পোস্ট দেখুন</a>' +
     '</div>';
   renderRelatedPosts(post);
+  renderRecentWidget();
   newCommentCaptcha();
 
   const likeBtn = document.getElementById('postLikeBtn');
