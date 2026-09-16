@@ -733,6 +733,29 @@
     margin:0 !important;
     border-radius:0 !important;
   }
+  .blog-grid-2col{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .blog-card.small{
+    padding:11px 12px;
+    border-radius:12px;
+  }
+  .blog-card.small .post-date{
+    font-size:10.5px;
+    margin-bottom:4px;
+  }
+  .blog-card.small .post-title{
+    font-size:13px;
+    line-height:1.4;
+    margin:0;
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
   .blog-list-compact{
     margin-top:4px;
     border-top:1px solid var(--line);
@@ -3567,35 +3590,37 @@ function blogExcerpt(text, len){
   return t.slice(0, len).trim() + '…';
 }
 
-function renderBlogCard(p, featured){
+function renderBlogCard(p, featured, small){
   const safeTitle = blogEscape(p.title);
-  const excerpt = blogEscape(blogExcerpt(p.content, featured ? 150 : 110));
+  const excerpt = blogEscape(blogExcerpt(p.content, featured ? 150 : (small ? 60 : 110)));
   const href = '?post=' + encodeURIComponent(p.id);
   const thumbHtml = p.imageUrl
-    ? '<img src="' + p.imageUrl + '" alt="" loading="lazy" style="' + (featured ? '' : 'width:100%; max-height:170px; object-fit:cover; border-radius:8px; margin-bottom:10px;') + '">'
+    ? '<img src="' + p.imageUrl + '" alt="" loading="lazy" style="' + (featured ? '' : ('width:100%; object-fit:cover; border-radius:8px; margin-bottom:' + (small ? '8px; max-height:100px;' : '10px; max-height:170px;'))) + '">'
     : '';
   const mediaTag = (!p.imageUrl && p.videoUrl)
     ? '<span style="display:inline-block; font-size:11.5px; color:var(--forest); margin-bottom:6px;">🎬 ভিডিওসহ পোস্ট</span>'
     : '';
-  const eyebrow = '<span class="post-eyebrow">' + (featured ? '★ সর্বশেষ আপডেট' : 'আপডেট') + '</span>';
+  const eyebrow = small ? '' : '<span class="post-eyebrow">' + (featured ? '★ সর্বশেষ আপডেট' : 'আপডেট') + '</span>';
   const body =
     '<div class="post-date">' + (p.date || '') + '</div>' +
     eyebrow +
     mediaTag +
     '<div class="post-title">' + safeTitle + '</div>' +
-    '<p class="post-excerpt">' + excerpt + '</p>' +
-    '<div class="post-meta-row">' +
-      '<span>❤️ ' + (p.likes || 0) + '</span>' +
-      '<span>💬 ' + (p.commentCount || 0) + '</span>' +
-    '</div>' +
-    '<span class="blog-readmore">বিস্তারিত পড়ুন →</span>';
+    (small ? '' : (
+      '<p class="post-excerpt">' + excerpt + '</p>' +
+      '<div class="post-meta-row">' +
+        '<span>❤️ ' + (p.likes || 0) + '</span>' +
+        '<span>💬 ' + (p.commentCount || 0) + '</span>' +
+      '</div>' +
+      '<span class="blog-readmore">বিস্তারিত পড়ুন →</span>'
+    ));
   if(featured){
     return '<a class="blog-card featured" href="' + href + '">' +
       thumbHtml +
       '<div class="featured-inner">' + body + '</div>' +
     '</a>';
   }
-  return '<a class="blog-card" href="' + href + '">' + thumbHtml + body + '</a>';
+  return '<a class="blog-card' + (small ? ' small' : '') + '" href="' + href + '">' + thumbHtml + body + '</a>';
 }
 
 function loadPosts(){
@@ -3678,11 +3703,22 @@ function renderBlogArchiveGrid(query){
     grid.innerHTML = '<p class="posts-empty">এই বিষয়ে কোনো পোস্ট পাওয়া যায়নি।</p>';
     return;
   }
-  // প্রথম ৬টা পোস্ট: ছবি, টাইটেল ও প্রকাশের সময়সহ পূর্ণ কার্ড
+  // প্রথম পোস্ট: বড় ফিচার্ড কার্ড (ছবি, টাইটেল, সময়সহ)
+  // পরের ৫টা (মোট প্রথম ৬টার বাকি): ২-কলাম গ্রিডে ছোট কার্ড হিসেবে (ছবি, টাইটেল, সময়সহ)
+  // এরপরের সব পোস্ট: শুধু টাইটেল ও সময়সহ ছোট তালিকা
   const featuredList = list.slice(0, 6);
-  // বাকি সব: শুধু টাইটেল ও প্রকাশের সময়সহ ছোট তালিকা (টাইটেলে ক্লিক করলে বিস্তারিত)
   const restList = list.slice(6);
-  let html = featuredList.map((p, i) => renderBlogCard(p, i === 0 && !q)).join('');
+  const showHero = !q && featuredList.length > 0;
+  const heroPost = showHero ? featuredList[0] : null;
+  const gridPosts = showHero ? featuredList.slice(1) : featuredList;
+
+  let html = '';
+  if(heroPost){
+    html += renderBlogCard(heroPost, true);
+  }
+  if(gridPosts.length > 0){
+    html += '<div class="blog-grid-2col">' + gridPosts.map(p => renderBlogCard(p, false, true)).join('') + '</div>';
+  }
   if(restList.length > 0){
     html += '<div class="blog-list-compact">' + restList.map(renderBlogListItem).join('') + '</div>';
   }
