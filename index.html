@@ -3584,6 +3584,15 @@ function blogEscape(s){
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+// টাইমজোনের নাম (যেমন "GMT+0600 (Bangladesh Standard Time)") বাদ দিয়ে শুধু তারিখ/সময়টা দেখানো
+function cleanPostDate(dateStr){
+  return String(dateStr || '')
+    .replace(/\s*GMT[+-]\d{4}\s*/i, ' ')
+    .replace(/\s*\([^)]*\)\s*/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
 function blogExcerpt(text, len){
   const t = String(text || '').trim();
   if(t.length <= len) return t;
@@ -3602,7 +3611,7 @@ function renderBlogCard(p, featured, small){
     : '';
   const eyebrow = small ? '' : '<span class="post-eyebrow">' + (featured ? '★ সর্বশেষ আপডেট' : 'আপডেট') + '</span>';
   const body =
-    '<div class="post-date">' + (p.date || '') + '</div>' +
+    '<div class="post-date">' + cleanPostDate(p.date) + '</div>' +
     eyebrow +
     mediaTag +
     '<div class="post-title">' + safeTitle + '</div>' +
@@ -3706,7 +3715,7 @@ function renderBlogArchiveGrid(query){
   // প্রথম পোস্ট: বড় ফিচার্ড কার্ড (ছবি, টাইটেল, সময়সহ)
   // পরের ৫টা (মোট প্রথম ৬টার বাকি): ২-কলাম গ্রিডে ছোট কার্ড হিসেবে (ছবি, টাইটেল, সময়সহ)
   // এরপরের সব পোস্ট: শুধু টাইটেল ও সময়সহ ছোট তালিকা
-  const featuredList = list.slice(0, 6);
+  const featuredList = list.slice(0, 7);
   const restList = list.slice(6);
   const showHero = !q && featuredList.length > 0;
   const heroPost = showHero ? featuredList[0] : null;
@@ -3730,7 +3739,7 @@ function renderBlogListItem(p){
   const href = '?post=' + encodeURIComponent(p.id);
   return '<a class="blog-list-item" href="' + href + '">' +
     '<span class="blog-list-title">' + safeTitle + '</span>' +
-    '<span class="blog-list-date">' + (p.date || '') + '</span>' +
+    '<span class="blog-list-date">' + cleanPostDate(p.date) + '</span>' +
   '</a>';
 }
 
@@ -3769,7 +3778,7 @@ function showBlogDetail(postId){
         '<img src="profile.jpg" alt="মোঃ আলামিন ইসলাম">' +
         '<div>' +
           '<div class="byline-name">মোঃ আলামিন ইসলাম</div>' +
-          '<div class="byline-date">' + (post.date || '') + '</div>' +
+          '<div class="byline-date">' + cleanPostDate(post.date) + '</div>' +
         '</div>' +
       '</div>' +
       imageHtml +
