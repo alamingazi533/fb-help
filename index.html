@@ -811,6 +811,29 @@
     text-decoration:none; color:var(--ink); font-size:13.5px; background:var(--card-bg);
   }
   .blog-related-item:hover{ border-color:var(--forest); }
+  .blog-subscribe-box{
+    max-width:560px; margin:24px auto 0; padding:18px 16px;
+    border:1.5px solid var(--line); border-radius:12px; background:var(--card-bg);
+  }
+  .blog-subscribe-box h3{
+    font-family:'Noto Serif Bengali', serif; font-size:16px; margin:0 0 6px; color:var(--forest);
+  }
+  .blog-subscribe-box p{ font-size:13px; color:var(--muted); margin:0 0 12px; line-height:1.6; }
+  .blog-subscribe-box label{ display:block; font-size:12px; color:var(--muted); margin-bottom:5px; }
+  .blog-subscribe-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .blog-subscribe-row input{
+    flex:1 1 180px; box-sizing:border-box; padding:11px 12px;
+    border:1.5px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--ink); font-size:14px; font-family:inherit;
+  }
+  .blog-subscribe-row input:focus{ outline:none; border-color:var(--forest); }
+  .blog-subscribe-row button{
+    padding:11px 18px; border:none; border-radius:8px; cursor:pointer;
+    background:var(--forest); color:var(--paper); font-size:13.5px; font-weight:700; font-family:inherit;
+  }
+  .blog-subscribe-row button:disabled{ opacity:0.6; cursor:default; }
+  .blog-subscribe-count{ font-size:12.5px; color:var(--muted); margin-top:10px; }
+  .blog-subscribe-msg{ font-size:12.5px; margin-top:8px; min-height:1em; }
   .blog-detail{
     max-width:560px;
     margin:0 auto;
@@ -1993,6 +2016,18 @@
     <div id="blogDetailContent">
       <p class="posts-empty">লোড হচ্ছে...</p>
     </div>
+  </div>
+
+  <div class="blog-subscribe-box">
+    <h3>আমাদের ব্লগ সাবস্ক্রাইব করুন</h3>
+    <p>এই ব্লগে যোগ দিতে আপনার ইমেইল ঠিকানা লিখুন। নতুন পোস্ট আসলে আপনাকে ইমেইল করে জানানো হবে।</p>
+    <label for="blogSubscribeEmail">ইমেইল ঠিকানা</label>
+    <div class="blog-subscribe-row">
+      <input type="email" id="blogSubscribeEmail" placeholder="ইমেইল ঠিকানা">
+      <button type="button" id="blogSubscribeBtn" onclick="submitBlogSubscribe()">সাবস্ক্রাইব</button>
+    </div>
+    <div class="blog-subscribe-count">Join <span id="blogSubscriberCount">0</span> other subscribers</div>
+    <div class="blog-subscribe-msg" id="blogSubscribeMsg"></div>
   </div>
 </div>
 
@@ -3909,6 +3944,57 @@ function trackVisitWithLocation(){
   });
 }
 trackVisitWithLocation();
+
+// ============ ব্লগ ইমেইল সাবস্ক্রিপশন ============
+function loadBlogSubscriberCount(){
+  fetch(SCRIPT_URL + '?action=getSubscriberCount')
+    .then(r => r.json())
+    .then(d => {
+      if(d && d.success){
+        const el = document.getElementById('blogSubscriberCount');
+        if(el) el.textContent = d.count;
+      }
+    })
+    .catch(()=>{});
+}
+function submitBlogSubscribe(){
+  const emailInput = document.getElementById('blogSubscribeEmail');
+  const msgEl = document.getElementById('blogSubscribeMsg');
+  const btn = document.getElementById('blogSubscribeBtn');
+  if(!emailInput || !msgEl || !btn) return;
+  const email = (emailInput.value || '').trim();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailPattern.test(email)){
+    msgEl.style.color = '#b3261e';
+    msgEl.textContent = 'সঠিক ইমেইল ঠিকানা দিন।';
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'সাবস্ক্রাইব হচ্ছে...';
+  msgEl.textContent = '';
+  fetch(SCRIPT_URL + '?action=subscribeToBlog&email=' + encodeURIComponent(email))
+    .then(r => r.json())
+    .then(d => {
+      btn.disabled = false;
+      btn.textContent = 'সাবস্ক্রাইব';
+      if(d && d.success){
+        msgEl.style.color = 'var(--forest)';
+        msgEl.textContent = d.already ? 'আপনি ইতিমধ্যে সাবস্ক্রাইব করা আছেন।' : 'ধন্যবাদ! আপনি সফলভাবে সাবস্ক্রাইব করেছেন।';
+        emailInput.value = '';
+        loadBlogSubscriberCount();
+      } else {
+        msgEl.style.color = '#b3261e';
+        msgEl.textContent = 'দুঃখিত, সাবস্ক্রাইব করা যায়নি। আবার চেষ্টা করুন।';
+      }
+    })
+    .catch(()=>{
+      btn.disabled = false;
+      btn.textContent = 'সাবস্ক্রাইব';
+      msgEl.style.color = '#b3261e';
+      msgEl.textContent = 'নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।';
+    });
+}
+loadBlogSubscriberCount();
 
 const reviewSubmitBtn = document.getElementById('reviewSubmitBtn');
 if(reviewSubmitBtn){
