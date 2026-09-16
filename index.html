@@ -733,6 +733,34 @@
     margin:0 !important;
     border-radius:0 !important;
   }
+  .blog-list-compact{
+    margin-top:4px;
+    border-top:1px solid var(--line);
+  }
+  .blog-list-item{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:10px;
+    padding:13px 4px;
+    border-bottom:1px solid var(--line);
+    text-decoration:none;
+    color:inherit;
+  }
+  .blog-list-item:hover .blog-list-title{ color:var(--forest); }
+  .blog-list-title{
+    font-size:14px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.5;
+    flex:1 1 auto;
+  }
+  .blog-list-date{
+    font-size:11.5px;
+    color:var(--muted);
+    white-space:nowrap;
+    flex:0 0 auto;
+  }
   .post-meta-row{
     display:flex;
     gap:14px;
@@ -3650,7 +3678,24 @@ function renderBlogArchiveGrid(query){
     grid.innerHTML = '<p class="posts-empty">এই বিষয়ে কোনো পোস্ট পাওয়া যায়নি।</p>';
     return;
   }
-  grid.innerHTML = list.map((p, i) => renderBlogCard(p, q ? false : i === 0)).join('');
+  // প্রথম ৬টা পোস্ট: ছবি, টাইটেল ও প্রকাশের সময়সহ পূর্ণ কার্ড
+  const featuredList = list.slice(0, 6);
+  // বাকি সব: শুধু টাইটেল ও প্রকাশের সময়সহ ছোট তালিকা (টাইটেলে ক্লিক করলে বিস্তারিত)
+  const restList = list.slice(6);
+  let html = featuredList.map((p, i) => renderBlogCard(p, i === 0 && !q)).join('');
+  if(restList.length > 0){
+    html += '<div class="blog-list-compact">' + restList.map(renderBlogListItem).join('') + '</div>';
+  }
+  grid.innerHTML = html;
+}
+
+function renderBlogListItem(p){
+  const safeTitle = blogEscape(p.title);
+  const href = '?post=' + encodeURIComponent(p.id);
+  return '<a class="blog-list-item" href="' + href + '">' +
+    '<span class="blog-list-title">' + safeTitle + '</span>' +
+    '<span class="blog-list-date">' + (p.date || '') + '</span>' +
+  '</a>';
 }
 
 function showBlogDetail(postId){
