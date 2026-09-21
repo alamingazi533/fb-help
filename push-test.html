@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>পুশ নোটিফিকেশন পরীক্ষা</title>
+<style>
+  body{font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif; background:#FBF6EA; color:#22281F; margin:0; padding:14px;}
+  h2{margin:4px 0 10px; font-size:18px; color:#1F3B2C;}
+  button{padding:10px 14px; margin:4px 6px 4px 0; border:1px solid #1F3B2C; border-radius:8px; background:#1F3B2C; color:#fff; font-size:14px;}
+  button.alt{background:#fff; color:#1F3B2C;}
+  pre{background:#fff; border:1px solid #d8cfb8; border-radius:8px; padding:10px; font-size:12.5px; white-space:pre-wrap; word-break:break-all; line-height:1.55;}
+  .note{font-size:12.5px; color:#6b6f66; margin:6px 0 10px;}
+</style>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+</head>
+<body>
+<h2>🔔 পুশ নোটিফিকেশন পরীক্ষা</h2>
+<div class="note">এই পেজ শুধু সমস্যা খোঁজার জন্য। কাজ শেষে GitHub থেকে মুছে দিন।</div>
+<button id="runBtn">১) পরীক্ষা চালান</button>
+<button id="subBtn" class="alt">২) সাবস্ক্রাইব করুন</button>
+<button id="copyBtn" class="alt">ফলাফল কপি</button>
+<pre id="out">"পরীক্ষা চালান" চাপুন...</pre>
+
+<script>
+var APP_ID = "414e7c02-46ae-4e1f-9b04-3dcc19eaedf7";
+var swScope = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1) || '/';
+var outEl = document.getElementById('out');
+var lines = [];
+var osErr = null, osReady = false, OS = null;
+
+window.addEventListener('error', function(e){ lines.push('❌ JS ত্রুটি: ' + (e.message || e)); });
+window.addEventListener('unhandledrejection', function(e){ lines.push('❌ Promise ত্রুটি: ' + (e.reason && e.reason.message || e.reason)); });
+
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+OneSignalDeferred.push(async function(OneSignal){
+  OS = OneSignal;
+  try{
+    await OneSignal.init({
+      appId: APP_ID,
+      serviceWorkerParam: { scope: swScope },
+      serviceWorkerPath: "sw.js"
+    });
+    osReady = true;
+  }catch(err){ osErr = String(err && err.message || err); }
+});
+
+function add(ok, k, v){ lines.push((ok === true ? '✅ ' : ok === false ? '❌ ' : '• ') + k + ': ' + v); }
+function show(){ outEl.textContent = lines.join('\n'); }
+function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+async function checkFile(url){
+  try{
+    var r = await fetch(url, { cache: 'no-store' });
+    var t = await r.text();
+    var good = t.indexOf('OneSignalSDK.sw.js') !== -1;
+    var bad = t.indexOf('OneSignalSDKWorker.js') !== -1;
+    add(r.ok && good && !bad, url, 'HTTP ' + r.status + (good ? ' | ঠিক লাইন আছে (OneSignalSDK.sw.js)' : ' | ঠিক লাইন নেই') + (bad ? ' | পুরনো ভুল লাইন এখনো আছে!' : ''));
+  }catch(err){ add(false, url, 'খোলা যায়নি: ' + err.message); }
+}
+
+async function runTests(){
+  lines = [];
+  outEl.textContent = 'পরীক্ষা চলছে...';
+  add(null, 'পেজ', location.href);
+  add(window.isSecureContext, 'HTTPS নিরাপদ পেজ', String(window.isSecureContext));
+  var standalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+  add(null, 'হোম-স্ক্রিন অ্যাপ মোডে খোলা', standalone ? 'হ্যাঁ (অ্যাপ)' : 'না (ব্রাউজার)');
+  add(null, 'ব্রাউজার', navigator.userAgent.slice(0, 90));
+  add(('Notification' in window), 'Notification সাপোর্ট', ('Notification' in window) ? 'আছে' : 'নেই');
+  if('Notification' in window){
+    add(Notification.permission === 'granted' ? true : (Notification.permission === 'denied' ? false : null), 'অনুমতির অবস্থা', Notification.permission + ' (granted = দেওয়া, denied = আটকানো, default = এখনো জিজ্ঞেস করা হয়নি)');
+  }
+  add(('serviceWorker' in navigator), 'Service Worker সাপোর্ট', ('serviceWorker' in navigator) ? 'আছে' : 'নেই');
+
+  await checkFile('/sw.js');
+  await checkFile('/fb-help/sw.js');
+
+  await sleep(2500);
+  add(osReady, 'OneSignal চালু (init)', osReady ? 'সফল' : (osErr ? 'ব্যর্থ: ' + osErr : 'এখনো চালু হয়নি (SDK লোড হয়নি?)'));
+
+  try{
+    var regs = await navigator.serviceWorker.getRegistrations();
+    add(regs.length > 0, 'Service Worker রেজিস্ট্রেশন', regs.length + 'টি');
+    regs.forEach(function(r){
+      var w = r.active || r.waiting || r.installing;
+      add(null, ' - scope', r.scope + ' | ফাইল: ' + (w ? w.scriptURL : '?') + ' | অবস্থা: ' + (w ? w.state : '?'));
+    });
+  }catch(err){ add(false, 'রেজিস্ট্রেশন দেখা', err.message); }
+
+  if(OS && osReady){
+    try{
+      var ps = OS.User.PushSubscription;
+      add(!!ps.id, 'OneSignal সাবস্ক্রিপশন আইডি', ps.id || 'নেই');
+      add(!!ps.token, 'পুশ টোকেন', ps.token ? 'আছে (' + String(ps.token).slice(0, 18) + '...)' : 'নেই');
+      add(ps.optedIn === true, 'optedIn (সাবস্ক্রাইব চালু)', String(ps.optedIn));
+      add(null, 'OneSignal অনুমতি', String(OS.Notifications.permission));
+      add(!!OS.User.onesignalId, 'OneSignal user id', OS.User.onesignalId || 'নেই');
+    }catch(err){ add(false, 'OneSignal অবস্থা পড়া', err.message); }
+  }
+  add(null, 'শেষ', new Date().toLocaleTimeString());
+  show();
+}
+
+async function doSubscribe(){
+  if(!OS || !osReady){ lines.push('❌ OneSignal চালু নেই, আগে "পরীক্ষা চালান" দিন'); show(); return; }
+  lines.push('• সাবস্ক্রাইব চেষ্টা চলছে...'); show();
+  try{
+    await OS.Notifications.requestPermission();
+    await OS.User.PushSubscription.optIn();
+    lines.push('• optIn সম্পন্ন, ৫ সেকেন্ড পর আবার পরীক্ষা হবে');
+  }catch(err){ lines.push('❌ সাবস্ক্রাইব ত্রুটি: ' + (err && err.message || err)); }
+  show();
+  await sleep(5000);
+  await runTests();
+}
+
+document.getElementById('runBtn').addEventListener('click', runTests);
+document.getElementById('subBtn').addEventListener('click', doSubscribe);
+document.getElementById('copyBtn').addEventListener('click', function(){
+  try{ navigator.clipboard.writeText(outEl.textContent); this.textContent = 'কপি হয়েছে ✓'; }catch(err){}
+});
+</script>
+</body>
+</html>
