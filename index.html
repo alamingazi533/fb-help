@@ -5297,10 +5297,14 @@ if(reviewSubmitBtn){
      নিচের YOUR_PROPERTY_ID এবং YOUR_WIDGET_ID বদলে আপনার নিজের ভ্যালু বসান।
      কীভাবে পাবেন তা চ্যাটের নিচের নির্দেশনায় দেওয়া আছে। -->
 <script type="text/javascript">
-var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+var Tawk_API = window.Tawk_API || {}, Tawk_LoadStart = new Date();
+// ব্লগ/পোস্টের উপর কোনো চ্যাট প্যানেল নিজে থেকে খুলবে না।
+// ব্রাউজারে আগের Tawk open-state থাকলেও load হওয়ার সাথে সাথে minimize করা হবে।
 Tawk_API.onLoad = function(){
-  // চ্যাট নিজে থেকে খুলবে না। বিশেষ করে ব্লগ/পোস্টের উপরে যেন চ্যাট উইন্ডো না আসে।
-  // ভিজিটর নিজে চ্যাট বাটনে চাপলে তখনই খুলবে।
+  try { if (typeof Tawk_API.minimize === 'function') Tawk_API.minimize(); } catch(e) {}
+};
+Tawk_API.onChatMaximized = function(){
+  // এখানে কোনো auto-open করা হবে না; শুধু ভিজিটরের click-এ maximize হতে দেবে।
 };
 (function(){
   function loadTawk(){
@@ -5313,6 +5317,7 @@ Tawk_API.onLoad = function(){
     s1.setAttribute('crossorigin', '*');
     s0.parentNode.insertBefore(s1, s0);
   }
+  // একবারই Tawk লোড হবে; duplicate script/inline loader থাকবে না।
   if('requestIdleCallback' in window) requestIdleCallback(loadTawk,{timeout:5000});
   else setTimeout(loadTawk,5000);
 })();
